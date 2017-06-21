@@ -21,6 +21,7 @@ Metadata:
         Parameters:
           - KeyPairName
           - BastionSecurityGroupID
+          - Owner
       - Label:
           default: AWS Quick Start Configuration
         Parameters:
@@ -52,6 +53,8 @@ Metadata:
         default: Password for 'mqadmin' user
       MQAppPassword:
         default: Password for 'mqapp' user
+      Owner:
+        default: Name to display as owner in EC2
       PrivateSubnet1ID:
         default: Private Subnet 1 ID
       PrivateSubnet2ID:
@@ -74,10 +77,6 @@ Parameters:
       ID of the bastion host security group to enable SSH connections (e.g.,
       sg-7f16e910)
     Type: 'AWS::EC2::SecurityGroup::Id'
-  AMI:
-    Description: ID of an AMI with IBM MQ pre-installed
-    Type: 'AWS::EC2::Image::Id'
-    ConstraintDescription: must be a valid AMI ID.
   InstanceType:
     Description: MQ server EC2 instance type
     Type: String
@@ -149,7 +148,8 @@ Parameters:
     Type: String
   MQConsoleUsername:
     Description: >-
-      Admin Username to access the MQ Web Console
+      Admin Username to access the MQ Web Console (default is mqconsoleadmin)
+    Default: mqconsoleadmin
     Type: String
   MQConsolePassword:
     Description: >-
@@ -169,6 +169,10 @@ Parameters:
     Type: String
     MinLength: 6
     NoEcho: True
+  Owner:
+    Description: >-
+      Name of owner to display in EC2
+    Type: String
   PrivateSubnet1ID:
     Description: >-
       ID of private subnet 1 in Availability Zone 1 for the IBM MQ
@@ -229,6 +233,19 @@ Rules:
             - 'Fn::RefAll': 'AWS::EC2::VPC::Id'
         AssertDescription: All subnets must in the VPC
 Mappings:
+  AWSAMIRegionMap:
+    AMI:
+      MQ903UBUNTU1604: "MQ_903_Ubuntu_1604"
+    ap-southeast-2:
+      MQ903UBUNTU1604: ami-397a6a5a
+    eu-west-1:
+      MQ903UBUNTU1604: ami-906b73f6
+    us-east-1:
+      MQ903UBUNTU1604: ami-79a58a6f
+    us-east-2:
+      MQ903UBUNTU1604: ami-0f91b76a
+    us-west-2:
+      MQ903UBUNTU1604: ami-c76471be
   S3EndPoints:
     ap-northeast-1:
       endpoint: s3-ap-northeast-1.amazonaws.com
@@ -375,18 +392,116 @@ Resources:
           buckets:
             - Ref: QSS3BucketName
       'AWS::CloudFormation::Init':
-        config:
+        configSets:
+          InstallConfig:
+            - Install
+            - Configure
+        Install:
           files:
-            /licenses/amqpcert.lic:
-              source:
-                  - !Ref LicenseFileURL
-              mode: '000550'
+            /usr/local/etc/configure.sh:
+              content:
+                'Fn::Join':
+                  - ''
+                  - - |
+                       #!/bin/bash
+                    - |
+                    - '     MQ_QMGR_NAME='
+                    - !Ref QueueManagerName
+                    - |+
+
+                    - '     MQ_FILE_SYSTEM='
+                    - !Ref MQFileSystem
+                    - |+
+
+                    - '     AWS_REGION='
+                    - !Ref 'AWS::Region'
+                    - |+
+
+                    - '     AWS_STACK_NAME='
+                    - !Ref 'AWS::StackName'
+                    - |+
+
+                    - '     AWS_REGION='
+                    - !Ref 'AWS::Region'
+                    - |+
+
+                    - '     S3_BUCKET='
+                    - !Ref QSS3BucketName
+                    - |+
+
+                    - '     S3_PREFIX='
+                    - !Ref QSS3KeyPrefix
+                    - |+
+
+                    - '     LICENSE_URL='
+                    - !Ref LicenseFileURL
+                    - |+
+
+                    - '     MQ_CONSOLE_USER='
+                    - !Ref MQConsoleUsername
+                    - |+
+
+                    - '     MQ_CONSOLE_PASSWORD='
+                    - !Ref MQConsolePassword
+                    - |+
+
+                    - '     MQ_ADMIN_PASSWORD='
+                    - !Ref MQAdminPassword
+                    - |+
+
+                    - '     MQ_APP_PASSWORD='
+                    - !Ref MQAppPassword
+                    - |+
+
+                    - |2
+                            configure-mq-aws ${MQ_QMGR_NAME} ${MQ_FILE_SYSTEM} ${AWS_REGION} ${MQ_CONSOLE_USER} ${MQ_CONSOLE_PASSWORD} ${MQ_ADMIN_PASSWORD} ${MQ_APP_PASSWORD}
+                    - |+
+
+                    - |2
+                            if [ ! -z "$LICENSE_URL" ]; then
+                    - |+
+
+                    - |3
+                              mkdir /licenses
+                    - |+
+
+                    - |3
+                              curl ${LICENSE_URL} -o /licenses/amqpcert.lic
+                    - |+
+
+                    - |3
+                              chmod 0644 /licenses/amqpcert.lic
+                    - |+
+
+                    - |3
+                              chown mqm /licenses/amqpcert.lic
+                    - |+
+
+                    - |3
+                              chgrp mqm /licenses/amqpcert.lic
+                    - |+
+
+                    - |3
+                              setmqprd /licenses/amqpcert.lic
+                    - |+
+
+                    - |2
+                            fi
+                    - |
+              mode: '000700'
               owner: root
               group: root
-              authentication: S3AccessCreds
+        Configure:
+          commands:
+            01_RunConfig:
+              command: /usr/local/etc/configure.sh
     Properties:
       AssociatePublicIpAddress: false
-      ImageId: !Ref AMI
+      ImageId:
+        'Fn::FindInMap':
+          - AWSAMIRegionMap
+          - !Ref AWS::Region
+          - MQ903UBUNTU1604
       InstanceType: !Ref InstanceType
       KeyName: !Ref KeyPairName
       SecurityGroups:
@@ -397,106 +512,29 @@ Resources:
           'Fn::Join':
             - ''
             - - |
-                #cloud-config
+                #!/bin/bash
               - |
-                write_files:
-              - |2
-                 - content: |
-              - |2
-                     #!/bin/bash
-              - '     MQ_QMGR_NAME='
-              - !Ref QueueManagerName
-              - |+
 
-              - '     MQ_FILE_SYSTEM='
-              - !Ref MQFileSystem
-              - |+
-
-              - '     AWS_REGION='
-              - !Ref 'AWS::Region'
-              - |+
-
-              - '     AWS_STACK_NAME='
+              - |
+              - /usr/local/bin/cfn-init
+              - ' --stack '
               - !Ref 'AWS::StackName'
-              - |+
-
-              - '     AWS_REGION='
+              - ' --resource LaunchConfiguration'
+              - ' --configsets InstallConfig'
+              - ' --region '
               - !Ref 'AWS::Region'
               - |+
 
-              - '     S3_BUCKET='
-              - !Ref QSS3BucketName
-              - |+
-
-              - '     S3_PREFIX='
-              - !Ref QSS3KeyPrefix
-              - |+
-
-              - '     LICENSE_URL='
-              - !Ref LicenseFileURL
-              - |+
-
-              - '     MQ_CONSOLE_USER='
-              - !Ref MQConsoleUsername
-              - |+
-
-              - '     MQ_CONSOLE_PASSWORD='
-              - !Ref MQConsolePassword
-              - |+
-
-              - '     MQ_ADMIN_PASSWORD='
-              - !Ref MQAdminPassword
-              - |+
-
-              - '     MQ_APP_PASSWORD='
-              - !Ref MQAppPassword
-              - |+
-
-              - |2
-                      configure-mq-aws ${MQ_QMGR_NAME} ${MQ_FILE_SYSTEM} ${AWS_REGION} ${MQ_CONSOLE_USER} ${MQ_CONSOLE_PASSWORD} ${MQ_ADMIN_PASSWORD} ${MQ_APP_PASSWORD}
-              - |+
-
-              - |2
-                      if [ ! -z "$LICENSE_URL" ]; then
-              - |+
-
-              - |3
-                        mkdir /licenses
-              - |+
-
-              - |3
-                        aws s3 cp s3://${S3_BUCKET}/${S3_PREFIX}${LICENSE_URL} /licenses/amqpcert.lic
-              - |+
-
-              - |3
-                        chmod 0644 /licenses/amqpcert.lic
-              - |+
-
-              - |3
-                        chown mqm /licenses/amqpcert.lic
-              - |+
-
-              - |3
-                        chgrp mqm /licenses/amqpcert.lic
-              - |+
-
-              - |3
-                        setmqprd /licenses/amqpcert.lic
-              - |+
-
-              - |2
-                      fi
-              - |+
-
-              - |2
-                   owner: root:root
-              - |2
-                   path: /tmp/configure
-              - |2
-                   permissions: '0700'
               - |
-                runcmd:
-              - ' - [ /tmp/configure ]'
+                # Signal the status from cfn-init
+              - '/usr/local/bin/cfn-signal -e $?'
+              - ' --stack '
+              - !Ref 'AWS::StackName'
+              - ' --resource AutoScalingGroup'
+              - ' --region '
+              - !Ref 'AWS::Region'
+              - |+
+
   AutoScalingGroup:
     Type: 'AWS::AutoScaling::AutoScalingGroup'
     DependsOn:
@@ -517,6 +555,9 @@ Resources:
       Tags:
         - Key: Name
           Value: ibm-mq-903
+          PropagateAtLaunch: 'true'
+        - Key: Owner
+          Value: !Ref Owner
           PropagateAtLaunch: 'true'
     UpdatePolicy:
       AutoScalingRollingUpdate:

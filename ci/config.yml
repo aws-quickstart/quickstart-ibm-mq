@@ -1,27 +1,12 @@
 global:
   marketplace-ami: false
-  owner: quickstart-eng@amazon.com
-  qsname: quickstart-ibm-mq
+  owner: mcguire7@uk.ibm.com
+  qsname: ibm-mq-aws-quickstart
   regions:
-    - ap-northeast-1
-    - ap-northeast-2
-    - ap-south-1
-    - ap-southeast-1
-    - ap-southeast-2
-    - ca-central-1
-    - eu-central-1
     - eu-west-1
-    - sa-east-1
-    - us-east-1
-    - us-east-2
-    - us-west-1
-    - us-west-2
   reporting: true
- 
+
 tests:
   quickstart-ibm-mqt1:
-    parameter_input: quickstart-ibm-mq-example-params1.json
-    template_file: quickstart-ibm-mq-example1.template
-  quickstart-ibm-mqt2:
-    parameter_input: quickstart-ibm-mq-example-params2.json
-    template_file: quickstart-ibm-mq-example2.template
+    parameter_input: ibm-mq-quickstart-master.params.json
+    template_file: ibm-mq-quickstart-master.template
