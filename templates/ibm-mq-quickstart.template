@@ -1,0 +1,640 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  This IBM MQ workload template deploys an IBM MQ cluster
+  behind an ELB load balancer in two private subnets. The cluster is configured
+  to use an S3 bucket for storage. **WARNING** This template creates EC2
+  instances and related resources. You will be billed for the AWS resources used
+  if you create a stack from this template. QS(0000)
+Metadata:
+  'AWS::CloudFormation::Interface':
+    ParameterGroups:
+      - Label:
+          default: Network Configuration
+        Parameters:
+          - VPCID
+          - PrivateSubnet1ID
+          - PrivateSubnet2ID
+          - PublicSubnet1ID
+          - PublicSubnet2ID
+      - Label:
+          default: Amazon EC2 Configuration
+        Parameters:
+          - KeyPairName
+          - BastionSecurityGroupID
+          - Owner
+      - Label:
+          default: AWS Quick Start Configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+      -  Label:
+            default: MQ Instance Configuration
+         Parameters:
+            - QueueManagerName
+            - LicenseFileURL
+            - InstanceType
+            - QueueManagerName
+            - MQConsoleUsername
+            - MQConsolePassword
+            - MQAdminPassword
+            - MQAppPassword
+    ParameterLabels:
+      BastionSecurityGroupID:
+        default: Bastion Security Group ID
+      KeyPairName:
+        default: SSH Key Name
+      LicenseFileURL:
+        default: URL for License File for MQ
+      MQConsoleUsername:
+        default: Username for MQ Web Console*
+      MQConsolePassword:
+        default: Password for MQ Web Console*
+      MQAdminPassword:
+        default: Password for 'mqadmin' user
+      MQAppPassword:
+        default: Password for 'mqapp' user
+      Owner:
+        default: Name to display as owner in EC2
+      PrivateSubnet1ID:
+        default: Private Subnet 1 ID
+      PrivateSubnet2ID:
+        default: Private Subnet 2 ID
+      PublicSubnet1ID:
+        default: Public Subnet 1 ID
+      PublicSubnet2ID:
+        default: Public Subnet 2 ID
+      QSS3BucketName:
+        default: Quick Start S3 Bucket Name
+      QSS3KeyPrefix:
+        default: Quick Start S3 Key Prefix
+      QueueManagerName:
+        default: Queue Manager Name
+      VPCID:
+        default: VPC ID
+Parameters:
+  BastionSecurityGroupID:
+    Description: >-
+      ID of the bastion host security group to enable SSH connections (e.g.,
+      sg-7f16e910)
+    Type: 'AWS::EC2::SecurityGroup::Id'
+  InstanceType:
+    Description: MQ server EC2 instance type
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t1.micro
+      - t2.nano
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - m1.small
+      - m1.medium
+      - m1.large
+      - m1.xlarge
+      - m2.xlarge
+      - m2.2xlarge
+      - m2.4xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - c1.medium
+      - c1.xlarge
+      - c3.large
+      - c3.xlarge
+      - c3.2xlarge
+      - c3.4xlarge
+      - c3.8xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - g2.2xlarge
+      - g2.8xlarge
+      - r3.large
+      - r3.xlarge
+      - r3.2xlarge
+      - r3.4xlarge
+      - r3.8xlarge
+      - i2.xlarge
+      - i2.2xlarge
+      - i2.4xlarge
+      - i2.8xlarge
+      - d2.xlarge
+      - d2.2xlarge
+      - d2.4xlarge
+      - d2.8xlarge
+      - hi1.4xlarge
+      - hs1.8xlarge
+      - cr1.8xlarge
+      - cc2.8xlarge
+      - cg1.4xlarge
+    ConstraintDescription: must be a valid EC2 instance type.
+  KeyPairName:
+    Description: >-
+      Name of an existing EC2 key pair. All instances will launch with this key
+      pair.
+    Type: 'AWS::EC2::KeyPair::KeyName'
+  LicenseFileURL:
+    Description: >-
+      The URL for the license file to enable production mode for MQ
+    Type: String
+  MQConsoleUsername:
+    Description: >-
+      Admin Username to access the MQ Web Console (default is mqconsoleadmin)
+    Default: mqconsoleadmin
+    Type: String
+  MQConsolePassword:
+    Description: >-
+      Admin Password to access the MQ Web Console (Min. Length of 6 Characters)
+    Type: String
+    MinLength: 6
+    NoEcho: True
+  MQAdminPassword:
+    Description: >-
+      Admin Password to access the MQ Admin User (Min. Length of 6 Characters)
+    Type: String
+    MinLength: 6
+    NoEcho: True
+  MQAppPassword:
+    Description: >-
+      Admin Password to access the MQ App User (Min. Length of 6 Characters)
+    Type: String
+    MinLength: 6
+    NoEcho: True
+  Owner:
+    Description: >-
+      Name of owner to display in EC2
+    Type: String
+  PrivateSubnet1ID:
+    Description: >-
+      ID of private subnet 1 in Availability Zone 1 for the IBM MQ
+      instances (e.g., subnet-a0246dcd)
+    Type: 'AWS::EC2::Subnet::Id'
+  PrivateSubnet2ID:
+    Description: >-
+      ID of private subnet 2 in Availability Zone 2 for the IBM MQ
+      instances (e.g., subnet-b1f432cd)
+    Type: 'AWS::EC2::Subnet::Id'
+  PublicSubnet1ID:
+    Description: >-
+      ID of public subnet 1 in Availability Zone 1 for the ELB load balancer
+      (e.g., subnet-9bc642ac)
+    Type: 'AWS::EC2::Subnet::Id'
+  PublicSubnet2ID:
+    Description: >-
+      ID of public subnet 2 in Availability Zone 2 for the ELB load balancer
+      (e.g., subnet-e3246d8e)
+    Type: 'AWS::EC2::Subnet::Id'
+  QSS3BucketName:
+    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    ConstraintDescription: >-
+      Quick Start bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Default: ibm-mq-quickstart
+    Description: >-
+      S3 bucket name for the Quick Start assets. This string can include
+      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot
+      start or end with a hyphen (-).
+    Type: String
+  QSS3KeyPrefix:
+    AllowedPattern: '^[0-9a-zA-Z-/]*$'
+    ConstraintDescription: >-
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), and forward slash (/).
+    Default: mq/
+    Description: >-
+      S3 key prefix for the Quick Start assets. Quick Start key prefix can
+      include numbers, lowercase letters, uppercase letters, hyphens (-), and
+      forward slash (/).
+    Type: String
+  QueueManagerName:
+    Description: Name to use for the IBM MQ queue manager
+    Type: String
+    ConstraintDescription: must be a valid MQ queue manager name.
+  VPCID:
+    Description: ID of your existing VPC for deployment
+    Type: 'AWS::EC2::VPC::Id'
+Rules:
+  SubnetsInVPC:
+    Assertions:
+      - Assert:
+          'Fn::EachMemberIn':
+            - 'Fn::ValueOfAll':
+                - 'AWS::EC2::Subnet::Id'
+                - VpcId
+            - 'Fn::RefAll': 'AWS::EC2::VPC::Id'
+        AssertDescription: All subnets must in the VPC
+Mappings:
+  AWSAMIRegionMap:
+    AMI:
+      MQ903UBUNTU1604: "MQ_903_Ubuntu_1604"
+    ap-southeast-2:
+      MQ903UBUNTU1604: ami-397a6a5a
+    eu-west-1:
+      MQ903UBUNTU1604: ami-906b73f6
+    us-east-1:
+      MQ903UBUNTU1604: ami-79a58a6f
+    us-east-2:
+      MQ903UBUNTU1604: ami-0f91b76a
+    us-west-2:
+      MQ903UBUNTU1604: ami-c76471be
+  S3EndPoints:
+    ap-northeast-1:
+      endpoint: s3-ap-northeast-1.amazonaws.com
+    ap-northeast-2:
+      endpoint: s3-ap-northeast-2.amazonaws.com
+    ap-south-1:
+      endpoint: s3-ap-south-1.amazonaws.com
+    ap-southeast-1:
+      endpoint: s3-ap-southeast-1.amazonaws.com
+    ap-southeast-2:
+      endpoint: s3-ap-southeast-2.amazonaws.com
+    ca-central-1:
+      endpoint: s3-ca-central-1.amazonaws.com
+    eu-central-1:
+      endpoint: s3-eu-central-1.amazonaws.com
+    eu-west-1:
+      endpoint: s3-eu-west-1.amazonaws.com
+    eu-west-2:
+      endpoint: s3-eu-west-2.amazonaws.com
+    sa-east-1:
+      endpoint: s3-sa-east-1.amazonaws.com
+    us-east-1:
+      endpoint: s3-external-1.amazonaws.com
+    us-east-2:
+      endpoint: s3-us-east-2.amazonaws.com
+    us-west-1:
+      endpoint: s3-us-west-1.amazonaws.com
+    us-west-2:
+      endpoint: s3-us-west-2.amazonaws.com
+Conditions:
+  isAmazonAuroraRegion:
+    'Fn::Not':
+      - Condition: isNotAmazonAuroraRegion
+  isNotAmazonAuroraRegion:
+    'Fn::Or':
+      - 'Fn::Equals':
+          - Ref: 'AWS::Region'
+          - ap-southeast-1
+      - 'Fn::Equals':
+          - Ref: 'AWS::Region'
+          - eu-central-1
+      - 'Fn::Equals':
+          - Ref: 'AWS::Region'
+          - sa-east-1
+  GovCloudCondition:
+    'Fn::Equals':
+      - Ref: 'AWS::Region'
+      - us-gov-west-1
+Resources:
+  S3Role:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      Policies:
+        - PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action:
+                  - 's3:GetObject'
+                Resource:
+                  'Fn::Sub':
+                    - 'arn:${Partition}:s3:::${QSS3BucketName}/${QSS3KeyPrefix}*'
+                    - Partition:
+                        'Fn::If':
+                          - GovCloudCondition
+                          - aws-us-gov
+                          - aws
+                Effect: Allow
+          PolicyName: aws-quick-start-s3-policy
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - 'sts:AssumeRole'
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Effect: Allow
+        Version: '2012-10-17'
+  ReportHealthRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+  ReportHealthRolePolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: ReportHealthPolicy
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: 'autoscaling:SetInstanceHealth'
+            Resource: '*'
+      Roles:
+        - !Ref ReportHealthRole
+  ReportHealthInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: /
+      Roles:
+        - !Ref ReportHealthRole
+  MQSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref VPCID
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '1414'
+          ToPort: '1414'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '9443'
+          ToPort: '9443'
+          CidrIp: 0.0.0.0/0
+  MountTargetSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref VPCID
+      GroupDescription: Security group for mount target
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '2049'
+          ToPort: '2049'
+          CidrIp: 0.0.0.0/0
+  LaunchConfiguration:
+    Type: 'AWS::AutoScaling::LaunchConfiguration'
+    Metadata:
+      'AWS::CloudFormation::Authentication':
+        S3AccessCreds:
+          type: S3
+          roleName:
+            Ref: S3Role
+          buckets:
+            - Ref: QSS3BucketName
+      'AWS::CloudFormation::Init':
+        configSets:
+          InstallConfig:
+            - Install
+            - Configure
+        Install:
+          files:
+            /usr/local/etc/configure.sh:
+              content:
+                'Fn::Join':
+                  - ''
+                  - - |
+                       #!/bin/bash
+                    - |
+                    - '     MQ_QMGR_NAME='
+                    - !Ref QueueManagerName
+                    - |+
+
+                    - '     MQ_FILE_SYSTEM='
+                    - !Ref MQFileSystem
+                    - |+
+
+                    - '     AWS_REGION='
+                    - !Ref 'AWS::Region'
+                    - |+
+
+                    - '     AWS_STACK_NAME='
+                    - !Ref 'AWS::StackName'
+                    - |+
+
+                    - '     AWS_REGION='
+                    - !Ref 'AWS::Region'
+                    - |+
+
+                    - '     S3_BUCKET='
+                    - !Ref QSS3BucketName
+                    - |+
+
+                    - '     S3_PREFIX='
+                    - !Ref QSS3KeyPrefix
+                    - |+
+
+                    - '     LICENSE_URL='
+                    - !Ref LicenseFileURL
+                    - |+
+
+                    - '     MQ_CONSOLE_USER='
+                    - !Ref MQConsoleUsername
+                    - |+
+
+                    - '     MQ_CONSOLE_PASSWORD='
+                    - !Ref MQConsolePassword
+                    - |+
+
+                    - '     MQ_ADMIN_PASSWORD='
+                    - !Ref MQAdminPassword
+                    - |+
+
+                    - '     MQ_APP_PASSWORD='
+                    - !Ref MQAppPassword
+                    - |+
+
+                    - |2
+                            configure-mq-aws ${MQ_QMGR_NAME} ${MQ_FILE_SYSTEM} ${AWS_REGION} ${MQ_CONSOLE_USER} ${MQ_CONSOLE_PASSWORD} ${MQ_ADMIN_PASSWORD} ${MQ_APP_PASSWORD}
+                    - |+
+
+                    - |2
+                            if [ ! -z "$LICENSE_URL" ]; then
+                    - |+
+
+                    - |3
+                              mkdir /licenses
+                    - |+
+
+                    - |3
+                              curl ${LICENSE_URL} -o /licenses/amqpcert.lic
+                    - |+
+
+                    - |3
+                              chmod 0644 /licenses/amqpcert.lic
+                    - |+
+
+                    - |3
+                              chown mqm /licenses/amqpcert.lic
+                    - |+
+
+                    - |3
+                              chgrp mqm /licenses/amqpcert.lic
+                    - |+
+
+                    - |3
+                              setmqprd /licenses/amqpcert.lic
+                    - |+
+
+                    - |2
+                            fi
+                    - |
+              mode: '000700'
+              owner: root
+              group: root
+        Configure:
+          commands:
+            01_RunConfig:
+              command: /usr/local/etc/configure.sh
+    Properties:
+      AssociatePublicIpAddress: false
+      ImageId:
+        'Fn::FindInMap':
+          - AWSAMIRegionMap
+          - !Ref AWS::Region
+          - MQ903UBUNTU1604
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref KeyPairName
+      SecurityGroups:
+        - !Ref MQSecurityGroup
+      IamInstanceProfile: !Ref ReportHealthInstanceProfile
+      UserData:
+        'Fn::Base64':
+          'Fn::Join':
+            - ''
+            - - |
+                #!/bin/bash
+              - |
+
+              - |
+              - /usr/local/bin/cfn-init
+              - ' --stack '
+              - !Ref 'AWS::StackName'
+              - ' --resource LaunchConfiguration'
+              - ' --configsets InstallConfig'
+              - ' --region '
+              - !Ref 'AWS::Region'
+              - |+
+
+              - |
+                # Signal the status from cfn-init
+              - '/usr/local/bin/cfn-signal -e $?'
+              - ' --stack '
+              - !Ref 'AWS::StackName'
+              - ' --resource AutoScalingGroup'
+              - ' --region '
+              - !Ref 'AWS::Region'
+              - |+
+
+  AutoScalingGroup:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    DependsOn:
+      - MountTarget1
+      - MountTarget2
+    Properties:
+      VPCZoneIdentifier:
+        - !Ref PrivateSubnet1ID
+        - !Ref PrivateSubnet2ID
+      LoadBalancerNames:
+        - !Ref LoadBalancer
+      HealthCheckType: ELB
+      HealthCheckGracePeriod: 90
+      LaunchConfigurationName: !Ref LaunchConfiguration
+      MinSize: '1'
+      MaxSize: '1'
+      DesiredCapacity: '1'
+      Tags:
+        - Key: Name
+          Value: ibm-mq-903
+          PropagateAtLaunch: 'true'
+        - Key: Owner
+          Value: !Ref Owner
+          PropagateAtLaunch: 'true'
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: '0'
+        MaxBatchSize: '1'
+  MQFileSystem:
+    Type: 'AWS::EFS::FileSystem'
+    Properties:
+      FileSystemTags:
+        - Key: Name
+          Value: MQFileSystem
+  MountTarget1:
+    Type: 'AWS::EFS::MountTarget'
+    Properties:
+      FileSystemId: !Ref MQFileSystem
+      SubnetId: !Ref PrivateSubnet1ID
+      SecurityGroups:
+        - !Ref MountTargetSecurityGroup
+  MountTarget2:
+    Type: 'AWS::EFS::MountTarget'
+    Properties:
+      FileSystemId: !Ref MQFileSystem
+      SubnetId: !Ref PrivateSubnet2ID
+      SecurityGroups:
+        - !Ref MountTargetSecurityGroup
+  LoadBalancer:
+    Type: 'AWS::ElasticLoadBalancing::LoadBalancer'
+    Properties:
+      CrossZone: true
+      LoadBalancerName:
+        'Fn::Join':
+          - ''
+          - - |
+            - ibm-mq-quickstart-elb
+            - !Ref QueueManagerName
+            - |
+      Listeners:
+        - InstancePort: '1414'
+          InstanceProtocol: TCP
+          LoadBalancerPort: '1414'
+          Protocol: TCP
+        - InstancePort: '9443'
+          InstanceProtocol: TCP
+          LoadBalancerPort: '9443'
+          Protocol: TCP
+      HealthCheck:
+        HealthyThreshold: '2'
+        Interval: '10'
+        Target: 'TCP:1414'
+        Timeout: '5'
+        UnhealthyThreshold: '2'
+      SecurityGroups:
+        - !Ref MQSecurityGroup
+      Subnets:
+        - !Ref PublicSubnet1ID
+        - !Ref PublicSubnet2ID
+Outputs:
+  MQRestApiURL:
+    Description: 'URL for Elastic Load Balancer to connect to REST API'
+    Value:
+      'Fn::Join':
+        - ''
+        - - |
+          - 'https://'
+          - !GetAtt LoadBalancer.DNSName
+          - ':9443/ibmmq/rest/v1/'
+          - |
+  MQConsoleURL:
+    Description: 'URL for Elastic Load Balancer to connect to MQ Console'
+    Value:
+      'Fn::Join':
+        - ''
+        - - |
+          - 'https://'
+          - !GetAtt LoadBalancer.DNSName
+          - ':9443/ibmmq/console/'
+          - |
+  ReadMeInfo:
+    Description: 'For more information and details visit:'
+    Value: 'https://github.com/aws-quickstart/ibm-mq-quickstart'

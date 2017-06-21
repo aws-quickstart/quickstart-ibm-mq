@@ -1,0 +1,46 @@
+[
+  {
+    "ParameterKey": "AvailablityZones",
+    "ParameterValue": "$[taskcat_genaz_2]"
+  },
+  {
+    "ParmaeterKey": "RemoteAccessCIDR",
+    "ParameterValue": "195.212.29.0/24"
+  },
+  {
+    "ParmaeterKey": "KeyPairName",
+    "ParameterValue": "jamesmcguire"
+  },
+  {
+    "ParmaeterKey": "BastionAMIOS",
+    "ParameterValue": "Ubuntu-Server-16.04-LTS-HVM"
+  },
+  {
+    "ParmaeterKey": "QSS3BucketName",
+    "ParameterValue": "ibm-mq-quickstart"
+  },
+  {
+    "ParmaeterKey": "Owner",
+    "ParameterValue": "mq-quickstart-user"
+  },
+  {
+    "ParmaeterKey": "QueueManagerName",
+    "ParameterValue": "taskcat"
+  },
+  {
+    "ParmaeterKey": "MQConsoleUsername",
+    "ParameterValue": "mqconsoleadmin"
+  },
+  {
+    "ParmaeterKey": "MQConsolePassword",
+    "ParameterValue": "$[taskcat_genpass_8A]"
+  },
+  {
+    "ParmaeterKey": "MQAdminPassword",
+    "ParameterValue": "$[taskcat_genpass_8A]"
+  },
+  {
+    "ParmaeterKey": "MQAdminPassword",
+    "ParameterValue": "$[taskcat_genpass_8A]"
+  }
+]
