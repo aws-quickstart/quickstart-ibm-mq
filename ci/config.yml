@@ -2,19 +2,17 @@ global:
   notification: true
   owner: mcguire7@uk.ibm.com
   project: quickstart-ibm-mq
-  qsname: quickstart-ibm-mq
-  reporting: true
+  qsname: ibm-mq-aws-quickstart
   regions:
     - us-east-1
     - us-east-2
     - us-west-2
     - eu-west-1
     - ap-southeast-2
-  report_email-to-owner: true
-  report_publish-to-s3: true
-  report_s3bucket: ibm-mq-quickstart
-  s3bucket: ibm-mq-quickstart
+  reporting: true
 tests:
   quickstart-ibm-mqt1:
     parameter_input: ibm-mq-quickstart-master.params.json
     template_file: ibm-mq-quickstart-master.template
+    region:
+      - us-east-1
