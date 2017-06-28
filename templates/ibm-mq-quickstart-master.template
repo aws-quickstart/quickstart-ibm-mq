@@ -397,3 +397,17 @@ Resources:
           'Fn::GetAtt':
             - VPCStack
             - Outputs.VPCID
+Rules:
+  EFSSupportedRegionRule:
+    Assertions:
+      - Assert:
+          'Fn::Contains':
+          -
+            - 'us-east-1'
+            - 'us-east-2'
+            - 'us-west-2'
+            - 'eu-west-1'
+            - 'ap-southeast-2'
+          - !Ref "AWS::Region"
+        AssertDescription: "This Quick Start utilizes Amazon EFS which is only available in the US East (N. Virginia),
+        US East (Ohio), US West (Oregon), EU (Ireland) and Asia Pacific (Sydney) regions. Please launch the stack in one of these regions"
