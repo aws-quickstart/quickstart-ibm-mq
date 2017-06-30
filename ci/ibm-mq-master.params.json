@@ -1,0 +1,54 @@
+[
+  {
+    "ParameterKey": "AvailabilityZones",
+    "ParameterValue": "$[taskcat_genaz_2]"
+  },
+  {
+    "ParameterKey": "RemoteAccessCIDR",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "KeyPairName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "BastionAMIOS",
+    "ParameterValue": "Ubuntu-Server-16.04-LTS-HVM"
+  },
+  {
+    "ParameterKey": "QSS3BucketName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "Owner",
+    "ParameterValue": "mq-user"
+  },
+  {
+    "ParameterKey": "InstanceName",
+    "ParameterValue": "ibm-mq"
+  },
+  {
+    "ParameterKey": "QueueManagerName",
+    "ParameterValue": "taskcat"
+  },
+  {
+    "ParameterKey": "LicenseFileURL",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "MQConsoleUsername",
+    "ParameterValue": "mqconsoleadmin"
+  },
+  {
+    "ParameterKey": "MQConsolePassword",
+    "ParameterValue": "$[taskcat_genpass_8A]"
+  },
+  {
+    "ParameterKey": "MQAdminPassword",
+    "ParameterValue": "$[taskcat_genpass_8A]"
+  },
+  {
+    "ParameterKey": "MQAppPassword",
+    "ParameterValue": "$[taskcat_genpass_8A]"
+  }
+]

@@ -27,6 +27,7 @@ Metadata:
           - BastionInstanceType
           - NumBastionHosts
           - Owner
+          - InstanceName
       - Label:
           default: AWS Quick Start Configuration
         Parameters:
@@ -49,6 +50,8 @@ Metadata:
         default: Bastion AMI Operating System
       BastionInstanceType:
         default: Bastion Instance Type
+      InstanceName:
+        default: Name for EC2 Instance
       NumBastionHosts:
         default: Number of Bastion Hosts
       KeyPairName:
@@ -112,6 +115,11 @@ Parameters:
     Default: t2.micro
     Description: Amazon EC2 instance type for the bastion instances
     Type: String
+  InstanceName:
+    Description: >-
+      Name for the EC2 Instance that is deployed by the Auto Scaling group
+    Type: String
+    Default: ibm-mq
   NumBastionHosts:
     AllowedValues:
       - '1'
@@ -351,12 +359,14 @@ Resources:
     Properties:
       TemplateURL:
         'Fn::Sub': >-
-          https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ibm-mq-quickstart.template
+          https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ibm-mq.template
       Parameters:
         BastionSecurityGroupID:
           'Fn::GetAtt':
             - BastionStack
             - Outputs.BastionSecurityGroupID
+        InstanceName:
+          Ref: InstanceName
         KeyPairName:
           Ref: KeyPairName
         LicenseFileURL:

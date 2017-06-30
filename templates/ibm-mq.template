@@ -22,6 +22,7 @@ Metadata:
           - KeyPairName
           - BastionSecurityGroupID
           - Owner
+          - InstanceName
       - Label:
           default: AWS Quick Start Configuration
         Parameters:
@@ -41,6 +42,8 @@ Metadata:
     ParameterLabels:
       BastionSecurityGroupID:
         default: Bastion Security Group ID
+      InstanceName:
+        default: Name for EC2 Instance
       KeyPairName:
         default: SSH Key Name
       LicenseFileURL:
@@ -77,6 +80,11 @@ Parameters:
       ID of the bastion host security group to enable SSH connections (e.g.,
       sg-7f16e910)
     Type: 'AWS::EC2::SecurityGroup::Id'
+  InstanceName:
+    Description: >-
+      Name for the EC2 Instance that is deployed by the Auto Scaling group
+    Type: String
+    Default: ibm-mq
   InstanceType:
     Description: MQ server EC2 instance type
     Type: String
@@ -554,7 +562,7 @@ Resources:
       DesiredCapacity: '1'
       Tags:
         - Key: Name
-          Value: ibm-mq-903
+          Value: !Ref InstanceName
           PropagateAtLaunch: 'true'
         - Key: Owner
           Value: !Ref Owner

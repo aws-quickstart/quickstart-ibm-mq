@@ -2,7 +2,7 @@ global:
   notification: true
   owner: mcguire7@uk.ibm.com
   project: quickstart-ibm-mq
-  qsname: ibm-mq-aws-quickstart
+  qsname: quickstart-ibm-mq
   regions:
     - us-east-1
     - us-east-2
@@ -12,7 +12,9 @@ global:
   reporting: true
 tests:
   quickstart-ibm-mqt1:
-    parameter_input: ibm-mq-quickstart-master.params.json
-    template_file: ibm-mq-quickstart-master.template
-    region:
-      - us-east-1
+    parameter_input: ibm-mq-master.params.json
+    template_file: ibm-mq-master.template
+    regions:
+      - eu-west-1
+      - us-east-2
+      - ap-southeast-2
