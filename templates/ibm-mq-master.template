@@ -1,48 +1,59 @@
+# © Copyright IBM Corporation 2017
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
   This master template creates a VPC infrastructure for a multi-AZ, multi-tier
-  deployment of IBM MQ on AWS. It deploys a VPC with bastions and the
+  deployment of IBM MQ 9.0.3 trial on AWS EC2, with EFS. It deploys a VPC with bastions and the
   IBM MQ solution. The IBM MQ solution is configured to use
-  an S3 bucket for storage. **WARNING** This template creates EC2 instances and
+  an EFS for persistant storage of the MQ volume. **WARNING** This template creates EC2 instances and
   related resources. You will be billed for the AWS resources used if you create
-  a stack from this template.
+  a stack from this template. IBM MQ is licensed seperatley, please review the terms and conditions here ( http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V) for further details.
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
       - Label:
-          default: Network Configuration
+          default: Software License Agreement
+        Parameters:
+          - LicenseAgreement
+      - Label:
+          default: VPC & Bastion Configuration
         Parameters:
           - AvailabilityZones
-          - VPCCIDR
-          - PrivateSubnet1CIDR
-          - PrivateSubnet2CIDR
-          - PublicSubnet1CIDR
-          - PublicSubnet2CIDR
           - RemoteAccessCIDR
-      - Label:
-          default: Amazon EC2 Configuration
-        Parameters:
           - KeyPairName
           - BastionAMIOS
           - BastionInstanceType
-          - NumBastionHosts
-          - Owner
-          - InstanceName
       - Label:
-          default: AWS Quick Start Configuration
+          default: IBM MQ Instance Configuration
         Parameters:
-          - QSS3BucketName
-          - QSS3KeyPrefix
-      - Label:
-          default: MQ Configuration
-        Parameters:
-          - LicenseFileURL
           - InstanceType
           - QueueManagerName
           - MQConsoleUsername
           - MQConsolePassword
           - MQAdminPassword
           - MQAppPassword
+      - Label:
+          default: IBM MQ License
+        Parameters:
+          - LicenseS3Bucket
+          - LicenseS3KeyPrefix
+      - Label:
+          default: AWS Quick Start Configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
     ParameterLabels:
       AvailabilityZones:
         default: Availability Zones
@@ -50,38 +61,30 @@ Metadata:
         default: Bastion AMI Operating System
       BastionInstanceType:
         default: Bastion Instance Type
-      InstanceName:
-        default: Name for EC2 Instance
-      NumBastionHosts:
-        default: Number of Bastion Hosts
+      InstanceType:
+        default: IBM MQ Instance Type
       KeyPairName:
         default: Key Pair Name
-      LicenseFileURL:
-        default: URL for License File for MQ
+      LicenseAgreement:
+        default: License Agreement
+      LicenseS3Bucket:
+        default: IBM MQ License S3 Bucket Name
+      LicenseS3KeyPrefix:
+        default: IBM MQ License S3 Key Prefix Name
       MQConsoleUsername:
-        default: Username for MQ Web Console*
+        default: IBM MQ Web Console Admin Username
       MQConsolePassword:
-        default: Password for MQ Web Console*
+        default: IBM MQ Web Console Admin Password
       MQAdminPassword:
-        default: Password for 'mqadmin' user
+        default: mqadmin Password
       MQAppPassword:
-        default: Password for 'mqapp' user
-      PrivateSubnet1CIDR:
-        default: Private Subnet 1 CIDR
-      PrivateSubnet2CIDR:
-        default: Private Subnet 2 CIDR
-      PublicSubnet1CIDR:
-        default: Public Subnet 1 CIDR
-      PublicSubnet2CIDR:
-        default: Public Subnet 2 CIDR
+        default: mqapp Password
       QSS3BucketName:
         default: Quick Start S3 Bucket Name
       QSS3KeyPrefix:
         default: Quick Start S3 Key Prefix
       RemoteAccessCIDR:
         default: Allowed Bastion External Access CIDR
-      VPCCIDR:
-        default: VPC CIDR
 Parameters:
   AvailabilityZones:
     Description: >-
@@ -115,22 +118,8 @@ Parameters:
     Default: t2.micro
     Description: Amazon EC2 instance type for the bastion instances
     Type: String
-  InstanceName:
-    Description: >-
-      Name for the EC2 Instance that is deployed by the Auto Scaling group
-    Type: String
-    Default: ibm-mq
-  NumBastionHosts:
-    AllowedValues:
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-    Default: '1'
-    Description: Enter the number of bastion Hosts to create
-    Type: String
   InstanceType:
-    Description: MQ server EC2 instance type
+    Description: IBM MQ server EC2 instance type
     Type: String
     Default: t2.micro
     AllowedValues:
@@ -192,71 +181,63 @@ Parameters:
   QueueManagerName:
     Description: Name to use for the IBM MQ queue manager
     Type: String
+    Default: QM1
     ConstraintDescription: must be a valid MQ queue manager name.
   KeyPairName:
     Description: >-
       The name of an existing public/private key pair, which allows you to
       securely connect to your instance after it launches
     Type: 'AWS::EC2::KeyPair::KeyName'
-  LicenseFileURL:
+  LicenseAgreement:
     Description: >-
-      The URL for the license file to enable production mode for MQ
+      I have read and agree to the license terms for IBM MQ (http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V).
     Type: String
+    Default: '-'
+    AllowedValues:
+      - 'I agree'
+      - '-'
+    ConstraintDescription: must answer 'I agree'
+  LicenseS3Bucket:
+    AllowedPattern: '^[0-9a-zA-Z]?([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    ConstraintDescription: >-
+      S3 bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Description: >-
+      S3 bucket name where you store your IBM MQ License file. Leave blank to use 90 day Trial license.
+    Type: String
+    MinLength: 0
+  LicenseS3KeyPrefix:
+    AllowedPattern: '^[0-9a-zA-Z]?([0-9a-zA-Z-/]*[0-9a-zA-Z])*$'
+    ConstraintDescription: >-
+      S3 key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), and forward slash (/). It cannot start or end with a hyphen (-) or (/).
+    Description: >-
+      S3 key prefix for the directory your IBM MQ License file is stored. Leave blank to use 90 day Trial license.
+    Type: String
+    MinLength: 0
   MQConsoleUsername:
     Description: >-
-      Admin Username to access the MQ Web Console (default is mqconsoleadmin)
+      Admin Username used for accessing Web Console and REST Api
     Default: mqconsoleadmin
     Type: String
   MQConsolePassword:
     Description: >-
-      Admin Password to access the MQ Web Console (Min. Length of 6 Characters)
+      Admin Password to access the MQ Web Console (Min. Length of 8 Characters)
     Type: String
-    MinLength: 6
+    MinLength: 8
     NoEcho: True
   MQAdminPassword:
     Description: >-
-      Admin Password to access the MQ Admin User (Min. Length of 6 Characters)
+      The default user (mqadmin) is predefined on the server & is used to administer MQ (Min. Length of 8 Characters)
     Type: String
-    MinLength: 6
+    MinLength: 8
     NoEcho: True
   MQAppPassword:
     Description: >-
-      Admin Password to access the MQ App User (Min. Length of 6 Characters)
+      The default user (mqapp) is predefined on the server & is used by applications to securely connect to MQ (Min. Length of 8 Characters)
     Type: String
-    MinLength: 6
+    MinLength: 8
     NoEcho: True
-  Owner:
-    Description: >-
-      Name of owner to display in EC2
-    Type: String
-  PrivateSubnet1CIDR:
-    AllowedPattern: >-
-      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
-    Default: 10.0.0.0/19
-    Description: CIDR block for private subnet 1 located in Availability Zone 1
-    Type: String
-  PrivateSubnet2CIDR:
-    AllowedPattern: >-
-      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
-    Default: 10.0.32.0/19
-    Description: CIDR block for private subnet 2 located in Availability Zone 2
-    Type: String
-  PublicSubnet1CIDR:
-    AllowedPattern: >-
-      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
-    Default: 10.0.128.0/20
-    Description: CIDR block for the public (DMZ) subnet 1 located in Availability Zone 1
-    Type: String
-  PublicSubnet2CIDR:
-    AllowedPattern: >-
-      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
-    Default: 10.0.144.0/20
-    Description: CIDR block for the public (DMZ) subnet 2 located in Availability Zone 2
-    Type: String
   QSS3BucketName:
     AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
     ConstraintDescription: >-
@@ -284,15 +265,7 @@ Parameters:
       ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
     Description: >-
-      The CIDR IP range that is permitted to access the IBM MQ
-      software. We recommend that you set this value to a trusted IP range.
-    Type: String
-  VPCCIDR:
-    AllowedPattern: >-
-      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
-    Default: 10.0.0.0/16
-    Description: CIDR block for the VPC
+      The CIDR IP range that is permitted to access the IBM MQ server. We recommend that you set this value to a trusted IP range.
     Type: String
 Resources:
   VPCStack:
@@ -309,16 +282,6 @@ Resources:
         KeyPairName:
           Ref: KeyPairName
         NumberOfAZs: '2'
-        PrivateSubnet1ACIDR:
-          Ref: PrivateSubnet1CIDR
-        PrivateSubnet2ACIDR:
-          Ref: PrivateSubnet2CIDR
-        PublicSubnet1CIDR:
-          Ref: PublicSubnet1CIDR
-        PublicSubnet2CIDR:
-          Ref: PublicSubnet2CIDR
-        VPCCIDR:
-          Ref: VPCCIDR
   BastionStack:
     DependsOn: VPCStack
     Type: 'AWS::CloudFormation::Stack'
@@ -331,8 +294,7 @@ Resources:
           Ref: BastionAMIOS
         BastionInstanceType:
           Ref: BastionInstanceType
-        NumBastionHosts:
-          Ref: NumBastionHosts
+        EnableBanner: true
         KeyPairName:
           Ref: KeyPairName
         PublicSubnet1ID:
@@ -365,12 +327,14 @@ Resources:
           'Fn::GetAtt':
             - BastionStack
             - Outputs.BastionSecurityGroupID
-        InstanceName:
-          Ref: InstanceName
         KeyPairName:
           Ref: KeyPairName
-        LicenseFileURL:
-          Ref: LicenseFileURL
+        LicenseAgreement:
+          Ref: LicenseAgreement
+        LicenseS3Bucket:
+          Ref: LicenseS3Bucket
+        LicenseS3KeyPrefix:
+          Ref: LicenseS3KeyPrefix
         MQConsoleUsername:
           Ref: MQConsoleUsername
         MQConsolePassword:
@@ -379,8 +343,6 @@ Resources:
           Ref: MQAdminPassword
         MQAppPassword:
           Ref: MQAppPassword
-        Owner:
-          Ref: Owner
         PrivateSubnet1ID:
           'Fn::GetAtt':
             - VPCStack
@@ -397,10 +359,6 @@ Resources:
           'Fn::GetAtt':
             - VPCStack
             - Outputs.PublicSubnet2ID
-        QSS3BucketName:
-          Ref: QSS3BucketName
-        QSS3KeyPrefix:
-          Ref: QSS3KeyPrefix
         QueueManagerName:
           Ref: QueueManagerName
         VPCID:
@@ -408,6 +366,14 @@ Resources:
             - VPCStack
             - Outputs.VPCID
 Rules:
+  LicenseAgreementRule:
+    Assertions:
+      - Assert:
+          'Fn::Contains':
+            -
+              - 'I agree'
+            - Ref: LicenseAgreement
+        AssertDescription: "User must agree to the terms of the license agreement."
   EFSSupportedRegionRule:
     Assertions:
       - Assert:
@@ -420,4 +386,14 @@ Rules:
             - 'ap-southeast-2'
           - !Ref "AWS::Region"
         AssertDescription: "This Quick Start utilizes Amazon EFS which is only available in the US East (N. Virginia),
-        US East (Ohio), US West (Oregon), EU (Ireland) and Asia Pacific (Sydney) regions. Please launch the stack in one of these regions"
+        US East (Ohio), US West (Oregon), EU (Ireland) and Asia Pacific (Sydney) regions. Please launch the stack in one of these regions to continue."
+Outputs:
+  MQRestApiURL:
+    Description: 'URL for Elastic Load Balancer to connect to REST API'
+    Value: !GetAtt MQStack.Outputs.MQRestApiURL
+  MQConsoleURL:
+    Description: 'URL for Elastic Load Balancer to connect to MQ Console'
+    Value: !GetAtt MQStack.Outputs.MQConsoleURL
+  ReadMeInfo:
+    Description: 'For more information and details visit:'
+    Value: 'https://github.com/aws-quickstart/ibm-mq-quickstart'

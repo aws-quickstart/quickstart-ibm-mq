@@ -1,19 +1,27 @@
 [
   {
-    "ParameterKey": "AvailabilityZones",
-    "ParameterValue": "$[taskcat_genaz_2]"
-  },
-  {
-    "ParameterKey": "RemoteAccessCIDR",
+    "ParameterKey": "VPCID",
     "ParameterValue": ""
   },
   {
-    "ParameterKey": "KeyPairName",
+    "ParameterKey": "PrivateSubnet1ID",
     "ParameterValue": ""
   },
   {
-    "ParameterKey": "BastionAMIOS",
-    "ParameterValue": "Ubuntu-Server-16.04-LTS-HVM"
+    "ParameterKey": "PrivateSubnet2ID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PublicSubnet1ID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PublicSubnet2ID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "BastionSecurityGroupID",
+    "ParameterValue": ""
   },
   {
     "ParameterKey": "QSS3BucketName",

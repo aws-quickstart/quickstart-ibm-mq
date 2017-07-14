@@ -1,13 +1,31 @@
+# © Copyright IBM Corporation 2017
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 AWSTemplateFormatVersion: '2010-09-09'
 Description: >-
-  This IBM MQ workload template deploys an IBM MQ cluster
-  behind an ELB load balancer in two private subnets. The cluster is configured
-  to use an S3 bucket for storage. **WARNING** This template creates EC2
-  instances and related resources. You will be billed for the AWS resources used
-  if you create a stack from this template. QS(0000)
+  This master template creates a VPC infrastructure for a multi-AZ, multi-tier
+  deployment of IBM MQ 9.0.3 trial on AWS EC2, with EFS. It deploys a VPC with bastions and the
+  IBM MQ solution. The IBM MQ solution is configured to use
+  an EFS for persistant storage of the MQ volume. **WARNING** This template creates EC2 instances and
+  related resources. You will be billed for the AWS resources used if you create
+  a stack from this template. IBM MQ is licensed seperatley, please review the terms and conditions here (http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V) for further details.
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
+      - Label:
+          default: Software License Agreement
+        Parameters:
+          - LicenseAgreement
       - Label:
           default: Network Configuration
         Parameters:
@@ -17,47 +35,51 @@ Metadata:
           - PublicSubnet1ID
           - PublicSubnet2ID
       - Label:
-          default: Amazon EC2 Configuration
+          default: Bastion Configuration
         Parameters:
           - KeyPairName
           - BastionSecurityGroupID
+      - Label:
+          default: IBM MQ Instance Configuration
+        Parameters:
           - Owner
           - InstanceName
+          - InstanceType
+          - QueueManagerName
+          - MQConsoleUsername
+          - MQConsolePassword
+          - MQAdminPassword
+          - MQAppPassword
       - Label:
-          default: AWS Quick Start Configuration
+          default: IBM MQ License
         Parameters:
-          - QSS3BucketName
-          - QSS3KeyPrefix
-      -  Label:
-            default: MQ Instance Configuration
-         Parameters:
-            - QueueManagerName
-            - LicenseFileURL
-            - InstanceType
-            - QueueManagerName
-            - MQConsoleUsername
-            - MQConsolePassword
-            - MQAdminPassword
-            - MQAppPassword
+          - LicenseS3Bucket
+          - LicenseS3KeyPrefix
     ParameterLabels:
       BastionSecurityGroupID:
         default: Bastion Security Group ID
       InstanceName:
-        default: Name for EC2 Instance
+        default: IBM MQ Instance Name
+      InstanceType:
+        default: IBM MQ Instance Type
       KeyPairName:
         default: SSH Key Name
-      LicenseFileURL:
-        default: URL for License File for MQ
+      LicenseAgreement:
+        default: License Agreement
+      LicenseS3Bucket:
+        default: IBM MQ License S3 Bucket Name
+      LicenseS3KeyPrefix:
+        default: IBM MQ License S3 Key Prefix Name
       MQConsoleUsername:
-        default: Username for MQ Web Console*
+        default: IBM MQ Web Console Admin Username
       MQConsolePassword:
-        default: Password for MQ Web Console*
+        default: IBM MQ Web Console Admin Password
       MQAdminPassword:
-        default: Password for 'mqadmin' user
+        default: mqadmin Password
       MQAppPassword:
-        default: Password for 'mqapp' user
+        default: mqapp Password
       Owner:
-        default: Name to display as owner in EC2
+        default: Owner Tag
       PrivateSubnet1ID:
         default: Private Subnet 1 ID
       PrivateSubnet2ID:
@@ -66,10 +88,6 @@ Metadata:
         default: Public Subnet 1 ID
       PublicSubnet2ID:
         default: Public Subnet 2 ID
-      QSS3BucketName:
-        default: Quick Start S3 Bucket Name
-      QSS3KeyPrefix:
-        default: Quick Start S3 Key Prefix
       QueueManagerName:
         default: Queue Manager Name
       VPCID:
@@ -82,11 +100,11 @@ Parameters:
     Type: 'AWS::EC2::SecurityGroup::Id'
   InstanceName:
     Description: >-
-      Name for the EC2 Instance that is deployed by the Auto Scaling group
+      Name for the IBM MQ instance that is deployed to EC2
     Type: String
     Default: ibm-mq
   InstanceType:
-    Description: MQ server EC2 instance type
+    Description: IBM MQ server EC2 instance type
     Type: String
     Default: t2.micro
     AllowedValues:
@@ -150,36 +168,60 @@ Parameters:
       Name of an existing EC2 key pair. All instances will launch with this key
       pair.
     Type: 'AWS::EC2::KeyPair::KeyName'
-  LicenseFileURL:
+  LicenseAgreement:
     Description: >-
-      The URL for the license file to enable production mode for MQ
+      I have read and agree to the license terms for IBM MQ (http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V).
     Type: String
+    Default: '-'
+    AllowedValues:
+      - 'I agree'
+      - '-'
+    ConstraintDescription: must answer 'I agree'
+  LicenseS3Bucket:
+    AllowedPattern: '^[0-9a-zA-Z]?([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
+    ConstraintDescription: >-
+      S3 bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Description: >-
+      S3 bucket name where you store IBM MQ License file. Leave blank to use 90 day Trial license.
+    Type: String
+    MinLength: 0
+  LicenseS3KeyPrefix:
+    AllowedPattern: '^[0-9a-zA-Z]?([0-9a-zA-Z-/]*[0-9a-zA-Z])*$'
+    ConstraintDescription: >-
+      S3 key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), and forward slash (/). It cannot start or end with a hyphen (-) or (/).
+    Description: >-
+      S3 key prefix for the directory your IBM MQ License file is stored. Leave blank to use 90 day Trial license.
+    Type: String
+    MinLength: 0
   MQConsoleUsername:
     Description: >-
-      Admin Username to access the MQ Web Console (default is mqconsoleadmin)
+      Admin Username used for accessing Web Console and REST Api
     Default: mqconsoleadmin
     Type: String
   MQConsolePassword:
     Description: >-
-      Admin Password to access the MQ Web Console (Min. Length of 6 Characters)
+      Admin Password to access the MQ Web Console (Min. Length of 8 Characters)
     Type: String
-    MinLength: 6
+    MinLength: 8
     NoEcho: True
   MQAdminPassword:
     Description: >-
-      Admin Password to access the MQ Admin User (Min. Length of 6 Characters)
+      This default user (mqadmin) is predefined on the server & is used to administer MQ (Min. Length of 8 Characters)
     Type: String
-    MinLength: 6
+    MinLength: 8
     NoEcho: True
   MQAppPassword:
     Description: >-
-      Admin Password to access the MQ App User (Min. Length of 6 Characters)
+      The default user (mqapp) is predefined on the server & is used by applications to securely connect to MQ (Min. Length of 8 Characters)
     Type: String
-    MinLength: 6
+    MinLength: 8
     NoEcho: True
   Owner:
     Description: >-
-      Name of owner to display in EC2
+      Set Owner tag for the IBM MQ instance
+    Default: ibm-mq
     Type: String
   PrivateSubnet1ID:
     Description: >-
@@ -201,36 +243,36 @@ Parameters:
       ID of public subnet 2 in Availability Zone 2 for the ELB load balancer
       (e.g., subnet-e3246d8e)
     Type: 'AWS::EC2::Subnet::Id'
-  QSS3BucketName:
-    AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
-    ConstraintDescription: >-
-      Quick Start bucket name can include numbers, lowercase letters, uppercase
-      letters, and hyphens (-). It cannot start or end with a hyphen (-).
-    Default: ibm-mq-quickstart
-    Description: >-
-      S3 bucket name for the Quick Start assets. This string can include
-      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot
-      start or end with a hyphen (-).
-    Type: String
-  QSS3KeyPrefix:
-    AllowedPattern: '^[0-9a-zA-Z-/]*$'
-    ConstraintDescription: >-
-      Quick Start key prefix can include numbers, lowercase letters, uppercase
-      letters, hyphens (-), and forward slash (/).
-    Default: mq/
-    Description: >-
-      S3 key prefix for the Quick Start assets. Quick Start key prefix can
-      include numbers, lowercase letters, uppercase letters, hyphens (-), and
-      forward slash (/).
-    Type: String
   QueueManagerName:
     Description: Name to use for the IBM MQ queue manager
     Type: String
+    Default: QM1
     ConstraintDescription: must be a valid MQ queue manager name.
   VPCID:
     Description: ID of your existing VPC for deployment
     Type: 'AWS::EC2::VPC::Id'
 Rules:
+  LicenseAgreementRule:
+    Assertions:
+      - Assert:
+          'Fn::Contains':
+            -
+              - 'I agree'
+            - Ref: LicenseAgreement
+        AssertDescription: "User must agree to the terms of the license agreement."
+  EFSSupportedRegionRule:
+    Assertions:
+      - Assert:
+          'Fn::Contains':
+          -
+            - 'us-east-1'
+            - 'us-east-2'
+            - 'us-west-2'
+            - 'eu-west-1'
+            - 'ap-southeast-2'
+          - !Ref "AWS::Region"
+        AssertDescription: "This Quick Start utilizes Amazon EFS which is only available in the US East (N. Virginia),
+        US East (Ohio), US West (Oregon), EU (Ireland) and Asia Pacific (Sydney) regions. Please launch the stack in one of these regions"
   SubnetsInVPC:
     Assertions:
       - Assert:
@@ -245,15 +287,15 @@ Mappings:
     AMI:
       MQ903UBUNTU1604: "MQ_903_Ubuntu_1604"
     ap-southeast-2:
-      MQ903UBUNTU1604: ami-397a6a5a
+      MQ903UBUNTU1604: ami-9efeecfd
     eu-west-1:
-      MQ903UBUNTU1604: ami-906b73f6
+      MQ903UBUNTU1604: ami-e23cdd9b
     us-east-1:
-      MQ903UBUNTU1604: ami-79a58a6f
+      MQ903UBUNTU1604: ami-f2a2a7e4
     us-east-2:
-      MQ903UBUNTU1604: ami-0f91b76a
+      MQ903UBUNTU1604: ami-60efce05
     us-west-2:
-      MQ903UBUNTU1604: ami-c76471be
+      MQ903UBUNTU1604: ami-52d1c22b
   S3EndPoints:
     ap-northeast-1:
       endpoint: s3-ap-northeast-1.amazonaws.com
@@ -303,35 +345,7 @@ Conditions:
       - Ref: 'AWS::Region'
       - us-gov-west-1
 Resources:
-  S3Role:
-    Type: 'AWS::IAM::Role'
-    Properties:
-      Policies:
-        - PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Action:
-                  - 's3:GetObject'
-                Resource:
-                  'Fn::Sub':
-                    - 'arn:${Partition}:s3:::${QSS3BucketName}/${QSS3KeyPrefix}*'
-                    - Partition:
-                        'Fn::If':
-                          - GovCloudCondition
-                          - aws-us-gov
-                          - aws
-                Effect: Allow
-          PolicyName: aws-quick-start-s3-policy
-      AssumeRolePolicyDocument:
-        Statement:
-          - Action:
-              - 'sts:AssumeRole'
-            Principal:
-              Service:
-                - ec2.amazonaws.com
-            Effect: Allow
-        Version: '2012-10-17'
-  ReportHealthRole:
+  InstanceRole:
     Type: 'AWS::IAM::Role'
     Properties:
       AssumeRolePolicyDocument:
@@ -343,7 +357,7 @@ Resources:
             Action:
               - 'sts:AssumeRole'
       Path: /
-  ReportHealthRolePolicy:
+  InstanceRolePolicy:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: ReportHealthPolicy
@@ -353,14 +367,25 @@ Resources:
           - Effect: Allow
             Action: 'autoscaling:SetInstanceHealth'
             Resource: '*'
+          - Action:
+              - 's3:GetObject'
+            Effect: Allow
+            Resource:
+              'Fn::Sub':
+                - 'arn:${Partition}:s3:::${LicenseS3Bucket}/*'
+                - Partition:
+                    'Fn::If':
+                      - GovCloudCondition
+                      - aws-us-gov
+                      - aws
       Roles:
-        - !Ref ReportHealthRole
-  ReportHealthInstanceProfile:
+        - !Ref InstanceRole
+  InstanceProfile:
     Type: 'AWS::IAM::InstanceProfile'
     Properties:
       Path: /
       Roles:
-        - !Ref ReportHealthRole
+        - !Ref InstanceRole
   MQSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -392,13 +417,6 @@ Resources:
   LaunchConfiguration:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Metadata:
-      'AWS::CloudFormation::Authentication':
-        S3AccessCreds:
-          type: S3
-          roleName:
-            Ref: S3Role
-          buckets:
-            - Ref: QSS3BucketName
       'AWS::CloudFormation::Init':
         configSets:
           InstallConfig:
@@ -433,16 +451,12 @@ Resources:
                     - !Ref 'AWS::Region'
                     - |+
 
-                    - '     S3_BUCKET='
-                    - !Ref QSS3BucketName
+                    - '     LICENSE_S3_BUCKET='
+                    - !Ref LicenseS3Bucket
                     - |+
 
-                    - '     S3_PREFIX='
-                    - !Ref QSS3KeyPrefix
-                    - |+
-
-                    - '     LICENSE_URL='
-                    - !Ref LicenseFileURL
+                    - '     LICENSE_S3_KEY='
+                    - !Ref LicenseS3KeyPrefix
                     - |+
 
                     - '     MQ_CONSOLE_USER='
@@ -462,11 +476,7 @@ Resources:
                     - |+
 
                     - |2
-                            configure-mq-aws ${MQ_QMGR_NAME} ${MQ_FILE_SYSTEM} ${AWS_REGION} ${MQ_CONSOLE_USER} ${MQ_CONSOLE_PASSWORD} ${MQ_ADMIN_PASSWORD} ${MQ_APP_PASSWORD}
-                    - |+
-
-                    - |2
-                            if [ ! -z "$LICENSE_URL" ]; then
+                            if [ -n ${LICENSE_S3_BUCKET} ]; then
                     - |+
 
                     - |3
@@ -474,27 +484,43 @@ Resources:
                     - |+
 
                     - |3
-                              curl ${LICENSE_URL} -o /licenses/amqpcert.lic
+                              aws s3 cp s3://${LICENSE_S3_BUCKET}/${LICENSE_S3_KEY}/amqpcert.lic /licenses/amqpcert.lic
                     - |+
 
                     - |3
-                              chmod 0644 /licenses/amqpcert.lic
+                              if [ $? -eq 0 ]; then
+                    - |+
+
+                    - |4
+                                chown mqm /licenses/amqpcert.lic
+                    - |+
+
+                    - |4
+                                chgrp mqm /licenses/amqpcert.lic
+                    - |+
+
+                    - |4
+                                setmqprd /licenses/amqpcert.lic
                     - |+
 
                     - |3
-                              chown mqm /licenses/amqpcert.lic
+                              else
+                    - |+
+
+                    - |4
+                                echo 'Failed to find license file'
                     - |+
 
                     - |3
-                              chgrp mqm /licenses/amqpcert.lic
-                    - |+
-
-                    - |3
-                              setmqprd /licenses/amqpcert.lic
+                              fi
                     - |+
 
                     - |2
                             fi
+                    - |+
+
+                    - |2
+                            configure-mq-aws ${MQ_QMGR_NAME} ${MQ_FILE_SYSTEM} ${AWS_REGION} ${MQ_CONSOLE_USER} ${MQ_CONSOLE_PASSWORD} ${MQ_ADMIN_PASSWORD} ${MQ_APP_PASSWORD}
                     - |
               mode: '000700'
               owner: root
@@ -514,7 +540,7 @@ Resources:
       KeyName: !Ref KeyPairName
       SecurityGroups:
         - !Ref MQSecurityGroup
-      IamInstanceProfile: !Ref ReportHealthInstanceProfile
+      IamInstanceProfile: !Ref InstanceProfile
       UserData:
         'Fn::Base64':
           'Fn::Join':
@@ -646,17 +672,3 @@ Outputs:
   ReadMeInfo:
     Description: 'For more information and details visit:'
     Value: 'https://github.com/aws-quickstart/ibm-mq-quickstart'
-Rules:
-  EFSSupportedRegionRule:
-    Assertions:
-      - Assert:
-          'Fn::Contains':
-          -
-            - 'us-east-1'
-            - 'us-east-2'
-            - 'us-west-2'
-            - 'eu-west-1'
-            - 'ap-southeast-2'
-          - !Ref "AWS::Region"
-        AssertDescription: "This Quick Start utilizes Amazon EFS which is only available in the US East (N. Virginia),
-        US East (Ohio), US West (Oregon), EU (Ireland) and Asia Pacific (Sydney) regions. Please launch the stack in one of these regions"
