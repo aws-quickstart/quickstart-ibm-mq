@@ -20,6 +20,22 @@
     "ParameterValue": ""
   },
   {
+    "ParameterKey": "PublicSubnet1CIDR",
+    "ParameterValue": "0.0.0.0/0"
+  },
+  {
+    "ParameterKey": "PublicSubnet2CIDR",
+    "ParameterValue": "0.0.0.0/0"
+  },
+  {
+    "ParameterKey": "PrivateSubnet1CIDR",
+    "ParameterValue": "10.0.0.0/16"
+  },
+  {
+    "ParameterKey": "PrivateSubnet2CIDR",
+    "ParameterValue": "10.0.0.0/16"
+  },
+  {
     "ParameterKey": "BastionSecurityGroupID",
     "ParameterValue": ""
   },

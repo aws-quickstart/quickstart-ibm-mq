@@ -4,12 +4,20 @@
     "ParameterValue": "$[taskcat_genaz_2]"
   },
   {
-    "ParameterKey": "RemoteAccessCIDR",
-    "ParameterValue": ""
+    "ParameterKey": "AdminRemoteAccessCIDR",
+    "ParameterValue": "0.0.0.0/0"
+  },
+  {
+    "ParameterKey": "AdminConsoleAccessCIDR",
+    "ParameterValue": "0.0.0.0/0"
+  },
+  {
+    "ParameterKey": "ClientAppAccessCIDR",
+    "ParameterValue": "0.0.0.0/0"
   },
   {
     "ParameterKey": "KeyPairName",
-    "ParameterValue": ""
+    "ParameterValue": "$[alfred_getkeypair]"
   },
   {
     "ParameterKey": "BastionAMIOS",
@@ -17,7 +25,7 @@
   },
   {
     "ParameterKey": "QSS3BucketName",
-    "ParameterValue": ""
+    "ParameterValue": "quickstart-reference"
   },
   {
     "ParameterKey": "QueueManagerName",

@@ -34,6 +34,12 @@ Metadata:
           - PrivateSubnet2ID
           - PublicSubnet1ID
           - PublicSubnet2ID
+          - PrivateSubnet1CIDR
+          - PrivateSubnet2CIDR
+          - PublicSubnet1CIDR
+          - PublicSubnet2CIDR
+          - AdminConsoleAccessCIDR
+          - ClientAppAccessCIDR
       - Label:
           default: Bastion Configuration
         Parameters:
@@ -56,8 +62,12 @@ Metadata:
           - LicenseS3Bucket
           - LicenseS3KeyPrefix
     ParameterLabels:
+      AdminConsoleAccessCIDR:
+        default: Allowed Admin Web Console External Access CIDR
       BastionSecurityGroupID:
         default: Bastion Security Group ID
+      ClientAppAccessCIDR:
+        default: Allowed Client Application External Access CIDR
       InstanceName:
         default: IBM MQ Instance Name
       InstanceType:
@@ -88,16 +98,36 @@ Metadata:
         default: Public Subnet 1 ID
       PublicSubnet2ID:
         default: Public Subnet 2 ID
+      PrivateSubnet1CIDR:
+        default: Private Subnet 1 CIDR
+      PrivateSubnet2CIDR:
+        default: Private Subnet 2 CIDR
       QueueManagerName:
         default: Queue Manager Name
       VPCID:
         default: VPC ID
 Parameters:
+  AdminConsoleAccessCIDR:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
+    Default: '0.0.0.0/0'
+    Description: >-
+      The CIDR IP range that is permitted to access the IBM MQ Web Console via the ELB. We recommend that you set this value to a trusted IP range.
+    Type: String
   BastionSecurityGroupID:
     Description: >-
       ID of the bastion host security group to enable SSH connections (e.g.,
       sg-7f16e910)
     Type: 'AWS::EC2::SecurityGroup::Id'
+  ClientAppAccessCIDR:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
+    Default: '0.0.0.0/0'
+    Description: >-
+      The CIDR IP range that is permitted to allow access for IBM MQ Client Applications. We recommend that you set this value to a trusted IP range.
+    Type: String
   InstanceName:
     Description: >-
       Name for the IBM MQ instance that is deployed to EC2
@@ -243,6 +273,34 @@ Parameters:
       ID of public subnet 2 in Availability Zone 2 for the ELB load balancer
       (e.g., subnet-e3246d8e)
     Type: 'AWS::EC2::Subnet::Id'
+  PrivateSubnet1CIDR:
+     AllowedPattern: >-
+       ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+     Default: 10.0.0.0/19
+     Description: CIDR block for private subnet 1 located in Availability Zone 1
+     Type: String
+  PrivateSubnet2CIDR:
+      AllowedPattern: >-
+        ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+      ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+      Default: 10.0.32.0/19
+      Description: CIDR block for private subnet 2 located in Availability Zone 2
+      Type: String
+  PublicSubnet1CIDR:
+      AllowedPattern: >-
+        ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+      ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+      Default: 10.0.128.0/20
+      Description: CIDR block for the public (DMZ) subnet 1 located in Availability Zone 1
+      Type: String
+  PublicSubnet2CIDR:
+    AllowedPattern: >-
+      ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/(1[6-9]|2[0-8]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/16-28
+    Default: 10.0.144.0/20
+    Description: CIDR block for the public (DMZ) subnet 2 located in Availability Zone 2
+    Type: String
   QueueManagerName:
     Description: Name to use for the IBM MQ queue manager
     Type: String
@@ -390,20 +448,46 @@ Resources:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       VpcId: !Ref VPCID
-      GroupDescription: Enable SSH access via port 22
+      GroupDescription: Enable SSH access via port 22, and access to 1414 and 9443 via ELB
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: '22'
           ToPort: '22'
-          CidrIp: 0.0.0.0/0
+          CidrIp: !Ref PublicSubnet1CIDR
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: !Ref PublicSubnet2CIDR
         - IpProtocol: tcp
           FromPort: '1414'
           ToPort: '1414'
-          CidrIp: 0.0.0.0/0
+          CidrIp: !Ref PublicSubnet1CIDR
+        - IpProtocol: tcp
+          FromPort: '1414'
+          ToPort: '1414'
+          CidrIp: !Ref PublicSubnet2CIDR
         - IpProtocol: tcp
           FromPort: '9443'
           ToPort: '9443'
-          CidrIp: 0.0.0.0/0
+          CidrIp: !Ref PublicSubnet1CIDR
+        - IpProtocol: tcp
+          FromPort: '9443'
+          ToPort: '9443'
+          CidrIp: !Ref PublicSubnet2CIDR
+  MQELBSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref VPCID
+      GroupDescription: Enable access via port 1414 and 9443
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '1414'
+          ToPort: '1414'
+          CidrIp: !Ref ClientAppAccessCIDR
+        - IpProtocol: tcp
+          FromPort: '9443'
+          ToPort: '9443'
+          CidrIp: !Ref AdminConsoleAccessCIDR
   MountTargetSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -413,7 +497,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: '2049'
           ToPort: '2049'
-          CidrIp: 0.0.0.0/0
+          CidrIp: !Ref PrivateSubnet1CIDR
+        - IpProtocol: tcp
+          FromPort: '2049'
+          ToPort: '2049'
+          CidrIp: !Ref PrivateSubnet2CIDR
   LaunchConfiguration:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Metadata:
@@ -644,7 +732,7 @@ Resources:
         Timeout: '5'
         UnhealthyThreshold: '2'
       SecurityGroups:
-        - !Ref MQSecurityGroup
+        - !Ref MQELBSecurityGroup
       Subnets:
         - !Ref PublicSubnet1ID
         - !Ref PublicSubnet2ID
