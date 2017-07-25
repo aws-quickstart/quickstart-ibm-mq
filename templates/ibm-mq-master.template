@@ -383,22 +383,6 @@ Resources:
           'Fn::GetAtt':
             - VPCStack
             - Outputs.PublicSubnet2ID
-        PrivateSubnet1CIDR:
-          'Fn::GetAtt':
-            - VPCStack
-            - Outputs.PrivateSubnet1ACIDR
-        PrivateSubnet2CIDR:
-          'Fn::GetAtt':
-            - VPCStack
-            - Outputs.PrivateSubnet2ACIDR
-        PublicSubnet1CIDR:
-          'Fn::GetAtt':
-            - VPCStack
-            - Outputs.PublicSubnet1CIDR
-        PublicSubnet2CIDR:
-          'Fn::GetAtt':
-            - VPCStack
-            - Outputs.PublicSubnet2CIDR
         QueueManagerName:
           Ref: QueueManagerName
         VPCID:
