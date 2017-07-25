@@ -1,31 +1,47 @@
 [
   {
-    "ParameterKey": "AvailabilityZones",
-    "ParameterValue": "$[taskcat_genaz_2]"
+    "ParameterKey": "VPCID",
+    "ParameterValue": ""
   },
   {
-    "ParameterKey": "AdminRemoteAccessCIDR",
+    "ParameterKey": "PrivateSubnet1ID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PrivateSubnet2ID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PublicSubnet1ID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PublicSubnet2ID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PublicSubnet1CIDR",
     "ParameterValue": "0.0.0.0/0"
   },
   {
-    "ParameterKey": "AdminConsoleAccessCIDR",
+    "ParameterKey": "PublicSubnet2CIDR",
     "ParameterValue": "0.0.0.0/0"
   },
   {
-    "ParameterKey": "ClientAppAccessCIDR",
-    "ParameterValue": "0.0.0.0/0"
+    "ParameterKey": "PrivateSubnet1CIDR",
+    "ParameterValue": "10.0.0.0/16"
   },
   {
-    "ParameterKey": "KeyPairName",
-    "ParameterValue": "$[alfred_getkeypair]"
+    "ParameterKey": "PrivateSubnet2CIDR",
+    "ParameterValue": "10.0.0.0/16"
   },
   {
-    "ParameterKey": "BastionAMIOS",
-    "ParameterValue": "Ubuntu-Server-16.04-LTS-HVM"
+    "ParameterKey": "BastionSecurityGroupID",
+    "ParameterValue": ""
   },
   {
     "ParameterKey": "QSS3BucketName",
-    "ParameterValue": "quickstart-reference"
+    "ParameterValue": ""
   },
   {
     "ParameterKey": "QueueManagerName",
