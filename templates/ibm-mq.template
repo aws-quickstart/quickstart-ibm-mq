@@ -308,15 +308,15 @@ Mappings:
     AMI:
       MQ903UBUNTU1604: "MQ_903_Ubuntu_1604"
     ap-southeast-2:
-      MQ903UBUNTU1604: ami-9efeecfd
+      MQ903UBUNTU1604: ami-e9fee18a
     eu-west-1:
-      MQ903UBUNTU1604: ami-e23cdd9b
+      MQ903UBUNTU1604: ami-5f658d26
     us-east-1:
-      MQ903UBUNTU1604: ami-f2a2a7e4
+      MQ903UBUNTU1604: ami-d0cf92ab
     us-east-2:
-      MQ903UBUNTU1604: ami-60efce05
+      MQ903UBUNTU1604: ami-66230303
     us-west-2:
-      MQ903UBUNTU1604: ami-52d1c22b
+      MQ903UBUNTU1604: ami-017a6078
   S3EndPoints:
     ap-northeast-1:
       endpoint: s3-ap-northeast-1.amazonaws.com
@@ -498,20 +498,24 @@ Resources:
                     - !Ref LicenseS3KeyPrefix
                     - |+
 
-                    - '     MQ_CONSOLE_USER='
+                    - '     MQ_CONSOLE_USER='''
                     - !Ref MQConsoleUsername
+                    - ''''
                     - |+
 
-                    - '     MQ_CONSOLE_PASSWORD='
+                    - '     MQ_CONSOLE_PASSWORD='''
                     - !Ref MQConsolePassword
+                    - ''''
                     - |+
 
-                    - '     MQ_ADMIN_PASSWORD='
+                    - '     MQ_ADMIN_PASSWORD='''
                     - !Ref MQAdminPassword
+                    - ''''
                     - |+
 
-                    - '     MQ_APP_PASSWORD='
+                    - '     MQ_APP_PASSWORD='''
                     - !Ref MQAppPassword
+                    - ''''
                     - |+
 
                     - |2
