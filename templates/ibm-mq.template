@@ -229,13 +229,13 @@ Parameters:
     NoEcho: True
   MQAdminPassword:
     Description: >-
-      This default user (mqadmin) is predefined on the server & is used to administer MQ (Min. Length of 8 Characters)
+      Password for predefined mqadmin user used to administer MQ (Min. Length of 8 Characters)
     Type: String
     MinLength: 8
     NoEcho: True
   MQAppPassword:
     Description: >-
-      The default user (mqapp) is predefined on the server & is used by applications to securely connect to MQ (Min. Length of 8 Characters)
+      Password for predefined mqapp user used by applications to securely connect to MQ (Min. Length of 8 Characters)
     Type: String
     MinLength: 8
     NoEcho: True
