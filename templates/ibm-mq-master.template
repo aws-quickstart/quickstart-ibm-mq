@@ -19,7 +19,7 @@ Description: >-
   IBM MQ solution. The IBM MQ solution is configured to use
   an EFS for persistant storage of the MQ volume. **WARNING** This template creates EC2 instances and
   related resources. You will be billed for the AWS resources used if you create
-  a stack from this template. IBM MQ is licensed seperatley, please review the terms and conditions here ( http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V) for further details. (qs-1nhqnkuin)
+  a stack from this template. IBM MQ is licensed seperatley, please review the terms and conditions here (http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V) for further details. (qs-1nhqnkuin)
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
@@ -255,13 +255,13 @@ Parameters:
     NoEcho: True
   MQAdminPassword:
     Description: >-
-      The default user (mqadmin) is predefined on the server & is used to administer MQ (Min. Length of 8 Characters)
+      Password for predefined mqadmin user used to administer MQ (Min. Length of 8 Characters)
     Type: String
     MinLength: 8
     NoEcho: True
   MQAppPassword:
     Description: >-
-      The default user (mqapp) is predefined on the server & is used by applications to securely connect to MQ (Min. Length of 8 Characters)
+      Password for predefined mqapp user used by applications to securely connect to MQ (Min. Length of 8 Characters)
     Type: String
     MinLength: 8
     NoEcho: True
