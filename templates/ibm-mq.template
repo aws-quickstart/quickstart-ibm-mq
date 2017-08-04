@@ -293,17 +293,17 @@ Rules:
 Mappings:
   AWSAMIRegionMap:
     AMI:
-      MQ903UBUNTU1604: MQ_903_Ubuntu_1604
+      IBMMQ903US1604: MQ_903_Ubuntu_1604
     ap-southeast-2:
-      MQ903UBUNTU1604: ami-e9fee18a
+      IBMMQ903US1604: ami-e9fee18a
     eu-west-1:
-      MQ903UBUNTU1604: ami-5f658d26
+      IBMMQ903US1604: ami-5f658d26
     us-east-1:
-      MQ903UBUNTU1604: ami-d0cf92ab
+      IBMMQ903US1604: ami-d0cf92ab
     us-east-2:
-      MQ903UBUNTU1604: ami-66230303
+      IBMMQ903US1604: ami-66230303
     us-west-2:
-      MQ903UBUNTU1604: ami-017a6078
+      IBMMQ903US1604: ami-017a6078
 Conditions:
   GovCloudCondition:
     Fn::Equals:
@@ -449,7 +449,7 @@ Resources:
         Fn::FindInMap:
         - AWSAMIRegionMap
         - !Ref AWS::Region
-        - MQ903UBUNTU1604
+        - IBMMQ903US1604
       InstanceType: !Ref InstanceType
       KeyName: !Ref KeyPairName
       SecurityGroups:
