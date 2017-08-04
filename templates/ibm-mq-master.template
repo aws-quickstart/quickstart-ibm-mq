@@ -1,4 +1,17 @@
 ---
+# © Copyright IBM Corporation 2017
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 AWSTemplateFormatVersion: '2010-09-09'
 Description: This master template creates a VPC infrastructure for a multi-AZ, multi-tier
   deployment of IBM MQ 9.0.3 trial on AWS EC2, with EFS. It deploys a VPC with bastions
@@ -263,6 +276,28 @@ Parameters:
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slash (/).
     Type: String
+Rules:
+  LicenseAgreementRule:
+    Assertions:
+    - Assert:
+        Fn::Contains:
+        - - I agree
+        - Ref: LicenseAgreement
+      AssertDescription: User must agree to the terms of the license agreement.
+  EFSSupportedRegionRule:
+    Assertions:
+    - Assert:
+        Fn::Contains:
+        - - us-east-1
+          - us-east-2
+          - us-west-2
+          - eu-west-1
+          - ap-southeast-2
+        - !Ref AWS::Region
+      AssertDescription: This Quick Start utilizes Amazon EFS which is only available
+        in the US East (N. Virginia), US East (Ohio), US West (Oregon), EU (Ireland)
+        and Asia Pacific (Sydney) regions. Please launch the stack in one of these
+        regions to continue.
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
@@ -362,28 +397,6 @@ Resources:
           Fn::GetAtt:
           - VPCStack
           - Outputs.VPCID
-Rules:
-  LicenseAgreementRule:
-    Assertions:
-    - Assert:
-        Fn::Contains:
-        - - I agree
-        - Ref: LicenseAgreement
-      AssertDescription: User must agree to the terms of the license agreement.
-  EFSSupportedRegionRule:
-    Assertions:
-    - Assert:
-        Fn::Contains:
-        - - us-east-1
-          - us-east-2
-          - us-west-2
-          - eu-west-1
-          - ap-southeast-2
-        - !Ref AWS::Region
-      AssertDescription: This Quick Start utilizes Amazon EFS which is only available
-        in the US East (N. Virginia), US East (Ohio), US West (Oregon), EU (Ireland)
-        and Asia Pacific (Sydney) regions. Please launch the stack in one of these
-        regions to continue.
 Outputs:
   MQRestApiURL:
     Description: URL for Elastic Load Balancer to connect to REST API
@@ -393,5 +406,5 @@ Outputs:
     Value: !GetAtt MQStack.Outputs.MQConsoleURL
   ReadMeInfo:
     Description: 'For more information and details visit:'
-    Value: https://github.com/aws-quickstart/ibm-mq-quickstart
+    Value: https://aws.amazon.com/quickstart/architecture/ibm-mq/
 ...

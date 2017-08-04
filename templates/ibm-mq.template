@@ -1,4 +1,17 @@
 ---
+# © Copyright IBM Corporation 2017
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 AWSTemplateFormatVersion: '2010-09-09'
 Description: This master template creates a VPC infrastructure for a multi-AZ, multi-tier
   deployment of IBM MQ 9.0.3 trial on AWS EC2, with EFS. It deploys a VPC with bastions
@@ -291,50 +304,7 @@ Mappings:
       MQ903UBUNTU1604: ami-66230303
     us-west-2:
       MQ903UBUNTU1604: ami-017a6078
-  S3EndPoints:
-    ap-northeast-1:
-      endpoint: s3-ap-northeast-1.amazonaws.com
-    ap-northeast-2:
-      endpoint: s3-ap-northeast-2.amazonaws.com
-    ap-south-1:
-      endpoint: s3-ap-south-1.amazonaws.com
-    ap-southeast-1:
-      endpoint: s3-ap-southeast-1.amazonaws.com
-    ap-southeast-2:
-      endpoint: s3-ap-southeast-2.amazonaws.com
-    ca-central-1:
-      endpoint: s3-ca-central-1.amazonaws.com
-    eu-central-1:
-      endpoint: s3-eu-central-1.amazonaws.com
-    eu-west-1:
-      endpoint: s3-eu-west-1.amazonaws.com
-    eu-west-2:
-      endpoint: s3-eu-west-2.amazonaws.com
-    sa-east-1:
-      endpoint: s3-sa-east-1.amazonaws.com
-    us-east-1:
-      endpoint: s3-external-1.amazonaws.com
-    us-east-2:
-      endpoint: s3-us-east-2.amazonaws.com
-    us-west-1:
-      endpoint: s3-us-west-1.amazonaws.com
-    us-west-2:
-      endpoint: s3-us-west-2.amazonaws.com
 Conditions:
-  isAmazonAuroraRegion:
-    Fn::Not:
-    - Condition: isNotAmazonAuroraRegion
-  isNotAmazonAuroraRegion:
-    Fn::Or:
-    - Fn::Equals:
-      - Ref: AWS::Region
-      - ap-southeast-1
-    - Fn::Equals:
-      - Ref: AWS::Region
-      - eu-central-1
-    - Fn::Equals:
-      - Ref: AWS::Region
-      - sa-east-1
   GovCloudCondition:
     Fn::Equals:
     - Ref: AWS::Region
@@ -440,144 +410,30 @@ Resources:
           files:
             /usr/local/etc/configure.sh:
               content:
-                Fn::Join:
-                - ''
-                - - '#!/bin/bash
-
-                    '
-                  - ''
-                  - '     MQ_QMGR_NAME='
-                  - !Ref QueueManagerName
-                  - '
-
-                    '
-                  - '     MQ_FILE_SYSTEM='
-                  - !Ref MQFileSystem
-                  - '
-
-                    '
-                  - '     AWS_REGION='
-                  - !Ref AWS::Region
-                  - '
-
-                    '
-                  - '     AWS_STACK_NAME='
-                  - !Ref AWS::StackName
-                  - '
-
-                    '
-                  - '     AWS_REGION='
-                  - !Ref AWS::Region
-                  - '
-
-                    '
-                  - '     LICENSE_S3_BUCKET='
-                  - !Ref LicenseS3Bucket
-                  - '
-
-                    '
-                  - '     LICENSE_S3_KEY='
-                  - !Ref LicenseS3KeyPrefix
-                  - '
-
-                    '
-                  - '     MQ_CONSOLE_USER='''
-                  - !Ref MQConsoleUsername
-                  - ''''
-                  - '
-
-                    '
-                  - '     MQ_CONSOLE_PASSWORD='''
-                  - !Ref MQConsolePassword
-                  - ''''
-                  - '
-
-                    '
-                  - '     MQ_ADMIN_PASSWORD='''
-                  - !Ref MQAdminPassword
-                  - ''''
-                  - '
-
-                    '
-                  - '     MQ_APP_PASSWORD='''
-                  - !Ref MQAppPassword
-                  - ''''
-                  - '
-
-                    '
-                  - '      if [ -n ${LICENSE_S3_BUCKET} ]; then
-
-                    '
-                  - '
-
-                    '
-                  - '       mkdir /licenses
-
-                    '
-                  - '
-
-                    '
-                  - '       aws s3 cp s3://${LICENSE_S3_BUCKET}/${LICENSE_S3_KEY}/amqpcert.lic
-                    /licenses/amqpcert.lic
-
-                    '
-                  - '
-
-                    '
-                  - '       if [ $? -eq 0 ]; then
-
-                    '
-                  - '
-
-                    '
-                  - '        chown mqm /licenses/amqpcert.lic
-
-                    '
-                  - '
-
-                    '
-                  - '        chgrp mqm /licenses/amqpcert.lic
-
-                    '
-                  - '
-
-                    '
-                  - '        setmqprd /licenses/amqpcert.lic
-
-                    '
-                  - '
-
-                    '
-                  - '       else
-
-                    '
-                  - '
-
-                    '
-                  - '        echo ''Failed to find license file''
-
-                    '
-                  - '
-
-                    '
-                  - '       fi
-
-                    '
-                  - '
-
-                    '
-                  - '      fi
-
-                    '
-                  - '
-
-                    '
-                  - '      configure-mq-aws ${MQ_QMGR_NAME} ${MQ_FILE_SYSTEM} ${AWS_REGION}
-                    ${MQ_CONSOLE_USER} ${MQ_CONSOLE_PASSWORD} ${MQ_ADMIN_PASSWORD}
-                    ${MQ_APP_PASSWORD}
-
-                    '
-                  - ''
+                Fn::Sub: |
+                  #!/bin/bash
+                  MQ_QMGR_NAME=${QueueManagerName}
+                  MQ_FILE_SYSTEM=${MQFileSystem}
+                  AWS_REGION=${AWS::Region}
+                  AWS_STACK_NAME=${AWS::StackName}
+                  LICENSE_S3_BUCKET=${LicenseS3Bucket}
+                  LICENSE_S3_KEY=${LicenseS3KeyPrefix}
+                  MQ_CONSOLE_USER=''${MQConsoleUsername}''
+                  MQ_CONSOLE_PASSWORD=''${MQConsolePassword''
+                  MQ_ADMIN_PASSWORD=''${MQAdminPassword''
+                  MQ_APP_PASSWORD=''${MQAppPassword}''
+                  if [ -n ${LICENSE_S3_BUCKET} ]; then
+                    mkdir /licenses
+                    aws s3 cp s3://${LICENSE_S3_BUCKET}/${LICENSE_S3_KEY}/amqpcert.lic /licenses/amqpcert.lic
+                      if [ $? -eq 0 ]; then
+                        chown mqm /licenses/amqpcert.lic
+                        chgrp mqm /licenses/amqpcert.lic
+                        setmqprd /licenses/amqpcert.lic
+                      else
+                        echo ''Failed to find license file''
+                      fi
+                  fi
+                  configure-mq-aws ${!MQ_QMGR_NAME} ${!MQ_FILE_SYSTEM} ${!AWS_REGION} ${!MQ_CONSOLE_USER} ${!MQ_CONSOLE_PASSWORD} ${!MQ_ADMIN_PASSWORD} ${!MQ_APP_PASSWORD}
               mode: '000700'
               owner: root
               group: root
@@ -601,35 +457,11 @@ Resources:
       IamInstanceProfile: !Ref InstanceProfile
       UserData:
         Fn::Base64:
-          Fn::Join:
-          - ''
-          - - '#!/bin/bash
-
-              '
-            - ''
-            - ''
-            - /usr/local/bin/cfn-init
-            - ' --stack '
-            - !Ref AWS::StackName
-            - ' --resource LaunchConfiguration'
-            - ' --configsets InstallConfig'
-            - ' --region '
-            - !Ref AWS::Region
-            - '
-
-              '
-            - '# Signal the status from cfn-init
-
-              '
-            - /usr/local/bin/cfn-signal -e $?
-            - ' --stack '
-            - !Ref AWS::StackName
-            - ' --resource AutoScalingGroup'
-            - ' --region '
-            - !Ref AWS::Region
-            - '
-
-              '
+          Fn::Sub: |
+            #!/bin/bash
+            /usr/local/bin/cfn-init --stack ${AWS::StackName} --resource LaunchConfiguration --configsets InstallConfig --region ${AWS::Region}
+            # Signal the status from cfn-init
+            /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource AutoScalingGroup --region ${AWS::Region}
   AutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     DependsOn:
@@ -683,12 +515,7 @@ Resources:
     Properties:
       CrossZone: true
       LoadBalancerName:
-        Fn::Join:
-        - ''
-        - - ''
-          - ibm-mq-quickstart-elb-
-          - !Ref QueueManagerName
-          - ''
+        Fn::Sub: ibm-mq-quickstart-elb-${QueueManagerName}
       Listeners:
       - InstancePort: '1414'
         InstanceProtocol: TCP
@@ -715,21 +542,17 @@ Outputs:
     Value:
       Fn::Join:
       - ''
-      - - ''
-        - https://
+      - - https://
         - !GetAtt LoadBalancer.DNSName
         - :9443/ibmmq/rest/v1/
-        - ''
   MQConsoleURL:
     Description: URL for Elastic Load Balancer to connect to MQ Console
     Value:
       Fn::Join:
       - ''
-      - - ''
-        - https://
+      - - https://
         - !GetAtt LoadBalancer.DNSName
         - :9443/ibmmq/console/
-        - ''
   ReadMeInfo:
     Description: 'For more information and details visit:'
     Value: https://github.com/aws-quickstart/ibm-mq-quickstart
