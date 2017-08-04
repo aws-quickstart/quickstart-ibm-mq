@@ -555,5 +555,5 @@ Outputs:
         - :9443/ibmmq/console/
   ReadMeInfo:
     Description: 'For more information and details visit:'
-    Value: https://github.com/aws-quickstart/ibm-mq-quickstart
+    Value: https://aws.amazon.com/quickstart/architecture/ibm-mq/
 ...
