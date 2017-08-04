@@ -540,19 +540,11 @@ Outputs:
   MQRestApiURL:
     Description: URL for Elastic Load Balancer to connect to REST API
     Value:
-      Fn::Join:
-      - ''
-      - - https://
-        - !GetAtt LoadBalancer.DNSName
-        - :9443/ibmmq/rest/v1/
+      Fn::Sub: https://${LoadBalancer.DNSName}:9443/ibmmq/rest/v1/
   MQConsoleURL:
     Description: URL for Elastic Load Balancer to connect to MQ Console
     Value:
-      Fn::Join:
-      - ''
-      - - https://
-        - !GetAtt LoadBalancer.DNSName
-        - :9443/ibmmq/console/
+      Fn::Sub: https://${LoadBalancer.DNSName}:9443/ibmmq/console/
   ReadMeInfo:
     Description: 'For more information and details visit:'
     Value: https://aws.amazon.com/quickstart/architecture/ibm-mq/
