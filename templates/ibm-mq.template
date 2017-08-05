@@ -418,19 +418,19 @@ Resources:
                   AWS_STACK_NAME=${AWS::StackName}
                   LICENSE_S3_BUCKET=${LicenseS3Bucket}
                   LICENSE_S3_KEY=${LicenseS3KeyPrefix}
-                  MQ_CONSOLE_USER=''${MQConsoleUsername}''
-                  MQ_CONSOLE_PASSWORD=''${MQConsolePassword''
-                  MQ_ADMIN_PASSWORD=''${MQAdminPassword''
-                  MQ_APP_PASSWORD=''${MQAppPassword}''
-                  if [ -n ${LICENSE_S3_BUCKET} ]; then
+                  MQ_CONSOLE_USER='${MQConsoleUsername}'
+                  MQ_CONSOLE_PASSWORD='${MQConsolePassword}'
+                  MQ_ADMIN_PASSWORD='${MQAdminPassword}'
+                  MQ_APP_PASSWORD='${MQAppPassword}'
+                  if [ -n ${!LICENSE_S3_BUCKET} ]; then
                     mkdir /licenses
-                    aws s3 cp s3://${LICENSE_S3_BUCKET}/${LICENSE_S3_KEY}/amqpcert.lic /licenses/amqpcert.lic
+                    aws s3 cp s3://${!LICENSE_S3_BUCKET}/${!LICENSE_S3_KEY}/amqpcert.lic /licenses/amqpcert.lic
                       if [ $? -eq 0 ]; then
                         chown mqm /licenses/amqpcert.lic
                         chgrp mqm /licenses/amqpcert.lic
                         setmqprd /licenses/amqpcert.lic
                       else
-                        echo ''Failed to find license file''
+                        echo 'Failed to find license file'
                       fi
                   fi
                   configure-mq-aws ${!MQ_QMGR_NAME} ${!MQ_FILE_SYSTEM} ${!AWS_REGION} ${!MQ_CONSOLE_USER} ${!MQ_CONSOLE_PASSWORD} ${!MQ_ADMIN_PASSWORD} ${!MQ_APP_PASSWORD}
