@@ -394,10 +394,6 @@ Resources:
         FromPort: '2049'
         ToPort: '2049'
         SourceSecurityGroupId: !Ref MQSecurityGroup
-      - IpProtocol: tcp
-        FromPort: '2049'
-        ToPort: '2049'
-        SourceSecurityGroupId: !Ref MQSecurityGroup
   LaunchConfiguration:
     Type: AWS::AutoScaling::LaunchConfiguration
     Metadata:
