@@ -331,7 +331,8 @@ Resources:
         Statement:
         - Effect: Allow
           Action: autoscaling:SetInstanceHealth
-          Resource: '*'
+          Resource:
+            Fn::Sub: arn:aws:autoscaling:${AWS::Region}:${AWS::AccountId}:autoScalingGroup:*:autoScalingGroupName/${AutoScalingGroup}
         - Action:
           - s3:GetObject
           Effect: Allow
