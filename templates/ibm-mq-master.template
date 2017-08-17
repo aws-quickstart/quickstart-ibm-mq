@@ -88,6 +88,8 @@ Metadata:
         default: mqadmin Password
       MQAppPassword:
         default: mqapp Password
+      QueueManagerName:
+        default: Queue Manager Name
       QSS3BucketName:
         default: Quick Start S3 Bucket Name
       QSS3KeyPrefix:
