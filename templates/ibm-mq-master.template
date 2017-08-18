@@ -14,7 +14,7 @@
 # limitations under the License.
 AWSTemplateFormatVersion: '2010-09-09'
 Description: This master template creates a VPC infrastructure for a multi-AZ, multi-tier
-  deployment of IBM MQ 9.0.3 trial on AWS EC2, with EFS. It deploys a VPC with bastions
+  deployment of IBM MQ 9.0.3 on AWS EC2, with EFS. It deploys a VPC with bastions
   and the IBM MQ solution. The IBM MQ solution is configured to use an EFS for persistant
   storage of the MQ volume. **WARNING** This template creates EC2 instances and related
   resources. You will be billed for the AWS resources used if you create a stack from
@@ -41,7 +41,9 @@ Metadata:
     - Label:
         default: IBM MQ Instance Configuration
       Parameters:
-      - InstanceType
+      - MQOwner
+      - MQInstanceName
+      - MQInstanceType
       - QueueManagerName
       - MQConsoleUsername
       - MQConsolePassword
@@ -70,7 +72,9 @@ Metadata:
         default: Bastion Instance Type
       ClientAppAccessCIDR:
         default: Allowed Client Application External Access CIDR
-      InstanceType:
+      MQInstanceName:
+        default: IBM MQ Instance Name
+      MQInstanceType:
         default: IBM MQ Instance Type
       KeyPairName:
         default: Key Pair Name
@@ -88,6 +92,8 @@ Metadata:
         default: mqadmin Password
       MQAppPassword:
         default: mqapp Password
+      MQOwner:
+        default: IBM MQ Instance Owner
       QueueManagerName:
         default: Queue Manager Name
       QSS3BucketName:
@@ -144,7 +150,7 @@ Parameters:
     Description: The CIDR IP range that is permitted to allow access for IBM MQ Client
       Applications. We recommend that you set this value to a trusted IP range.
     Type: String
-  InstanceType:
+  MQInstanceType:
     Description: IBM MQ server EC2 instance type
     Type: String
     Default: t2.micro
@@ -205,8 +211,11 @@ Parameters:
     - cg1.4xlarge
     ConstraintDescription: must be a valid EC2 instance type.
   QueueManagerName:
-    Description: Name to use for the IBM MQ queue manager
+    Description: Name to use for the IBM MQ queue manager. Queue Manager name can include Uppercase Letters, Numbers,
+      periods (.), underscores (_), and percentage (%) (Max Length of 48 Characters).
     Type: String
+    AllowedPattern: ^[0-9A-Z._%]+([0-9A-Z._\/%]*[0-9A-Z.%])*$
+    MaxLength: 48
     Default: QM1
     ConstraintDescription: must be a valid MQ queue manager name.
   KeyPairName:
@@ -243,22 +252,93 @@ Parameters:
     Default: mqconsoleadmin
     Type: String
   MQConsolePassword:
-    Description: Admin Password to access the MQ Web Console (Min. Length of 8 Characters)
+    Description: Admin Password to access the MQ Web Console (Min. Length of 8 Characters, Max Length of 12 Characters)
     Type: String
     MinLength: 8
+    MaxLength: 12
     NoEcho: true
   MQAdminPassword:
     Description: Password for predefined mqadmin user used to administer MQ (Min.
-      Length of 8 Characters)
+      Length of 8 Characters, Max Length of 12 Characters)
     Type: String
     MinLength: 8
+    MaxLength: 12
     NoEcho: true
   MQAppPassword:
     Description: Password for predefined mqapp user used by applications to securely
-      connect to MQ (Min. Length of 8 Characters)
+      connect to MQ (Min. Length of 8 Characters, Max Length of 12 Characters)
     Type: String
     MinLength: 8
+    MaxLength: 12
     NoEcho: true
+  MQInstanceName:
+    Description: Name for the IBM MQ instance that is deployed to EC2
+    Type: String
+    Default: ibm-mq
+  MQInstanceType:
+    Description: IBM MQ server EC2 instance type
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+    - t1.micro
+    - t2.nano
+    - t2.micro
+    - t2.small
+    - t2.medium
+    - t2.large
+    - m1.small
+    - m1.medium
+    - m1.large
+    - m1.xlarge
+    - m2.xlarge
+    - m2.2xlarge
+    - m2.4xlarge
+    - m3.medium
+    - m3.large
+    - m3.xlarge
+    - m3.2xlarge
+    - m4.large
+    - m4.xlarge
+    - m4.2xlarge
+    - m4.4xlarge
+    - m4.10xlarge
+    - c1.medium
+    - c1.xlarge
+    - c3.large
+    - c3.xlarge
+    - c3.2xlarge
+    - c3.4xlarge
+    - c3.8xlarge
+    - c4.large
+    - c4.xlarge
+    - c4.2xlarge
+    - c4.4xlarge
+    - c4.8xlarge
+    - g2.2xlarge
+    - g2.8xlarge
+    - r3.large
+    - r3.xlarge
+    - r3.2xlarge
+    - r3.4xlarge
+    - r3.8xlarge
+    - i2.xlarge
+    - i2.2xlarge
+    - i2.4xlarge
+    - i2.8xlarge
+    - d2.xlarge
+    - d2.2xlarge
+    - d2.4xlarge
+    - d2.8xlarge
+    - hi1.4xlarge
+    - hs1.8xlarge
+    - cr1.8xlarge
+    - cc2.8xlarge
+    - cg1.4xlarge
+    ConstraintDescription: must be a valid EC2 instance type.
+  MQOwner:
+    Description: Set Owner tag for the IBM MQ instance
+    Default: ibm-mq
+    Type: String
   QSS3BucketName:
     AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
     ConstraintDescription: Quick Start bucket name can include numbers, lowercase
@@ -377,6 +457,12 @@ Resources:
           Ref: MQAdminPassword
         MQAppPassword:
           Ref: MQAppPassword
+        MQOwner:
+          Ref: MQOwner
+        MQInstanceName:
+          Ref: MQInstanceName
+        MQInstanceType:
+          Ref: MQInstanceType
         PrivateSubnet1ID:
           Fn::GetAtt:
           - VPCStack
