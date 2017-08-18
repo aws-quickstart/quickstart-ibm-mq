@@ -58,5 +58,17 @@
   {
     "ParameterKey": "MQAppPassword",
     "ParameterValue": "$[taskcat_genpass_8A]"
+  },
+  {
+    "ParameterKey": "MQOwner",
+    "ParameterValue": "taskcat-ibm"
+  },
+  {
+    "ParameterKey": "MQInstanceName",
+    "ParameterValue": "taskcat-ibm-mq"
+  },
+  {
+    "ParameterKey": "QueueManagerName",
+    "ParameterValue": "QM1"
   }
 ]
