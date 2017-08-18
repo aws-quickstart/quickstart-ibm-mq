@@ -17,7 +17,7 @@
   },
   {
     "ParameterKey": "KeyPairName",
-    "ParameterValue": "jm_taskcat"
+    "ParameterValue": "$[alfred_getkeypair]"
   },
   {
     "ParameterKey": "BastionAMIOS",
@@ -25,7 +25,7 @@
   },
   {
     "ParameterKey": "QSS3BucketName",
-    "ParameterValue": "ibm-mq-quickstart"
+    "ParameterValue": "quickstart-reference"
   },
   {
     "ParameterKey": "QueueManagerName",
