@@ -24,10 +24,6 @@
     "ParameterValue": "Ubuntu-Server-16.04-LTS-HVM"
   },
   {
-    "ParameterKey": "QSS3BucketName",
-    "ParameterValue": "quickstart-reference"
-  },
-  {
     "ParameterKey": "LicenseAgreement",
     "ParameterValue": "I agree"
   },
