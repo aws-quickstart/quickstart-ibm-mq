@@ -28,10 +28,6 @@
     "ParameterValue": "quickstart-reference"
   },
   {
-    "ParameterKey": "QueueManagerName",
-    "ParameterValue": "taskcat"
-  },
-  {
     "ParameterKey": "LicenseAgreement",
     "ParameterValue": "I agree"
   },
