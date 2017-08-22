@@ -41,15 +41,15 @@
   },
   {
     "ParameterKey": "MQConsolePassword",
-    "ParameterValue": "$[taskcat_genpass_8A]"
+    "ParameterValue": "$[alfred_genpass_10]"
   },
   {
     "ParameterKey": "MQAdminPassword",
-    "ParameterValue": "$[taskcat_genpass_8A]"
+    "ParameterValue": "$[alfred_genpass_10]"
   },
   {
     "ParameterKey": "MQAppPassword",
-    "ParameterValue": "$[taskcat_genpass_8A]"
+    "ParameterValue": "$[alfred_genpass_10]"
   },
   {
     "ParameterKey": "MQOwner",
