@@ -9,7 +9,7 @@ This Quick Start uses AWS CloudFormation templates to deploy IBM MQ into a virtu
 
 ![Quick Start architecture for IBM MQ on AWS](https://d0.awsstatic.com/partner-network/QuickStart/datasheets/ibm-mq-architecture-on-aws.png)
 
-For architectural details, best practices, step-by-step instructions, and customization options, see the [deployment guide](https://s3.amazonaws.com/quickstart-reference/ibm/mq/latest/doc/ibm-mq-on-the-aws-cloud.pdf).
+For architectural details, best practices, step-by-step instructions, and customization options, see the [deployment guide](https://fwd.aws/z5x65).
 
 To post feedback, submit feature ideas, or report bugs, use the **Issues** section of this GitHub repo.
 If you'd like to submit code for this Quick Start, please review the [AWS Quick Start Contributor's Kit](https://aws-quickstart.github.io/). 
