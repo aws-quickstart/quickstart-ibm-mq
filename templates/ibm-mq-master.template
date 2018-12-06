@@ -1,5 +1,5 @@
 ---
-# © Copyright IBM Corporation 2017
+# © Copyright IBM Corporation 2017, 2018
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
 # limitations under the License.
 AWSTemplateFormatVersion: '2010-09-09'
 Description: This master template creates a VPC infrastructure for a multi-AZ, multi-tier
-  deployment of IBM MQ 9.0.3 on AWS EC2, with EFS. It deploys a VPC with bastions
+  deployment of IBM MQ 9.1.1 on AWS EC2, with EFS. It deploys a VPC with bastions
   and the IBM MQ solution. The IBM MQ solution is configured to use an EFS for persistant
   storage of the MQ volume. **WARNING** This template creates EC2 instances and related
   resources. You will be billed for the AWS resources used if you create a stack from
   this template. IBM MQ is licensed seperatley, please review the terms and conditions
-  here (http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V)
+  here (https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&li_formnum=L-APIG-AZYF4X)
   for further details. (qs-1nhqnkuin)
 Metadata:
   AWS::CloudFormation::Interface:
@@ -223,7 +223,7 @@ Parameters:
       to securely connect to your instance after it launches
     Type: AWS::EC2::KeyPair::KeyName
   LicenseAgreement:
-    Description: I have read and agree to the license terms for IBM MQ (http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V).
+    Description: I have read and agree to the license terms for IBM MQ (https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&li_formnum=L-APIG-AZYF4X).
     Type: String
     Default: '-'
     AllowedValues:
