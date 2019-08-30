@@ -299,16 +299,36 @@ Mappings:
   AWSAMIRegionMap:
     AMI:
       IBMMQ911US1604: MQ_911_Ubuntu_1604
+    ap-southeast-1:
+      IBMMQ911US1604: ami-03cd5fd2e3d377204
     ap-southeast-2:
-      IBMMQ911US1604: ami-0617c3daa1aebd02d
+      IBMMQ911US1604: ami-014fc0f529b984c13
+    ap-south-1:
+      IBMMQ911US1604: ami-04ab5a570952b7bfe
+    ap-northeast-1:
+      IBMMQ911US1604: ami-0195d8f6fd1c4a7b8
+    ap-northeast-2:
+      IBMMQ911US1604: ami-0376d061b082d0746
+    ca-central-1:
+      IBMMQ911US1604: ami-0b09f573fbc68b78b
+    eu-central-1: 
+      IBMMQ911US1604: ami-000ae9e026f308433
     eu-west-1:
-      IBMMQ911US1604: ami-0b9cdceb787870bd4
+      IBMMQ911US1604: ami-0aac3a846b4bdbeb1
+    eu-west-2:
+      IBMMQ911US1604: ami-01ffb098d1f14ce44
+    eu-west-3:
+      IBMMQ911US1604: ami-0040ca95b9ab561f2
+    sa-east-1:
+      IBMMQ911US1604: ami-0a5d4117561bb7800
     us-east-1:
-      IBMMQ911US1604: ami-0a0c96cb1ba7f4f29
+      IBMMQ911US1604: ami-0fb470eee385153f5
     us-east-2:
-      IBMMQ911US1604: ami-049d47f4e4d22bc18
+      IBMMQ911US1604: ami-093e5008d65af14c5
+    us-west-1:
+      IBMMQ911US1604: ami-0e0fc582586e57fac
     us-west-2:
-      IBMMQ911US1604: ami-01f2cc55fb8954fef
+      IBMMQ911US1604: ami-0749e2094b4cfdc37
 Conditions:
   GovCloudCondition:
     Fn::Equals:
