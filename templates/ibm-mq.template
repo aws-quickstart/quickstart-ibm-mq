@@ -1,5 +1,5 @@
 ---
-# © Copyright IBM Corporation 2017
+# © Copyright IBM Corporation 2017, 2018
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 AWSTemplateFormatVersion: '2010-09-09'
-Description: This template creates a deployment of IBM MQ 9.0.3 on AWS EC2, with EFS,
+Description: This template creates a deployment of IBM MQ 9.1.1 on AWS EC2, with EFS,
   within an existing VPC and Bastion server environment. The IBM MQ solution is configured
   to use an EFS for persistant storage of the MQ volume. **WARNING** This template creates EC2
   instances and related resources. You will be billed for the AWS resources used if you create
   a stack from this template. IBM MQ is licensed seperatley, please review the terms and conditions
-  here (http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V)
+  here (https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&li_formnum=L-APIG-AZYF4X)
   for further details. (qs-1nhqnkuii)
 Metadata:
   AWS::CloudFormation::Interface:
@@ -185,7 +185,7 @@ Parameters:
       this key pair.
     Type: AWS::EC2::KeyPair::KeyName
   LicenseAgreement:
-    Description: I have read and agree to the license terms for IBM MQ (http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V).
+    Description: I have read and agree to the license terms for IBM MQ (https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&li_formnum=L-APIG-AZYF4X).
     Type: String
     Default: '-'
     AllowedValues:
@@ -298,17 +298,37 @@ Rules:
 Mappings:
   AWSAMIRegionMap:
     AMI:
-      IBMMQ903US1604: MQ_903_Ubuntu_1604
+      IBMMQ911US1604: MQ_911_Ubuntu_1604
+    ap-southeast-1:
+      IBMMQ911US1604: ami-03cd5fd2e3d377204
     ap-southeast-2:
-      IBMMQ903US1604: ami-e9fee18a
+      IBMMQ911US1604: ami-014fc0f529b984c13
+    ap-south-1:
+      IBMMQ911US1604: ami-04ab5a570952b7bfe
+    ap-northeast-1:
+      IBMMQ911US1604: ami-0195d8f6fd1c4a7b8
+    ap-northeast-2:
+      IBMMQ911US1604: ami-0376d061b082d0746
+    ca-central-1:
+      IBMMQ911US1604: ami-0b09f573fbc68b78b
+    eu-central-1: 
+      IBMMQ911US1604: ami-000ae9e026f308433
     eu-west-1:
-      IBMMQ903US1604: ami-5f658d26
+      IBMMQ911US1604: ami-0aac3a846b4bdbeb1
+    eu-west-2:
+      IBMMQ911US1604: ami-01ffb098d1f14ce44
+    eu-west-3:
+      IBMMQ911US1604: ami-0040ca95b9ab561f2
+    sa-east-1:
+      IBMMQ911US1604: ami-0a5d4117561bb7800
     us-east-1:
-      IBMMQ903US1604: ami-d0cf92ab
+      IBMMQ911US1604: ami-0fb470eee385153f5
     us-east-2:
-      IBMMQ903US1604: ami-66230303
+      IBMMQ911US1604: ami-093e5008d65af14c5
+    us-west-1:
+      IBMMQ911US1604: ami-0e0fc582586e57fac
     us-west-2:
-      IBMMQ903US1604: ami-017a6078
+      IBMMQ911US1604: ami-0749e2094b4cfdc37
 Conditions:
   GovCloudCondition:
     Fn::Equals:
@@ -451,7 +471,7 @@ Resources:
         Fn::FindInMap:
         - AWSAMIRegionMap
         - !Ref AWS::Region
-        - IBMMQ903US1604
+        - IBMMQ911US1604
       InstanceType: !Ref MQInstanceType
       KeyName: !Ref KeyPairName
       SecurityGroups:
@@ -542,7 +562,7 @@ Outputs:
   MQRestApiURL:
     Description: URL for Elastic Load Balancer to connect to REST API
     Value:
-      Fn::Sub: https://${LoadBalancer.DNSName}:9443/ibmmq/rest/v1/
+      Fn::Sub: https://${LoadBalancer.DNSName}:9443/ibmmq/rest/v1/admin/
   MQConsoleURL:
     Description: URL for Elastic Load Balancer to connect to MQ Console
     Value:
