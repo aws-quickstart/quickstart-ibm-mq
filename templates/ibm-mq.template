@@ -281,7 +281,6 @@ Rules:
           - us-west-1
           - us-west-2
           - ca-central-1
-          - sa-east-1
           - eu-central-1
           - eu-west-1
           - eu-west-2
@@ -292,10 +291,8 @@ Rules:
           - ap-northeast-2
           - ap-south-1
         - !Ref AWS::Region
-      AssertDescription: This Quick Start utilizes Amazon EFS which is only available
-        in the US East (N. Virginia), US East (Ohio), US West (Oregon), EU (Ireland)
-        and Asia Pacific (Sydney) regions. Please launch the stack in one of these
-        regions
+      AssertDescription: This Quick Start utilizes Amazon EFS. Please refer to AWS Region table and launch the stack in one of the
+        regions where EFS is supported.
   SubnetsInVPC:
     Assertions:
     - Assert:
