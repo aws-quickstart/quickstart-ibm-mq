@@ -2,6 +2,7 @@ project:
   name: quickstart-ibm-mq
   owner: mcguire7@uk.ibm.com
   package_lambda: false
+  shorten_stack_name: true
   regions:
   - us-east-1
   - us-east-2
@@ -37,6 +38,8 @@ tests:
       MQInstanceName: taskcat-ibm-mq
       MQOwner: taskcat-ibm
       QueueManagerName: QM1
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
     regions:
     - us-east-1
     - us-east-2
