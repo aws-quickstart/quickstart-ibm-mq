@@ -58,6 +58,7 @@ Metadata:
         default: AWS Quick Start Configuration
       Parameters:
       - QSS3BucketName
+      - QSS3BucketRegion
       - QSS3KeyPrefix
     ParameterLabels:
       AdminConsoleAccessCIDR:
@@ -98,6 +99,8 @@ Metadata:
         default: Queue Manager Name
       QSS3BucketName:
         default: Quick Start S3 Bucket Name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket region
       QSS3KeyPrefix:
         default: Quick Start S3 Key Prefix
 Parameters:
@@ -289,6 +292,10 @@ Parameters:
       numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
       or end with a hyphen (-).
     Type: String
+  QSS3BucketRegion:
+    Default: 'us-east-1'
+    Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
+    Type: String
   QSS3KeyPrefix:
     AllowedPattern: ^[0-9a-zA-Z-/]*$
     ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
@@ -325,14 +332,18 @@ Rules:
           - ap-northeast-2
           - ap-south-1
         - !Ref AWS::Region
-      AssertDescription: This Quick Start utilizes Amazon EFS. Please refer to AWS Region table and launch the stack in one of the
-        regions where EFS is supported.
+      AssertDescription: This Quick Start utilizes Amazon EFS. Please refer to AWS Region table and launch the stack in one of the regions where EFS is supported.
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
 Resources:
   VPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL:
-        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template
+        Fn::Sub:
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
         AvailabilityZones:
           Fn::Join:
@@ -346,7 +357,10 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL:
-        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}submodules/quickstart-linux-bastion/templates/linux-bastion.template
+        Fn::Sub:
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-linux-bastion/templates/linux-bastion.template
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
         BastionAMIOS:
           Ref: BastionAMIOS
@@ -363,8 +377,8 @@ Resources:
           Fn::GetAtt:
           - VPCStack
           - Outputs.PublicSubnet2ID
-        QSS3BucketName:
-          Ref: QSS3BucketName
+        QSS3BucketName: !If [UsingDefaultBucket, !Sub "${QSS3BucketName}-${AWS::Region}",!Ref QSS3BucketName]
+        QSS3BucketRegion: !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
         QSS3KeyPrefix:
           Fn::Sub: ${QSS3KeyPrefix}submodules/quickstart-linux-bastion/
         RemoteAccessCIDR:
@@ -378,7 +392,10 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL:
-        Fn::Sub: https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}templates/ibm-mq.template
+        Fn::Sub:
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq.template
+        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
+          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
       Parameters:
         AdminConsoleAccessCIDR:
           Ref: AdminConsoleAccessCIDR
