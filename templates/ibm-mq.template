@@ -451,7 +451,7 @@ Resources:
                   MQ_CONSOLE_PASSWORD='${MQConsolePassword}'
                   MQ_ADMIN_PASSWORD='${MQAdminPassword}'
                   MQ_APP_PASSWORD='${MQAppPassword}'
-                  if [ -n ${!LICENSE_S3_BUCKET} ]; then
+                  if [ -n "${!LICENSE_S3_BUCKET}" ]; then
                     mkdir /licenses
                     aws s3 cp s3://${!LICENSE_S3_BUCKET}/${!LICENSE_S3_KEY}/amqpcert.lic /licenses/amqpcert.lic
                       if [ $? -eq 0 ]; then
@@ -463,6 +463,13 @@ Resources:
                       fi
                   fi
                   configure-mq-aws ${!MQ_QMGR_NAME} ${!MQ_FILE_SYSTEM} ${!AWS_REGION} ${!MQ_CONSOLE_USER} ${!MQ_CONSOLE_PASSWORD} ${!MQ_ADMIN_PASSWORD} ${!MQ_APP_PASSWORD}
+                  # NOTE: AMI doesnt have web console or api enabled by default
+		  # Uncomment below lines to enable web services. See documentation at
+	          # https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.con.doc/q132130_.htm
+		  # su mqm -c 'setmqweb properties -k httpHost -v "*"'
+		  # su mqm -c 'dspmqweb status'
+		  # su mqm -c 'setmqweb properties -k mqRestMftEnabled -v true'
+		  # su mqm -c 'setmqweb properties -k mqRestMftCoordinationQmgr -v ${!MQ_QMGR_NAME}'
               mode: '000700'
               owner: root
               group: root
