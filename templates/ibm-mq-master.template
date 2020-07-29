@@ -1,5 +1,5 @@
 ---
-# © Copyright IBM Corporation 2017, 2018
+# © Copyright IBM Corporation 2017, 2020
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 # limitations under the License.
 AWSTemplateFormatVersion: '2010-09-09'
 Description: This master template creates a VPC infrastructure for a multi-AZ, multi-tier
-  deployment of IBM MQ 9.1.1 on AWS EC2, with EFS. It deploys a VPC with bastions
+  deployment of IBM MQ 9.2.0 on AWS EC2, with EFS. It deploys a VPC with bastions
   and the IBM MQ solution. The IBM MQ solution is configured to use an EFS for persistant
   storage of the MQ volume. **WARNING** This template creates EC2 instances and related
   resources. You will be billed for the AWS resources used if you create a stack from
