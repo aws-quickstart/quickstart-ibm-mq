@@ -25,7 +25,7 @@ tests:
       AdminConsoleAccessCIDR: 10.0.0.0/16
       AdminRemoteAccessCIDR: 10.0.0.0/16
       AvailabilityZones: $[taskcat_genaz_2]
-      BastionAMIOS: Ubuntu-Server-16.04-LTS-HVM
+      BastionAMIOS: Ubuntu-Server-20.04-LTS-HVM
       ClientAppAccessCIDR: 10.0.0.0/16
       KeyPairName: $[taskcat_getkeypair]
       LicenseAgreement: I agree
