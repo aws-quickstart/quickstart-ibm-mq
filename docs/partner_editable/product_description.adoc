@@ -2,4 +2,18 @@
 // Briefly describe the software. Use consistent and clear branding. 
 // Include the benefits of using the software on AWS, and provide details on usage scenarios.
 
-<Describe how the software works on AWS.>
+IBM MQ is messaging middleware that simplifies and accelerates the integration of diverse applications and business data across multiple platforms. It uses message queues to facilitate the exchange of information, and offers a single messaging solution for cloud, mobile, the Internet of Things (IoT), and on-premises environments.
+
+By connecting virtually everything, from a simple pair of applications to the most complex business environments, IBM MQ helps you improve business responsiveness, control costs, reduce risk, and gain real-time insight from mobile, IoT, and sensor data.
+
+AWS offers flexible compute, storage, and database services that provide a scalable, secure cloud platform for running IBM MQ.
+
+IBM MQ delivers:
+
+* *Flexible, near-universal connectivity* to adapt systems to meet changing market demands and take advantage of emerging opportunities.
+* *Secure message delivery* to preserve message integrity and mitigate risk of data loss.
+* *Dynamic scaling* to improve business responsiveness and control costs.
+* *Simplified management and control* to improve productivity.
+* *A unified messaging solution* to simplify integration, lower cost of ownership, and accelerate application deployment.
+
+For more information about IBM MQ features, see the http://www-03.ibm.com/software/products/en/ibm-mq[IBM MQ product page].

@@ -16,6 +16,27 @@ For additional information, see https://docs.aws.amazon.com/AWSCloudFormation/la
 *A.* We recommend that you launch the Quick Start templates from the links in this guide or from another S3 bucket. If you deploy the templates from a local copy on your computer or from a location other than an S3 bucket, you might encounter template size limitations. For more information about AWS CloudFormation quotas, see the http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html[AWS documentation^].
 
 
-== Troubleshooting
+== Additional Resources
 
-<Steps for troubleshooting the deployment go here.>
+*AWS services*
+
+* Amazon EC2 +
+http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html
+* AWS CloudFormation +
+https://aws.amazon.com/documentation/cloudformation/
+* Amazon VPC +
+https://aws.amazon.com/documentation/vpc/
+
+*IBM MQ*
+
+* IBM blog +
+http://ibm.biz/mqawsquickstartblog
+* MQ on Cloud resources +
+https://developer.ibm.com/messaging/mq-on-cloud/
+* IBM MQ downloads +
+https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867
+
+*Quick Start reference deployments*
+
+* AWS Quick Start home page +
+https://aws.amazon.com/quickstart/

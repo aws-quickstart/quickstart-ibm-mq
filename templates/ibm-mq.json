@@ -1,0 +1,771 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This template creates a deployment of IBM MQ 9.0.3 on AWS EC2, with EFS, within an existing VPC and Bastion server environment. The IBM MQ solution is configured to use an EFS for persistant storage of the MQ volume. **WARNING** This template creates EC2 instances and related resources. You will be billed for the AWS resources used if you create a stack from this template. IBM MQ is licensed seperatley, please review the terms and conditions here (http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V) for further details. (qs-1nhqnkuii)",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "Software License Agreement"
+                    },
+                    "Parameters": [
+                        "LicenseAgreement"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Network Configuration"
+                    },
+                    "Parameters": [
+                        "VPCID",
+                        "PrivateSubnet1ID",
+                        "PrivateSubnet2ID",
+                        "PublicSubnet1ID",
+                        "PublicSubnet2ID",
+                        "AdminConsoleAccessCIDR",
+                        "ClientAppAccessCIDR"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Bastion Configuration"
+                    },
+                    "Parameters": [
+                        "KeyPairName",
+                        "BastionSecurityGroupID"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "IBM MQ Instance Configuration"
+                    },
+                    "Parameters": [
+                        "MQOwner",
+                        "MQInstanceName",
+                        "MQInstanceType",
+                        "QueueManagerName",
+                        "MQConsoleUsername",
+                        "MQConsolePassword",
+                        "MQAdminPassword",
+                        "MQAppPassword"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "IBM MQ License"
+                    },
+                    "Parameters": [
+                        "LicenseS3Bucket",
+                        "LicenseS3KeyPrefix"
+                    ]
+                }
+            ],
+            "ParameterLabels": {
+                "AdminConsoleAccessCIDR": {
+                    "default": "Allowed Admin Web Console External Access CIDR"
+                },
+                "BastionSecurityGroupID": {
+                    "default": "Bastion Security Group ID"
+                },
+                "ClientAppAccessCIDR": {
+                    "default": "Allowed Client Application External Access CIDR"
+                },
+                "MQInstanceName": {
+                    "default": "IBM MQ Instance Name"
+                },
+                "MQInstanceType": {
+                    "default": "IBM MQ Instance Type"
+                },
+                "KeyPairName": {
+                    "default": "SSH Key Name"
+                },
+                "LicenseAgreement": {
+                    "default": "License Agreement"
+                },
+                "LicenseS3Bucket": {
+                    "default": "IBM MQ License S3 Bucket Name"
+                },
+                "LicenseS3KeyPrefix": {
+                    "default": "IBM MQ License S3 Key Prefix Name"
+                },
+                "MQConsoleUsername": {
+                    "default": "IBM MQ Web Console Admin Username"
+                },
+                "MQConsolePassword": {
+                    "default": "IBM MQ Web Console Admin Password"
+                },
+                "MQAdminPassword": {
+                    "default": "mqadmin Password"
+                },
+                "MQAppPassword": {
+                    "default": "mqapp Password"
+                },
+                "MQOwner": {
+                    "default": "IBM MQ Instance Owner"
+                },
+                "PrivateSubnet1ID": {
+                    "default": "Private Subnet 1 ID"
+                },
+                "PrivateSubnet2ID": {
+                    "default": "Private Subnet 2 ID"
+                },
+                "PublicSubnet1ID": {
+                    "default": "Public Subnet 1 ID"
+                },
+                "PublicSubnet2ID": {
+                    "default": "Public Subnet 2 ID"
+                },
+                "QueueManagerName": {
+                    "default": "Queue Manager Name"
+                },
+                "VPCID": {
+                    "default": "VPC ID"
+                }
+            }
+        }
+    },
+    "Parameters": {
+        "AdminConsoleAccessCIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/x",
+            "Description": "The CIDR IP range that is permitted to access the IBM MQ Web Console via the ELB. We recommend that you set this value to a trusted IP range.",
+            "Type": "String"
+        },
+        "BastionSecurityGroupID": {
+            "Description": "ID of the bastion host security group to enable SSH connections (e.g., sg-7f16e910)",
+            "Type": "AWS::EC2::SecurityGroup::Id"
+        },
+        "ClientAppAccessCIDR": {
+            "AllowedPattern": "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\\/([0-9]|[1-2][0-9]|3[0-2]))$",
+            "ConstraintDescription": "CIDR block parameter must be in the form x.x.x.x/x",
+            "Description": "The CIDR IP range that is permitted to allow access for IBM MQ Client Applications. We recommend that you set this value to a trusted IP range.",
+            "Type": "String"
+        },
+        "MQInstanceName": {
+            "Description": "Name for the IBM MQ instance that is deployed to EC2",
+            "Type": "String",
+            "Default": "ibm-mq"
+        },
+        "MQInstanceType": {
+            "Description": "IBM MQ server EC2 instance type",
+            "Type": "String",
+            "Default": "t2.micro",
+            "AllowedValues": [
+                "t1.micro",
+                "t2.nano",
+                "t2.micro",
+                "t2.small",
+                "t2.medium",
+                "t2.large",
+                "m1.small",
+                "m1.medium",
+                "m1.large",
+                "m1.xlarge",
+                "m2.xlarge",
+                "m2.2xlarge",
+                "m2.4xlarge",
+                "m3.medium",
+                "m3.large",
+                "m3.xlarge",
+                "m3.2xlarge",
+                "m4.large",
+                "m4.xlarge",
+                "m4.2xlarge",
+                "m4.4xlarge",
+                "m4.10xlarge",
+                "c1.medium",
+                "c1.xlarge",
+                "c3.large",
+                "c3.xlarge",
+                "c3.2xlarge",
+                "c3.4xlarge",
+                "c3.8xlarge",
+                "c4.large",
+                "c4.xlarge",
+                "c4.2xlarge",
+                "c4.4xlarge",
+                "c4.8xlarge",
+                "g2.2xlarge",
+                "g2.8xlarge",
+                "r3.large",
+                "r3.xlarge",
+                "r3.2xlarge",
+                "r3.4xlarge",
+                "r3.8xlarge",
+                "i2.xlarge",
+                "i2.2xlarge",
+                "i2.4xlarge",
+                "i2.8xlarge",
+                "d2.xlarge",
+                "d2.2xlarge",
+                "d2.4xlarge",
+                "d2.8xlarge",
+                "hi1.4xlarge",
+                "hs1.8xlarge",
+                "cr1.8xlarge",
+                "cc2.8xlarge",
+                "cg1.4xlarge"
+            ],
+            "ConstraintDescription": "must be a valid EC2 instance type."
+        },
+        "KeyPairName": {
+            "Description": "Name of an existing EC2 key pair. All instances will launch with this key pair.",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "LicenseAgreement": {
+            "Description": "I have read and agree to the license terms for IBM MQ (http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V).",
+            "Type": "String",
+            "Default": "-",
+            "AllowedValues": [
+                "I agree",
+                "-"
+            ],
+            "ConstraintDescription": "must answer 'I agree'"
+        },
+        "LicenseS3Bucket": {
+            "AllowedPattern": "^[0-9a-zA-Z]?([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
+            "ConstraintDescription": "S3 bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+            "Description": "S3 bucket name where you store IBM MQ License file. Leave blank to use 90 day Trial license.",
+            "Type": "String",
+            "MinLength": 0
+        },
+        "LicenseS3KeyPrefix": {
+            "AllowedPattern": "^[0-9a-zA-Z]?([0-9a-zA-Z-/]*[0-9a-zA-Z])*$",
+            "ConstraintDescription": "S3 key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with a hyphen (-) or (/).",
+            "Description": "S3 key prefix for the directory your IBM MQ License file is stored. Leave blank to use 90 day Trial license.",
+            "Type": "String",
+            "MinLength": 0
+        },
+        "MQConsoleUsername": {
+            "Description": "Admin Username used for accessing Web Console and REST Api",
+            "Default": "mqconsoleadmin",
+            "Type": "String"
+        },
+        "MQConsolePassword": {
+            "Description": "Admin Password to access the MQ Web Console (Min. Length of 8 Characters, Max Length of 12 Characters)",
+            "Type": "String",
+            "MinLength": 8,
+            "MaxLength": 12,
+            "NoEcho": true
+        },
+        "MQAdminPassword": {
+            "Description": "Password for predefined mqadmin user used to administer MQ (Min. Length of 8 Characters, Max Length of 12 Characters)",
+            "Type": "String",
+            "MinLength": 8,
+            "MaxLength": 12,
+            "NoEcho": true
+        },
+        "MQAppPassword": {
+            "Description": "Password for predefined mqapp user used by applications to securely connect to MQ (Min. Length of 8 Characters, Max Length of 12 Characters)",
+            "Type": "String",
+            "MinLength": 8,
+            "MaxLength": 12,
+            "NoEcho": true
+        },
+        "MQOwner": {
+            "Description": "Set Owner tag for the IBM MQ instance",
+            "Default": "ibm-mq",
+            "Type": "String"
+        },
+        "PrivateSubnet1ID": {
+            "Description": "ID of private subnet 1 in Availability Zone 1 for the IBM MQ instances (e.g., subnet-a0246dcd)",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "PrivateSubnet2ID": {
+            "Description": "ID of private subnet 2 in Availability Zone 2 for the IBM MQ instances (e.g., subnet-b1f432cd)",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "PublicSubnet1ID": {
+            "Description": "ID of public subnet 1 in Availability Zone 1 for the ELB load balancer (e.g., subnet-9bc642ac)",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "PublicSubnet2ID": {
+            "Description": "ID of public subnet 2 in Availability Zone 2 for the ELB load balancer (e.g., subnet-e3246d8e)",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "QueueManagerName": {
+            "Description": "Name to use for the IBM MQ queue manager. Queue Manager name can include Uppercase Letters, Numbers, periods (.), underscores (_), and percentage (%) (Max Length of 48 Characters).",
+            "Type": "String",
+            "AllowedPattern": "^[0-9A-Z._%]+([0-9A-Z._%]*[0-9A-Z.%])*$",
+            "MaxLength": 48,
+            "Default": "QM1",
+            "ConstraintDescription": "must be a valid MQ queue manager name."
+        },
+        "VPCID": {
+            "Description": "ID of your existing VPC for deployment",
+            "Type": "AWS::EC2::VPC::Id"
+        }
+    },
+    "Rules": {
+        "LicenseAgreementRule": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Contains": [
+                            [
+                                "I agree"
+                            ],
+                            {
+                                "Ref": "LicenseAgreement"
+                            }
+                        ]
+                    },
+                    "AssertDescription": "User must agree to the terms of the license agreement."
+                }
+            ]
+        },
+        "EFSSupportedRegionRule": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::Contains": [
+                            [
+                                "us-east-1",
+                                "us-east-2",
+                                "us-west-2",
+                                "eu-west-1",
+                                "ap-southeast-2"
+                            ],
+                            {
+                                "Ref": "AWS::Region"
+                            }
+                        ]
+                    },
+                    "AssertDescription": "This Quick Start utilizes Amazon EFS which is only available in the US East (N. Virginia), US East (Ohio), US West (Oregon), EU (Ireland) and Asia Pacific (Sydney) regions. Please launch the stack in one of these regions"
+                }
+            ]
+        },
+        "SubnetsInVPC": {
+            "Assertions": [
+                {
+                    "Assert": {
+                        "Fn::EachMemberIn": [
+                            {
+                                "Fn::ValueOfAll": [
+                                    "AWS::EC2::Subnet::Id",
+                                    "VpcId"
+                                ]
+                            },
+                            {
+                                "Fn::RefAll": "AWS::EC2::VPC::Id"
+                            }
+                        ]
+                    },
+                    "AssertDescription": "All subnets must in the VPC"
+                }
+            ]
+        }
+    },
+    "Mappings": {
+        "AWSAMIRegionMap": {
+            "AMI": {
+                "IBMMQ903US1604": "MQ_903_Ubuntu_1604"
+            },
+            "ap-southeast-2": {
+                "IBMMQ903US1604": "ami-e9fee18a"
+            },
+            "eu-west-1": {
+                "IBMMQ903US1604": "ami-5f658d26"
+            },
+            "us-east-1": {
+                "IBMMQ903US1604": "ami-d0cf92ab"
+            },
+            "us-east-2": {
+                "IBMMQ903US1604": "ami-66230303"
+            },
+            "us-west-2": {
+                "IBMMQ903US1604": "ami-017a6078"
+            }
+        }
+    },
+    "Conditions": {
+        "GovCloudCondition": {
+            "Fn::Equals": [
+                {
+                    "Ref": "AWS::Region"
+                },
+                "us-gov-west-1"
+            ]
+        }
+    },
+    "Resources": {
+        "InstanceRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/"
+            }
+        },
+        "InstanceRolePolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "ReportHealthPolicy",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": "autoscaling:SetInstanceHealth",
+                            "Resource": {
+                                "Fn::Sub": "arn:aws:autoscaling:${AWS::Region}:${AWS::AccountId}:autoScalingGroup:*:autoScalingGroupName/${AutoScalingGroup}"
+                            }
+                        },
+                        {
+                            "Action": [
+                                "s3:GetObject"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": {
+                                "Fn::Sub": [
+                                    "arn:${Partition}:s3:::${LicenseS3Bucket}/*",
+                                    {
+                                        "Partition": {
+                                            "Fn::If": [
+                                                "GovCloudCondition",
+                                                "aws-us-gov",
+                                                "aws"
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "Roles": [
+                    {
+                        "Ref": "InstanceRole"
+                    }
+                ]
+            }
+        },
+        "InstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "InstanceRole"
+                    }
+                ]
+            }
+        },
+        "MQSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPCID"
+                },
+                "GroupDescription": "Enable SSH access via port 22, and access to 1414 and 9443 via ELB",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "22",
+                        "ToPort": "22",
+                        "SourceSecurityGroupId": {
+                            "Ref": "BastionSecurityGroupID"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "1414",
+                        "ToPort": "1414",
+                        "SourceSecurityGroupId": {
+                            "Ref": "MQELBSecurityGroup"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "9443",
+                        "ToPort": "9443",
+                        "SourceSecurityGroupId": {
+                            "Ref": "MQELBSecurityGroup"
+                        }
+                    }
+                ]
+            }
+        },
+        "MQELBSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPCID"
+                },
+                "GroupDescription": "Enable access via port 1414 and 9443",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "1414",
+                        "ToPort": "1414",
+                        "CidrIp": {
+                            "Ref": "ClientAppAccessCIDR"
+                        }
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "9443",
+                        "ToPort": "9443",
+                        "CidrIp": {
+                            "Ref": "AdminConsoleAccessCIDR"
+                        }
+                    }
+                ]
+            }
+        },
+        "MountTargetSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPCID"
+                },
+                "GroupDescription": "Security group for mount target",
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": "2049",
+                        "ToPort": "2049",
+                        "SourceSecurityGroupId": {
+                            "Ref": "MQSecurityGroup"
+                        }
+                    }
+                ]
+            }
+        },
+        "LaunchConfiguration": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Metadata": {
+                "AWS::CloudFormation::Init": {
+                    "configSets": {
+                        "InstallConfig": [
+                            "Install",
+                            "Configure"
+                        ]
+                    },
+                    "Install": {
+                        "files": {
+                            "/usr/local/etc/configure.sh": {
+                                "content": {
+                                    "Fn::Sub": "#!/bin/bash\nMQ_QMGR_NAME=${QueueManagerName}\nMQ_FILE_SYSTEM=${MQFileSystem}\nAWS_REGION=${AWS::Region}\nAWS_STACK_NAME=${AWS::StackName}\nLICENSE_S3_BUCKET=${LicenseS3Bucket}\nLICENSE_S3_KEY=${LicenseS3KeyPrefix}\nMQ_CONSOLE_USER='${MQConsoleUsername}'\nMQ_CONSOLE_PASSWORD='${MQConsolePassword}'\nMQ_ADMIN_PASSWORD='${MQAdminPassword}'\nMQ_APP_PASSWORD='${MQAppPassword}'\nif [ -n ${!LICENSE_S3_BUCKET} ]; then\n  mkdir /licenses\n  aws s3 cp s3://${!LICENSE_S3_BUCKET}/${!LICENSE_S3_KEY}/amqpcert.lic /licenses/amqpcert.lic\n    if [ $? -eq 0 ]; then\n      chown mqm /licenses/amqpcert.lic\n      chgrp mqm /licenses/amqpcert.lic\n      setmqprd /licenses/amqpcert.lic\n    else\n      echo 'Failed to find license file'\n    fi\nfi\nconfigure-mq-aws ${!MQ_QMGR_NAME} ${!MQ_FILE_SYSTEM} ${!AWS_REGION} ${!MQ_CONSOLE_USER} ${!MQ_CONSOLE_PASSWORD} ${!MQ_ADMIN_PASSWORD} ${!MQ_APP_PASSWORD}\n"
+                                },
+                                "mode": "000700",
+                                "owner": "root",
+                                "group": "root"
+                            }
+                        }
+                    },
+                    "Configure": {
+                        "commands": {
+                            "01_RunConfig": {
+                                "command": "/usr/local/etc/configure.sh"
+                            },
+                            "02_RmConfig": {
+                                "command": "rm /usr/local/etc/configure.sh"
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties": {
+                "AssociatePublicIpAddress": false,
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "AWSAMIRegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "IBMMQ903US1604"
+                    ]
+                },
+                "InstanceType": {
+                    "Ref": "MQInstanceType"
+                },
+                "KeyName": {
+                    "Ref": "KeyPairName"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "MQSecurityGroup"
+                    }
+                ],
+                "IamInstanceProfile": {
+                    "Ref": "InstanceProfile"
+                },
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Sub": "#!/bin/bash\n/usr/local/bin/cfn-init --stack ${AWS::StackName} --resource LaunchConfiguration --configsets InstallConfig --region ${AWS::Region}\n# Signal the status from cfn-init\n/usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource AutoScalingGroup --region ${AWS::Region}\n"
+                    }
+                }
+            }
+        },
+        "AutoScalingGroup": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "DependsOn": [
+                "MountTarget1",
+                "MountTarget2"
+            ],
+            "Properties": {
+                "VPCZoneIdentifier": [
+                    {
+                        "Ref": "PrivateSubnet1ID"
+                    },
+                    {
+                        "Ref": "PrivateSubnet2ID"
+                    }
+                ],
+                "LoadBalancerNames": [
+                    {
+                        "Ref": "LoadBalancer"
+                    }
+                ],
+                "HealthCheckType": "ELB",
+                "HealthCheckGracePeriod": 90,
+                "LaunchConfigurationName": {
+                    "Ref": "LaunchConfiguration"
+                },
+                "MinSize": "1",
+                "MaxSize": "1",
+                "DesiredCapacity": "1",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Ref": "MQInstanceName"
+                        },
+                        "PropagateAtLaunch": "true"
+                    },
+                    {
+                        "Key": "Owner",
+                        "Value": {
+                            "Ref": "MQOwner"
+                        },
+                        "PropagateAtLaunch": "true"
+                    }
+                ]
+            },
+            "UpdatePolicy": {
+                "AutoScalingRollingUpdate": {
+                    "MinInstancesInService": "0",
+                    "MaxBatchSize": "1"
+                }
+            }
+        },
+        "MQFileSystem": {
+            "Type": "AWS::EFS::FileSystem",
+            "Properties": {
+                "FileSystemTags": [
+                    {
+                        "Key": "Name",
+                        "Value": "MQFileSystem"
+                    }
+                ]
+            }
+        },
+        "MountTarget1": {
+            "Type": "AWS::EFS::MountTarget",
+            "Properties": {
+                "FileSystemId": {
+                    "Ref": "MQFileSystem"
+                },
+                "SubnetId": {
+                    "Ref": "PrivateSubnet1ID"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "MountTargetSecurityGroup"
+                    }
+                ]
+            }
+        },
+        "MountTarget2": {
+            "Type": "AWS::EFS::MountTarget",
+            "Properties": {
+                "FileSystemId": {
+                    "Ref": "MQFileSystem"
+                },
+                "SubnetId": {
+                    "Ref": "PrivateSubnet2ID"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "MountTargetSecurityGroup"
+                    }
+                ]
+            }
+        },
+        "LoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "CrossZone": true,
+                "LoadBalancerName": {
+                    "Fn::Sub": "ibm-mq-elb-${AWS::AccountId}"
+                },
+                "Listeners": [
+                    {
+                        "InstancePort": "1414",
+                        "InstanceProtocol": "TCP",
+                        "LoadBalancerPort": "1414",
+                        "Protocol": "TCP"
+                    },
+                    {
+                        "InstancePort": "9443",
+                        "InstanceProtocol": "TCP",
+                        "LoadBalancerPort": "9443",
+                        "Protocol": "TCP"
+                    }
+                ],
+                "HealthCheck": {
+                    "HealthyThreshold": "2",
+                    "Interval": "10",
+                    "Target": "TCP:1414",
+                    "Timeout": "5",
+                    "UnhealthyThreshold": "2"
+                },
+                "SecurityGroups": [
+                    {
+                        "Ref": "MQELBSecurityGroup"
+                    }
+                ],
+                "Subnets": [
+                    {
+                        "Ref": "PublicSubnet1ID"
+                    },
+                    {
+                        "Ref": "PublicSubnet2ID"
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "MQRestApiURL": {
+            "Description": "URL for Elastic Load Balancer to connect to REST API",
+            "Value": {
+                "Fn::Sub": "https://${LoadBalancer.DNSName}:9443/ibmmq/rest/v1/"
+            }
+        },
+        "MQConsoleURL": {
+            "Description": "URL for Elastic Load Balancer to connect to MQ Console",
+            "Value": {
+                "Fn::Sub": "https://${LoadBalancer.DNSName}:9443/ibmmq/console/"
+            }
+        },
+        "ReadMeInfo": {
+            "Description": "For more information and details visit:",
+            "Value": "https://aws.amazon.com/quickstart/architecture/ibm-mq/"
+        }
+    }
+}

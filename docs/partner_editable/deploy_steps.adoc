@@ -2,6 +2,7 @@
 === Sign in to your AWS account
 
 . Sign in to your AWS account at https://aws.amazon.com with an IAM user role that has the necessary permissions. For details, see link:#_planning_the_deployment[Planning the deployment] earlier in this guide.
+. Use the region selector in the navigation bar to choose the AWS Region where you want to deploy {partner-product-short-name} on AWS.
 . Make sure that your AWS account is configured correctly, as discussed in the link:#_technical_requirements[Technical requirements] section.
 
 // Optional based on Marketplace listing. Not to be edited
@@ -19,6 +20,17 @@ This Quick Start requires a subscription to the AMI for {partner-product-short-n
 endif::marketplace_subscription[]
 // \Not to be edited
 
+=== Sign up for an IBM MQ License
+
+To use the Quick Start in your production environment, you must have an IBM MQ program license. If you’d like to try out the software first, skip this step. The Quick Start will automatically sign you up for a 90-day trial period, and you can add a program license later.
+
+To get a program license:
+
+. Sign up for an IBM MQ program license at https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867[IBM developerWorks] (requires an IBMid).
+
+. Place the license key file for the software in an S3 bucket. You’ll be prompted for the bucket name and license file name in step 3.
+
+
 === Launch the Quick Start
 
 NOTE: You are responsible for the cost of the AWS services used while running this Quick Start reference deployment. There is no additional cost for using this Quick Start. For full details, see the pricing pages for each AWS service used by this Quick Start. Prices are subject to change.
@@ -27,15 +39,14 @@ NOTE: You are responsible for the cost of the AWS services used while running th
 
 [cols=2*]
 |===
-^|http://qs_launch_link[Deploy {partner-product-short-name} into a new VPC on AWS^]
-^|http://qs_template_link[View template^]
+^|https://fwd.aws/jJbmD[Deploy {partner-product-short-name} into a new VPC on AWS^]
+^|https://github.com/aws-quickstart/quickstart-ibm-mq/blob/master/templates/ibm-mq-master.template[View template^]
 
-^|http://qs_launch_link[Deploy {partner-product-short-name} into an existing VPC on AWS^]
-^|http://qs_template_link[View template^]
+^|https://fwd.aws/EawQ9[Deploy {partner-product-short-name} into an existing VPC on AWS^]
+^|https://github.com/aws-quickstart/quickstart-ibm-mq/blob/master/templates/ibm-mq.template[View template^]
 |===
 
 WARNING: If you’re deploying {partner-product-short-name} into an existing VPC, make sure that your VPC has two private subnets in different Availability Zones for the workload instances, and that the subnets aren’t shared. This Quick Start doesn’t support https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html[shared subnets^]. These subnets require https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html[NAT gateways^] in their route tables, to allow the instances to download packages and software without exposing them to the internet.
-
 Also, make sure that the domain name option in the DHCP options is configured as explained in the http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html[Amazon VPC documentation^]. You provide your VPC settings when you launch the Quick Start.
 
 Each deployment takes about {deployment_time} to complete.

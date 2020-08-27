@@ -1,6 +1,15 @@
 // Replace the content in <>
 // Describe or link to specific knowledge requirements; for example: “familiarity with basic concepts in the areas of networking, database operations, and data encryption” or “familiarity with <software>.”
 
-This Quick Start assumes familiarity with <knowledge expectations>.
+This Quick Start assumes familiarity with with the following AWS services.
+
+* https://aws.amazon.com/documentation/ec2/[Amazon EC2] – The Amazon Elastic Compute Cloud (Amazon EC2) service enables you to launch virtual machine instances with a variety of operating systems. You can choose from existing Amazon Machine Images (AMIs) or import your own virtual machine images.  
+* https://aws.amazon.com/documentation/vpc/[Amazon VPC] – The Amazon Virtual Private Cloud (Amazon VPC) service lets you provision a private, isolated section of the AWS Cloud where you can launch AWS services and other resources in a virtual network that you define. You have complete control over your virtual networking environment, including selection of your own IP address range, subnet creation, and configuration of route tables and network gateways.
+* https://aws.amazon.com/documentation/cloudformation/[AWS CloudFormation] – AWS CloudFormation gives you an easy way to create and manage a collection of related AWS resources, and provision and update them in an orderly and predictable way. You use a template to describe all the AWS resources (e.g., EC2 instances) that you want. You don’t have to create and configure the resources or figure out dependencies; AWS CloudFormation handles all of that.  
+* https://aws.amazon.com/documentation/autoscaling/[Auto Scaling] – Auto Scaling helps maintain high availability and manage capacity by automatically increasing or decreasing the EC2 instance fleet. You can use Auto Scaling to run your fleet at optimal utilization by increasing instance capacity during demand spikes and decreasing capacity during down times.  
+* https://aws.amazon.com/documentation/elastic-load-balancing/[ELB] – Elastic Load Balancing automatically distributes incoming application traffic across multiple EC2 instances.   
+* https://aws.amazon.com/documentation/efs/[Amazon EFS] – Amazon Elastic File System (Amazon EFS) provides simple, scalable file storage for use with EC2 instances. This IBM MQ deployment uses Amazon EFS to ensure high availability of message data in case of server failure.   
+* https://aws.amazon.com/documentation/iam/[IAM] – AWS Identity and Access Management (IAM) enables you to securely control access to AWS services and resources for your users. With IAM, you can manage users, security credentials such as access keys, and permissions that control which AWS resources users can access, from a central location.  
+
 
 
