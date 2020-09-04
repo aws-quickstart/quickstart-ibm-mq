@@ -12,23 +12,23 @@ To connect to IBM MQ through the web console:
 . Choose the URL of the Elastic Load Balancing endpoint for the IBM MQ console. This is the URL highlighted in <<cfn_outputs>>.
 . The https://www.ibm.com/support/knowledgecenter/en/SSAW57_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/cwlp_about.html[Liberty server] used by the MQ Console is initially configured to use a self-signed certificate, so your browser may display the warning shown in *Figure 3*. Please note, the screenshots shown were captured from Firefox v79.0, currently Chrome v84.x does not allow the user to bypass this warning.
   +
-  We recommend that you update the self-signed certificate to a certificate that’s signed by a trusted CA. For more information about setting up certificates, see the https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q127940_.htm[IBM MQ documentation].
+  We recommend that you update the self-signed certificate to a certificate that’s signed by a trusted CA. For more information about setting up certificates, see the https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q127940_.htm[IBM MQ documentation^].
 
 :xrefstyle: short
 [#connection_error1]
 .Connection error when accessing `MQConsoleURL`
 [link=images/connection_error1.png]
 image::../images/connection_error1.png[image,width=648,height=439]
-
++
 :xrefstyle: short
 [#connection_error2]
 .Accepting the security certificate
 [link=images/connection_error2.png]
 image::../images/connection_error2.png[image,width=648,height=439]
-
++
 [start=3]
 . In the IBM MQ Console login screen, enter the user name and password you created during deployment. (The default user name is *mqconsoleadmin*.)
-
++
 :xrefstyle: short
 [#login_screen1]
 .{partner-product-short-name} Console login screen
@@ -68,6 +68,7 @@ image::../images/queue_manager.png[image,width=648,height=364]
 [start=6]
 . Open the queue ‘*Q1*’ from the table to view it’s details page. Local queues will show a message viewer, which allows you to view, filter, and search messages currently on the queue.
 
+
 :xrefstyle: short
 [#view-queue1]
 .Message viewer
@@ -99,6 +100,6 @@ For more information about using the https://www.ibm.com/support/knowledgecenter
 
 It is possible to administer IBM MQ locally from the server. For more information about this option, see https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.adm.doc/q019950_.htm[Administering IBM MQ] in the IBM Knowledge Center.
 
-To connect to the IBM MQ server instance, use SSH to connect to the bastion host instance in your VPC. Use an SSH agent to forward your private key on connection. For more information about SSH agents, see the https://developer.github.com/v3/guides/using-ssh-agent-forwarding/[GitHub documentation].
+To connect to the IBM MQ server instance, use SSH to connect to the bastion host instance in your VPC. Use an SSH agent to forward your private key on connection. For more information about SSH agents, see the https://developer.github.com/v3/guides/using-ssh-agent-forwarding/[GitHub documentation^].
 
 WARNING: Do not copy your private key to the bastion host instance.
