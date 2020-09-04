@@ -10,10 +10,10 @@ In the following steps, you’ll connect to IBM MQ through a web console to veri
 To connect to IBM MQ through the web console:
 
 . Choose the URL of the Elastic Load Balancing endpoint for the IBM MQ console. This is the URL highlighted in <<cfn_outputs>>.
-. The https://www.ibm.com/support/knowledgecenter/en/SSAW57_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/cwlp_about.html[Liberty server] used by the MQ Console is initially configured to use a self-signed certificate, so your browser may display the warning shown in *Figure 3*. Please note, the screenshots shown were captured from Firefox v79.0, currently Chrome v84.x does not allow the user to bypass this warning.
-  +
-  We recommend that you update the self-signed certificate to a certificate that’s signed by a trusted CA. For more information about setting up certificates, see the https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q127940_.htm[IBM MQ documentation^].
-
+. The https://www.ibm.com/support/knowledgecenter/en/SSAW57_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/cwlp_about.html[Liberty server^] used by the MQ Console is initially configured to use a self-signed certificate, so your browser may display the warning shown in <<connection_error1>>. Please note, the screenshots shown were captured from Firefox v79.0, currently Chrome v84.x does not allow the user to bypass this warning.
++
+We recommend that you update the self-signed certificate to a certificate that’s signed by a trusted CA. For more information about setting up certificates, see the https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q127940_.htm[IBM MQ documentation^].
++
 :xrefstyle: short
 [#connection_error1]
 .Connection error when accessing `MQConsoleURL`
@@ -34,71 +34,70 @@ image::../images/connection_error2.png[image,width=648,height=439]
 .{partner-product-short-name} Console login screen
 [link=images/login_screen.png]
 image::../images/login_screen.png[image,width=648,height=439]
-
-The Console initially shows a landing page, shown in <<landing_page1>>. Here quick links to key areas of the user interface can be found. ‘Manage’ takes you to the queue manager management page, where you can create and edit queue managers. There are also quick links to ‘Create a queue manager’ and for ‘Create a queue’.
-
-The ‘MQ Basics’ tiles will launch a short guide that will describe some of the core concepts of messaging with IBM MQ, which is particularly useful if you are new to IBM MQ. Also is a link to the external ‘Learn MQ’ website where tutorials and articles to help users how to learn IBM MQ can be found.
-
++
+The Console initially shows a landing page, shown in <<landing_page1>>. Here quick links to key areas of the user interface can be found. *Manage* takes you to the queue manager management page, where you can create and edit queue managers. There are also quick links to *Create a queue manager* and *Create a queue*.
++
+The *MQ Basics* tiles will launch a short guide that will describe some of the core concepts of messaging with IBM MQ, which is particularly useful if you are new to IBM MQ. Also is a link to the external *Learn MQ* website where tutorials and articles to help users how to learn IBM MQ can be found.
++
 :xrefstyle: short
 [#landing_page1]
 .{partner-product-short-name} Console landing page
 [link=images/landing_page.png]
 image::../images/landing_page.png[image,width=648,height=364]
-
++
 You can use the IBM MQ Console to perform administration tasks such as stopping and starting queue managers and creating objects such as queues and channels. In the following steps, you’ll use the console to verify that the server is working correctly and add a message to a queue.
-
++
 [start=4]
 . From the landing page, choose *Manage*.
-
++
 :xrefstyle: short
 [#manage_queue_page1]
 .Manage queue page
 [link=images/manage_queue_page.png]
 image::../images/manage_queue_page.png[image,width=216,height=190]
-
++
 [start=5]
 . On the *Manage* page, choose *QM1* to open the queue manager details page. You should see a view as shown in <<queue_manager1>>.
-
++
 :xrefstyle: short
 [#queue_manager1]
 .Viewing the queue manager details
 [link=images/queue_manager.png]
 image::../images/queue_manager.png[image,width=648,height=364]
-
++
 [start=6]
-. Open the queue ‘*Q1*’ from the table to view it’s details page. Local queues will show a message viewer, which allows you to view, filter, and search messages currently on the queue.
-
-
+. Open the queue *Q1* from the table to view it’s details page. Local queues will show a message viewer, which allows you to view, filter, and search messages currently on the queue.
++
 :xrefstyle: short
 [#view-queue1]
 .Message viewer
 [link=images/view-queue.png]
 image::../images/view-queue.png[image,width=648,height=364]
-
++
 [start=7]
-. Choose on the *Create* button to put a message on the queue. In the side-panel input your message content in the text field labelled *‘Application data’*, see <<place_message1>>.
-
+. Choose *Create* to put a message on the queue. In the side-panel input your message content in the text field labelled *Application data*, see <<place-message1>>.
++
 :xrefstyle: short
 [#place-message1]
 .Input message text in side panel
 [link=images/place-message.png]
 image::../images/place-message.png[put_message,width=648,height=364]
-
++
 [start=8]
 . Choose *Create* to put the message on the queue. The side-panel will close and the list view will refresh and show the new message has been put on the queue.
-
++
 :xrefstyle: short
 [#browse-message1]
 .Message appears in viewer
 [link=images/browse-message.png]
 image::../images/browse-message.png[browse_message,width=648,height=231]
-
-For more information about using the https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.adm.doc/q127570_.htm[IBM MQ Console], see the IBM Knowledge Center.
++
+For more information about using the https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.adm.doc/q127570_.htm[IBM MQ Console^], see the IBM Knowledge Center.
 
 == Post deployment steps
 === Connect to the IBM MQ Server
 
-It is possible to administer IBM MQ locally from the server. For more information about this option, see https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.adm.doc/q019950_.htm[Administering IBM MQ] in the IBM Knowledge Center.
+It is possible to administer IBM MQ locally from the server. For more information about this option, see https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.adm.doc/q019950_.htm[Administering IBM MQ^] in the IBM Knowledge Center.
 
 To connect to the IBM MQ server instance, use SSH to connect to the bastion host instance in your VPC. Use an SSH agent to forward your private key on connection. For more information about SSH agents, see the https://developer.github.com/v3/guides/using-ssh-agent-forwarding/[GitHub documentation^].
 
