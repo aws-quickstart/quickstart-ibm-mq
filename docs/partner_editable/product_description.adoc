@@ -16,4 +16,4 @@ IBM MQ delivers:
 * *Simplified management and control* to improve productivity.
 * *A unified messaging solution* to simplify integration, lower cost of ownership, and accelerate application deployment.
 
-For more information about IBM MQ features, see the http://www-03.ibm.com/software/products/en/ibm-mq[IBM MQ product page].
+For more information about IBM MQ features, see the http://www-03.ibm.com/software/products/en/ibm-mq[IBM MQ product page^].
