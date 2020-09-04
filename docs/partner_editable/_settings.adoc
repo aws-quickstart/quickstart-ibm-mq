@@ -1,4 +1,4 @@
-:quickstart-project-name: quickstart-documentation-base
+:quickstart-project-name: quickstart-ibm-mq
 :partner-product-name: IBM MQ
 :partner-product-short-name: IBM MQ
 :partner-company-name: IBM
