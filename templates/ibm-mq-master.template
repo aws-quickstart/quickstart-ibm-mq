@@ -22,6 +22,11 @@ Description: This master template creates a VPC infrastructure for a multi-AZ, m
   here (https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&li_formnum=L-APIG-AZYF4X)
   for further details. (qs-1nhqnkuin)
 Metadata:
+  QuickStartDocumentation:
+    EntrypointName: "Parameters for launching into a new VPC"
+    OptionalParameters:
+      - LicenseS3Bucket
+      - LicenseS3KeyPrefix
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
@@ -100,7 +105,7 @@ Metadata:
       QSS3BucketName:
         default: Quick Start S3 Bucket Name
       QSS3BucketRegion:
-        default: Quick Start S3 bucket region
+        default: Quick Start S3 bucket Region
       QSS3KeyPrefix:
         default: Quick Start S3 Key Prefix
 Parameters:

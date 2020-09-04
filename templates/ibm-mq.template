@@ -21,6 +21,11 @@ Description: This template creates a deployment of IBM MQ 9.2.0 on AWS EC2, with
   here (https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&li_formnum=L-APIG-AZYF4X)
   for further details. (qs-1nhqnkuii)
 Metadata:
+  QuickStartDocumentation:
+    EntrypointName: "Parameters for launching into an existing VPC"
+    OptionalParameters:
+      - LicenseS3Bucket
+      - LicenseS3KeyPrefix
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
