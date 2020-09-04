@@ -46,7 +46,7 @@ image::../images/queue_manager.png[image,width=648,height=439]
 You can use the IBM MQ Console to perform administration tasks such as stopping and starting queue managers and creating objects such as queues and channels. In the following steps, you’ll use the console to verify that the server is working correctly and add a message to a queue.
 
 . In the console window, choose *Add widget*.
-
++
 :xrefstyle: short
 [#add_widget1]
 .Adding a widget
@@ -55,13 +55,13 @@ image::../images/add_widget.png[image,width=158,height=50]
 
 [start=2]
 . In the *Add a new widget* dialog box, choose *Queues* to display the predefined queue, *Q1*.
-
++
 :xrefstyle: short
 [#add_widget2]
 .Creating a queues widget
 [link=images/create-queue-widget.png]
 image::../images/create-queue-widget.png[image,width=634,height=500]
-
++
 :xrefstyle: short
 [#view-queue1]
 .Viewing the predefined queue
@@ -70,15 +70,14 @@ image::../images/view-queue.png[image,width=641,height=246]
 
 [start=3]
 . On the toolbar, choose the envelope icon to put a test message on the queue.
-
++
 :xrefstyle: short
 [#env-icon1]
 .Envelope icon
 [link=images/envelope-icon.png]
 image::../images/envelope-icon.png[image,width=222,height=68]
 
-Figure 9: Envelope icon
-
++
 :xrefstyle: short
 [#place-message1]
 .Placing a message in the queue
@@ -87,13 +86,13 @@ image::../images/place-message.png[put_message,width=620,height=226]
 
 [start=4]
 . On the *Queues on QM1* window toolbar, you can now choose the folder icon to browse the messages on the queue.
-
++
 :xrefstyle: short
 [#dir-icon1]
 .Folder icon
 [link=images/folder-icon.png]
 image::../images/folder-icon.png[image,width=222,height=68]
-
++
 :xrefstyle: short
 [#browse-message1]
 .Browsing messages on the queue
