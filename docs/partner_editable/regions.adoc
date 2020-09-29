@@ -15,4 +15,4 @@ The following Regions are currently supported by this Quick Start.
 - ap-northeast-1 (Tokyo)
 - ap-northeast-2 (Seoul)
 
-NOTE: This Quick Start uses Amazon EFS, which is supported only in the regions listed on the https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services[AWS Regional Table^] webpage.
+NOTE: This Quick Start uses Amazon EFS, which is not supported in all AWS Regions. For availability information, see https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services[AWS Regional Services^].
