@@ -1,11 +1,11 @@
 // Include details about the license and how they can sign up. If no license is required, clarify that. 
 
-This Quick Start builds the IBM MQ environment by using a pre-built Amazon Machine Image (AMI) with IBM MQ installed on the Ubuntu operating system.
+This Quick Start builds the IBM MQ environment by using a pre-built Amazon Machine Image (AMI) with IBM MQ installed on an Ubuntu operating system.
 
-The Quick Start requires a license for IBM MQ. To use the Quick Start in your production environment, sign up for an IBM MQ program license at https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867[IBM developerWorks^] (requires an IBMid). You’ll need to place the license key in an Amazon Simple Storage Service (Amazon S3) bucket and specify its location when you launch the Quick Start. (For details, see link:#_sign_up_for_an_ibm_mq_license[step 2] of the deployment instructions.)
+This deployment requires an IBM MQ license. To use the Quick Start in a production environment, sign up for an https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867[IBM MQ program license^] (requires an IBMid). You must place the license key in an Amazon Simple Storage Service (Amazon S3) bucket and specify its location. For more information, see the link:#_sign_up_for_an_ibm_mq_license[Sign up for an IBM MQ license] section.
 
-If you don’t have a license file, the Quick Start will deploy an IBM MQ trial license, which allows 90 days of free usage in a non-production environment. After this time, the queue manager will expire. You can purchase support at an additional cost, or use the forums.
+If you don’t have a license, the Quick Start uses an IBM MQ trial license, which allows 90 days of free usage in a non-production environment. After that time, the queue manager expires. Purchase support at an additional cost, or use the forums.
 
-If the license file is in place at stack creation time, the IBM MQ server will automatically use the production license. To upgrade from a trial license to a production license after deployment, follow the instructions in the https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.0.0/com.ibm.mq.ins.doc/q008943_.htm[IBM Knowledge Center].
+If the license file is in place when the stack is created, the IBM MQ server automatically uses the production license. To upgrade from a trial license to a production license after deployment, see https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.2.0/com.ibm.mq.ins.doc/q008943_.htm[Converting a trial license on Linux].
 
-The IBM MQ http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V[software license agreement^] contains more details about licensing terms. When you launch the Quick Start, you’ll be asked to read and agree to the terms of the agreement.
+The http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&li_formnum=L-APIG-AKHJ8V[IBM MQ software license agreement^] details the licensing terms. When you launch this Quick Start, you are asked to read and agree to the terms.
