@@ -22,7 +22,7 @@ IMPORTANT: Do not provision the software from AWS Marketplace—the Quick Start 
 endif::marketplace_subscription[]
 // \Not to be edited
 
-=== Sign up for an IBM MQ License
+=== Sign up for an IBM MQ license
 
 To use the Quick Start in a production environment, you must have an IBM MQ program license. If you want to try out the software first, skip this step. The Quick Start automatically signs you up for a 90-day trial period, and you can add a program license later.
 
@@ -30,9 +30,7 @@ To get a program license:
 
 . To sign up for an IBM MQ program license, see https://www.ibm.com/account/reg/us-en/signup[IBM MQ Trial^].
 
-. Place the license key file for the software in an S3 bucket. You are prompted for the bucket name and license file name in 
-//TODO Which step 3?
-step 3.
+. Place the license key file for the software in an S3 bucket. You are prompted for the bucket name and license file name in the next section.
 
 
 === Launch the Quick Start

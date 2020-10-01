@@ -14,15 +14,11 @@ As shown in <<architecture1>>, the Quick Start sets up the following:
 
 * A virtual private cloud (VPC) that spans two Availability Zones and includes two public and two private subnets, for security and high availability.*
 * An internet gateway to allow access to the internet.*
-* In the public subnet, a bastion host to provide secure Secure Shell (SSH) access to the IBM MQ server. The bastion host is in an Auto Scaling group of 1
-//TODO Instead of "1," can we just say "by itself"?
-, which helps to ensure that one host is always available.*
-* In the private subnet, an IBM MQ server in an Auto Scaling group of 1.
-//TODO Instead of "1," can we just say "by itself"?
+* In the public subnet, a bastion host to provide secure Secure Shell (SSH) access to the IBM MQ server. The bastion host is in an Auto Scaling group with its desired capacity set to one instance, which helps to ensure that one host is always available.*
+* In the private subnet, an IBM MQ server in an Auto Scaling group with its desired capacity set to one instance.
 * Amazon Elastic File System (Amazon EFS) automatically mounts the IBM MQ server instance for distributed storage to ensure high availability of the queue manager service and message data. If the IBM MQ server fails in one Availability Zone, a new server is created in a second Availability Zone and connects to the existing data so no persistent messages are lost. Failover typically takes 3–5 minutes but may be longer if there are outstanding transactions.
 * Elastic Load Balancing to automatically distribute connections to the active IBM MQ server.
-* An IAM instance role with fine-grained permissions for access to AWS services necessary for the deployment process.
-//TODO Instead of "fine-grained," can we use "resource-level permissions," as described here?: https://alpha-docs-aws.amazon.com/awsstyleguide/latest/styleguide/dictionary.html#style-F-terms
+* An IAM instance role with resource-level permissions for access to AWS services necessary for the deployment process.
 * Appropriate security groups for each instance or function to restrict access to only necessary protocols and ports. For example, access to HTTP server ports on Amazon EC2 servers is limited to Elastic Load Balancing.
 
 *The template that deploys the Quick Start into an existing VPC skips

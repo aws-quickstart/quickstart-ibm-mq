@@ -2,9 +2,7 @@
 
 This Quick Start builds the IBM MQ environment by using a pre-built Amazon Machine Image (AMI) with IBM MQ installed on an Ubuntu operating system.
 
-This deployment requires an IBM MQ license. To use the Quick Start in a production environment, sign up for an https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867[IBM MQ program license^] (requires an IBMid). You must place the license key in an Amazon Simple Storage Service (Amazon S3) bucket and specify its location. (For more information, see link:#_sign_up_for_an_ibm_mq_license
-//TODO "step 2" link doesn't seem to resolve.
-[step 2].)
+This deployment requires an IBM MQ license. To use the Quick Start in a production environment, sign up for an https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867[IBM MQ program license^] (requires an IBMid). You must place the license key in an Amazon Simple Storage Service (Amazon S3) bucket and specify its location. For more information, see the link:#_sign_up_for_an_ibm_mq_license[Sign up for an IBM MQ license] section.
 
 If you don’t have a license, the Quick Start uses an IBM MQ trial license, which allows 90 days of free usage in a non-production environment. After that time, the queue manager expires. Purchase support at an additional cost, or use the forums.
 

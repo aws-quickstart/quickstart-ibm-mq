@@ -10,9 +10,7 @@ In the following steps, you connect to IBM MQ through a web console to verify an
 Connect to the IBM MQ Console:
 
 . Choose the URL of the Elastic Load Balancing endpoint for the IBM MQ Console, as shown in <<cfn_outputs>>.
-. The https://www.ibm.com/support/knowledgecenter/en/SSAW57_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/cwlp_about.html[Liberty server^] used by the IBM MQ Console is initially configured to use a self-signed certificate, so your browser may display the warning shown in <<connection_error1>>. Note that the screenshot was captured using Firefox v79.0;
-//TODO Does this Firefox/Chrome note about the warning still apply?
- currently, Chrome v84.x does not allow users to bypass this warning.
+. The https://www.ibm.com/support/knowledgecenter/en/SSAW57_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/cwlp_about.html[Liberty server^] used by the IBM MQ Console is initially configured to use a self-signed certificate, so your browser may display the warning shown in <<connection_error1>>. Note that the screenshot was captured using Firefox v79.0; currently, Chrome v84.x does not allow users to bypass this warning.
 +
 We recommend that you update the self-signed certificate to a certificate that’s signed by a trusted certificate authority (CA). For more information about setting up certificates, see https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q127940_.htm[Using client certificate authentication with the REST API and IBM MQ Console^].
 +
