@@ -24,11 +24,11 @@
 (`MQOwner`)|`ibm-mq`|Set Owner tag for the IBM MQ instance|IBM MQ Instance Name
 (`MQInstanceName`)|`ibm-mq`|Name for the IBM MQ instance that is deployed to EC2|IBM MQ Instance Type
 (`MQInstanceType`)|`t2.micro`|IBM MQ server EC2 instance type|Queue Manager Name
-(`QueueManagerName`)|`QM1`|Name to use for the IBM MQ queue manager. Queue Manager name can include Uppercase Letters, Numbers, periods (.), underscores (_), and percentage (%) (Max Length of 48 Characters).|IBM MQ Web Console Admin Username
+(`QueueManagerName`)|`QM1`|The name to use for the IBM MQ queue manager. This string can include a maximum of 48 characters, consisting of uppercase letters, numbers, periods (.), underscores (_), and percent signs (%). See the IBM Knowledge Center for naming rules (https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.pro.doc/q003340_.htm).|IBM MQ Web Console Admin Username
 (`MQConsoleUsername`)|`mqconsoleadmin`|Admin Username used for accessing Web Console and REST Api|IBM MQ Web Console Admin Password
 (`MQConsolePassword`)|`**__Requires input__**`|Admin Password to access the MQ Web Console (Min. Length of 8 Characters, Max Length of 12 Characters)|mqadmin Password
-(`MQAdminPassword`)|`**__Requires input__**`|Password for predefined mqadmin user used to administer MQ (Min. Length of 8 Characters, Max Length of 12 Characters)|mqapp Password
-(`MQAppPassword`)|`**__Requires input__**`|Password for predefined mqapp user used by applications to securely connect to MQ (Min. Length of 8 Characters, Max Length of 12 Characters)
+(`MQAdminPassword`)|`**__Requires input__**`|Password for predefined mqadmin user, which is used to administer IBM MQ. See the IBM Knowledge Center for information on authority to administer IBM MQ (https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm). This is an 8-12 character string.|mqapp Password
+(`MQAppPassword`)|`**__Requires input__**`|Password for predefined mqapp user, which applications use to securely connect to IBM MQ. See the IBM Knowledge Center for details on authorization for applications to use IBM MQ (https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm). This is an 8-12 character string.
 |===
 .IBM MQ License
 [width="100%",cols="16%,11%,73%",options="header",]

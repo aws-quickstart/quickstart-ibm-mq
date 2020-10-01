@@ -768,16 +768,19 @@ a img {
     border: 1px solid #A4A4A4;
 }
 
-#preview_mode {
+.preview_mode {
 	border-color:#e0e0dc;
 	-webkit-box-shadow:0 1px 4px #e0e0dc;
 	box-shadow:0 1px 4px #e0e0dc;
   background:#ffffb3;
   padding-bottom: 2rem;
 }
-#preview_mode .tableblock {
+.preview_mode .tableblock {
   background:#ffffb3;
 }
+
+.footer-text{color:rgba(255,255,255,.8);line-height:1.44;background:#1c222a;padding:1.25em;max-width:100%;margin-bottom:unset}
+p.footer-text a{color:#d7d8d8}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -792,7 +795,7 @@ a img {
 <li><a href="#_software_licenses">Software licenses</a></li>
 <li><a href="#_architecture">Architecture</a>
 <ul class="sectlevel2">
-<li><a href="#design-considerations">Design Considerations</a></li>
+<li><a href="#design-considerations">Design considerations</a></li>
 </ul>
 </li>
 <li><a href="#_planning_the_deployment">Planning the deployment</a>
@@ -805,27 +808,24 @@ a img {
 <li><a href="#_deployment_steps">Deployment steps</a>
 <ul class="sectlevel2">
 <li><a href="#_sign_in_to_your_aws_account">Sign in to your AWS account</a></li>
-<li><a href="#_sign_up_for_an_ibm_mq_license">Sign up for an IBM MQ License</a></li>
+<li><a href="#_sign_up_for_an_ibm_mq_license">Sign up for an IBM MQ license</a></li>
 <li><a href="#_launch_the_quick_start">Launch the Quick Start</a></li>
-<li><a href="#_parameters_for_launching_into_an_existing_vpc">Parameters for launching into an existing VPC</a></li>
 <li><a href="#_parameters_for_launching_into_a_new_vpc">Parameters for launching into a new VPC</a></li>
+<li><a href="#_parameters_for_launching_into_an_existing_vpc">Parameters for launching into an existing VPC</a></li>
 </ul>
 </li>
 <li><a href="#_test_the_deployment">Test the deployment</a></li>
-<li><a href="#_post_deployment_steps">Post deployment steps</a>
+<li><a href="#_post_deployment_steps">Post-deployment steps</a>
 <ul class="sectlevel2">
-<li><a href="#_connect_to_the_ibm_mq_server">Connect to the IBM MQ Server</a></li>
+<li><a href="#_connect_to_the_ibm_mq_server">Connect to the IBM MQ server</a></li>
 </ul>
 </li>
 <li><a href="#_faq">FAQ</a></li>
-<li><a href="#_additional_resources">Additional Resources</a></li>
+<li><a href="#_additional_resources">Additional resources</a></li>
 <li><a href="#_send_us_feedback">Send us feedback</a></li>
 <li><a href="#_quick_start_reference_deployments">Quick Start reference deployments</a></li>
-<li><a href="#_github_repository">GitHub repository</a>
-<ul class="sectlevel3">
+<li><a href="#_github_repository">GitHub repository</a></li>
 <li><a href="#_notices">Notices</a></li>
-</ul>
-</li>
 </ul>
 </div>
 </div>
@@ -840,9 +840,9 @@ a img {
 </div>
 </div>
 <div class="paragraph text-center">
-<p><strong>August, 2020</strong><br>
-<em>Arthur Barr, James McGuire, and Jon Tilt - IBM</em><br>
-<em>Vinod Shukla and Scott Kellish, AWS</em></p>
+<p><strong>September, 2020</strong><br>
+<em>Arthur Barr, James McGuire, and Jon Tilt, IBM</em><br>
+<em>Vinod Shukla and Scott Kellish, AWS Quick Start team</em></p>
 </div>
 <div class="admonitionblock tip text-left">
 <table>
@@ -869,7 +869,7 @@ report bugs, or submit feature ideas for this Quick Start.
 <p>This Quick Start reference deployment guide provides step-by-step instructions for deploying IBM MQ server on the AWS Cloud.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start is for IT infrastructure decision makers and IBM MQ system administrators who require guidance on how to rapidly configure, deploy, and run an IBM MQ server on AWS. It deploys a reference architecture of a highly available, secure IBM MQ version 9 queue manager.</p>
+<p>This Quick Start is for IT infrastructure personnel and system administrators who require guidance on how to configure, deploy, and run an IBM MQ server on AWS. It deploys IBM MQ queue manager (version 9.2) in an environment that&#8217;s designed to be secure and highly available.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -891,13 +891,13 @@ collaborated with AWS on the content of the Quick Start.
 <h2 id="_ibm_mq_on_aws">IBM MQ on AWS</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>IBM MQ is messaging middleware that simplifies and accelerates the integration of diverse applications and business data across multiple platforms. It uses message queues to facilitate the exchange of information, and offers a single messaging solution for cloud, mobile, the Internet of Things (IoT), and on-premises environments.</p>
+<p>IBM MQ is messaging middleware that helps to simplify and accelerate the integration of diverse applications and business data across multiple platforms. It uses message queues to facilitate the exchange of information and offers a single messaging solution for cloud, mobile, the Internet of Things (IoT), and on-premises environments.</p>
 </div>
 <div class="paragraph">
-<p>By connecting virtually everything, from a simple pair of applications to the most complex business environments, IBM MQ helps you improve business responsiveness, control costs, reduce risk, and gain real-time insight from mobile, IoT, and sensor data.</p>
+<p>By connecting virtually everything, from a simple pair of applications to the most complex business environments, IBM MQ helps you improve business responsiveness, control costs, reduce risks, and gain real-time insights from mobile, IoT, and sensor data.</p>
 </div>
 <div class="paragraph">
-<p>AWS offers flexible compute, storage, and database services that provide a scalable, secure cloud platform for running IBM MQ.</p>
+<p>AWS offers flexible compute, storage, and database services that are designed to be scalable and secure for running IBM MQ in the cloud.</p>
 </div>
 <div class="paragraph">
 <p>IBM MQ delivers:</p>
@@ -908,7 +908,7 @@ collaborated with AWS on the content of the Quick Start.
 <p><strong>Flexible, near-universal connectivity</strong> to adapt systems to meet changing market demands and take advantage of emerging opportunities.</p>
 </li>
 <li>
-<p><strong>Secure message delivery</strong> to preserve message integrity and mitigate risk of data loss.</p>
+<p><strong>Secure message delivery</strong> to preserve message integrity and mitigate the risk of data loss.</p>
 </li>
 <li>
 <p><strong>Dynamic scaling</strong> to improve business responsiveness and control costs.</p>
@@ -917,12 +917,12 @@ collaborated with AWS on the content of the Quick Start.
 <p><strong>Simplified management and control</strong> to improve productivity.</p>
 </li>
 <li>
-<p><strong>A unified messaging solution</strong> to simplify integration, lower cost of ownership, and accelerate application deployment.</p>
+<p><strong>A unified messaging solution</strong> to simplify integration, lower the cost of ownership, and accelerate application deployment.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>For more information about IBM MQ features, see the <a href="http://www-03.ibm.com/software/products/en/ibm-mq" target="_blank" rel="noopener">IBM MQ product page</a>.</p>
+<p>For more information, see the <a href="http://www-03.ibm.com/software/products/en/ibm-mq" target="_blank" rel="noopener">IBM MQ product page</a>.</p>
 </div>
 </div>
 </div>
@@ -958,19 +958,19 @@ After you deploy the Quick Start, enable the <a href="https://docs.aws.amazon.co
 <h2 id="_software_licenses">Software licenses</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This Quick Start builds the IBM MQ environment by using a pre-built Amazon Machine Image (AMI) with IBM MQ installed on the Ubuntu operating system.</p>
+<p>This Quick Start builds the IBM MQ environment by using a pre-built Amazon Machine Image (AMI) with IBM MQ installed on an Ubuntu operating system.</p>
 </div>
 <div class="paragraph">
-<p>The Quick Start requires a license for IBM MQ. To use the Quick Start in your production environment, sign up for an IBM MQ program license at <a href="https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867" target="_blank" rel="noopener">IBM developerWorks</a> (requires an IBMid). You’ll need to place the license key in an Amazon Simple Storage Service (Amazon S3) bucket and specify its location when you launch the Quick Start. (For details, see <a href="#_sign_up_for_an_ibm_mq_license">step 2</a> of the deployment instructions.)</p>
+<p>This deployment requires an IBM MQ license. To use the Quick Start in a production environment, sign up for an <a href="https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867" target="_blank" rel="noopener">IBM MQ program license</a> (requires an IBMid). You must place the license key in an Amazon Simple Storage Service (Amazon S3) bucket and specify its location. For more information, see the <a href="#_sign_up_for_an_ibm_mq_license">Sign up for an IBM MQ license</a> section.</p>
 </div>
 <div class="paragraph">
-<p>If you don’t have a license file, the Quick Start will deploy an IBM MQ trial license, which allows 90 days of free usage in a non-production environment. After this time, the queue manager will expire. You can purchase support at an additional cost, or use the forums.</p>
+<p>If you don’t have a license, the Quick Start uses an IBM MQ trial license, which allows 90 days of free usage in a non-production environment. After that time, the queue manager expires. Purchase support at an additional cost, or use the forums.</p>
 </div>
 <div class="paragraph">
-<p>If the license file is in place at stack creation time, the IBM MQ server will automatically use the production license. To upgrade from a trial license to a production license after deployment, follow the instructions in the <a href="https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.0.0/com.ibm.mq.ins.doc/q008943_.htm">IBM Knowledge Center</a>.</p>
+<p>If the license file is in place when the stack is created, the IBM MQ server automatically uses the production license. To upgrade from a trial license to a production license after deployment, see <a href="https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.2.0/com.ibm.mq.ins.doc/q008943_.htm">Converting a trial license on Linux</a>.</p>
 </div>
 <div class="paragraph">
-<p>The IBM MQ <a href="http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&amp;li_formnum=L-APIG-AKHJ8V" target="_blank" rel="noopener">software license agreement</a> contains more details about licensing terms. When you launch the Quick Start, you’ll be asked to read and agree to the terms of the agreement.</p>
+<p>The <a href="http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=Z125-3301-14&amp;li_formnum=L-APIG-AKHJ8V" target="_blank" rel="noopener">IBM MQ software license agreement</a> details the licensing terms. When you launch this Quick Start, you are asked to read and agree to the terms.</p>
 </div>
 </div>
 </div>
@@ -997,22 +997,22 @@ AWS Cloud.</p>
 <p>A virtual private cloud (VPC) that spans two Availability Zones and includes two public and two private subnets, for security and high availability.*</p>
 </li>
 <li>
-<p>An Internet gateway to allow access to the Internet.*</p>
+<p>An internet gateway to allow access to the internet.*</p>
 </li>
 <li>
-<p>In a public subnet, a bastion host to provide secure Secure Shell (SSH) access to the IBM MQ server. The bastion host is in an Auto Scaling group of 1, ensuring there will always be one host available.*</p>
+<p>In the public subnet, a bastion host to provide secure Secure Shell (SSH) access to the IBM MQ server. The bastion host is in an Auto Scaling group with its desired capacity set to one instance, which helps to ensure that one host is always available.*</p>
 </li>
 <li>
-<p>In a private subnet, an IBM MQ server in an Auto Scaling group of 1.</p>
+<p>In the private subnet, an IBM MQ server in an Auto Scaling group with its desired capacity set to one instance.</p>
 </li>
 <li>
-<p>Amazon Elastic File System (Amazon EFS) automatically mounted on the IBM MQ server instance for distributed storage, to ensure high availability of the queue manager service and the message data. If the IBM MQ server fails in one Availability Zone, a new server is created in the second Availability Zone and connected to the existing data so no persistent messages are lost. Failover typically takes 3-5 minutes, but can be longer if there are outstanding transactions.</p>
+<p>Amazon Elastic File System (Amazon EFS) automatically mounts the IBM MQ server instance for distributed storage to ensure high availability of the queue manager service and message data. If the IBM MQ server fails in one Availability Zone, a new server is created in a second Availability Zone and connects to the existing data so no persistent messages are lost. Failover typically takes 3–5 minutes but may be longer if there are outstanding transactions.</p>
 </li>
 <li>
 <p>Elastic Load Balancing to automatically distribute connections to the active IBM MQ server.</p>
 </li>
 <li>
-<p>An IAM instance role with fine-grained permissions for access to AWS services necessary for the deployment process.</p>
+<p>An IAM instance role with resource-level permissions for access to AWS services necessary for the deployment process.</p>
 </li>
 <li>
 <p>Appropriate security groups for each instance or function to restrict access to only necessary protocols and ports. For example, access to HTTP server ports on Amazon EC2 servers is limited to Elastic Load Balancing.</p>
@@ -1025,32 +1025,29 @@ the components marked by asterisks and prompts you for your existing VPC
 configuration.</p>
 </div>
 <div class="sect2">
-<h3 id="design-considerations">Design Considerations</h3>
+<h3 id="design-considerations">Design considerations</h3>
 <div class="paragraph">
-<p>IBM MQ provides a messaging platform that can be deployed with a variety of options, depending on your needs. This Quick Start provides a great starting point for building your messaging solution rapidly with IBM MQ on the AWS Cloud. The following sections discuss design considerations for large-scale deployments and options for optimizing performance.</p>
+<p>IBM MQ provides a messaging platform that can be deployed with various options, depending on your needs. This Quick Start provides a starting point for building your messaging solution rapidly with IBM MQ on the AWS Cloud. The following sections discuss design considerations for large-scale deployments and options for optimizing performance.</p>
 </div>
 <div class="paragraph">
 <p>To enhance availability and reliability for production workloads, this Quick Start uses two Availability Zones. This provides an automated failover from the primary server to a server that runs in a different Availability Zone, with no loss of message or configuration data.</p>
 </div>
 <div class="paragraph">
-<p>The IBM MQ service will support client messaging applications from within your VPC, from trusted addresses on the Internet, and via a VPN from your on-premises environment.</p>
+<p>The IBM MQ service supports client messaging applications (within your VPC) from trusted internet addresses and via a VPN from your on-premises environment.</p>
 </div>
 <div class="sect3">
-<h4 id="ibm-mq-instances">IBM MQ Instances</h4>
+<h4 id="ibm-mq-instances">IBM MQ instances</h4>
 <div class="paragraph">
-<p>The deployment launches an EC2 instance running Ubuntu Linux x86-64. Elastic Load Balancing is used to automatically ensure that traffic is pointed to an active server.</p>
-</div>
-<div class="paragraph">
-<p>The Quick Start supports a large selection of EC2 instance types for the IBM MQ server instances. We recommend that you benchmark the environment to make sure you achieve the level of performance you need before starting a production deployment.</p>
+<p>This deployment launches an EC2 instance using Ubuntu Linux x86-64. Elastic Load Balancing is used to automatically ensure that traffic is pointed to an active server. This deployment supports a selection of EC2 instance types for the IBM MQ server. Before you deploy a production instance, we recommend that you benchmark the environment to ensure that you achieve your required level of performance.</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="amazon-efs">Amazon EFS</h4>
 <div class="paragraph">
-<p>Amazon EFS is a file storage service with a simple interface that enables you to create and configure file systems quickly and easily. Multiple EC2 instances can access an Amazon EFS file system at the same time, so this service provides a common data source for workloads and applications that are running on more than one EC2 instance.</p>
+<p>Amazon EFS is a file storage service with an interface that allows you to create and configure file systems. Multiple EC2 instances can access an Amazon EFS file system at the same time, so this service provides a common data source for workloads and applications that run on more than one EC2 instance.</p>
 </div>
 <div class="paragraph">
-<p>In the architecture built by this Quick Start, only one EC2 instance will access the data at a specific time.</p>
+<p>The default architecture built by this Quick Start allows for only one EC2 instance at a time to access your data.</p>
 </div>
 </div>
 </div>
@@ -1071,30 +1068,30 @@ deploy, and operate your infrastructure and applications on the AWS
 Cloud.</p>
 </div>
 <div class="paragraph">
-<p>This Quick Start assumes familiarity with with the following AWS services.</p>
+<p>This Quick Start assumes familiarity with the following AWS services.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://aws.amazon.com/documentation/ec2/" target="_blank" rel="noopener">Amazon EC2</a> – The Amazon Elastic Compute Cloud (Amazon EC2) service enables you to launch virtual machine instances with a variety of operating systems. You can choose from existing Amazon Machine Images (AMIs) or import your own virtual machine images.  </p>
+<p><a href="https://aws.amazon.com/documentation/ec2/" target="_blank" rel="noopener">Amazon EC2</a> — The Amazon Elastic Compute Cloud (Amazon EC2) service enables you to launch virtual machine instances using a variety of operating systems. You can choose from existing Amazon Machine Images (AMIs) or import your own virtual machine images.</p>
 </li>
 <li>
-<p><a href="https://aws.amazon.com/documentation/vpc/" target="_blank" rel="noopener">Amazon VPC</a> – The Amazon Virtual Private Cloud (Amazon VPC) service lets you provision a private, isolated section of the AWS Cloud where you can launch AWS services and other resources in a virtual network that you define. You have complete control over your virtual networking environment, including selection of your own IP address range, subnet creation, and configuration of route tables and network gateways.</p>
+<p><a href="https://aws.amazon.com/documentation/vpc/" target="_blank" rel="noopener">Amazon VPC</a> — The Amazon Virtual Private Cloud (Amazon VPC) service lets you provision a private, isolated section of the AWS Cloud where you can launch AWS services and other resources in a virtual network that you define. You have complete control over your virtual networking environment, including selection of your own IP address range, subnet creation, and configuration of route tables and network gateways.</p>
 </li>
 <li>
-<p><a href="https://aws.amazon.com/documentation/cloudformation/" target="_blank" rel="noopener">AWS CloudFormation</a> – AWS CloudFormation gives you an easy way to create and manage a collection of related AWS resources, and provision and update them in an orderly and predictable way. You use a template to describe all the AWS resources (e.g., EC2 instances) that you want. You don’t have to create and configure the resources or figure out dependencies; AWS CloudFormation handles all of that.  </p>
+<p><a href="https://aws.amazon.com/documentation/cloudformation/" target="_blank" rel="noopener">AWS CloudFormation</a> — AWS CloudFormation provides a way to create and manage a collection of related AWS resources that are provisioned and updated in an orderly and predictable way. You use a template to describe all the AWS resources (e.g., EC2 instances) that you want, so there&#8217;s no need to create and configure the resources or figure out dependencies.</p>
 </li>
 <li>
-<p><a href="https://aws.amazon.com/documentation/autoscaling/" target="_blank" rel="noopener">Auto Scaling</a> – Auto Scaling helps maintain high availability and manage capacity by automatically increasing or decreasing the EC2 instance fleet. You can use Auto Scaling to run your fleet at optimal utilization by increasing instance capacity during demand spikes and decreasing capacity during down times.  </p>
+<p><a href="https://aws.amazon.com/documentation/autoscaling/" target="_blank" rel="noopener">Auto Scaling</a> — Auto Scaling helps to maintain high availability and manage capacity by automatically increasing or decreasing the EC2 instance fleet. You can use Auto Scaling to run your fleet optimally by increasing instance capacity during demand spikes and decreasing capacity during down times.</p>
 </li>
 <li>
-<p><a href="https://aws.amazon.com/documentation/elastic-load-balancing/" target="_blank" rel="noopener">ELB</a> – Elastic Load Balancing automatically distributes incoming application traffic across multiple EC2 instances.   </p>
+<p><a href="https://aws.amazon.com/documentation/elastic-load-balancing/" target="_blank" rel="noopener">ELB</a> — Elastic Load Balancing automatically distributes incoming application traffic across multiple EC2 instances.</p>
 </li>
 <li>
-<p><a href="https://aws.amazon.com/documentation/efs/" target="_blank" rel="noopener">Amazon EFS</a> – Amazon Elastic File System (Amazon EFS) provides simple, scalable file storage for use with EC2 instances. This IBM MQ deployment uses Amazon EFS to ensure high availability of message data in case of server failure.   </p>
+<p><a href="https://aws.amazon.com/documentation/efs/" target="_blank" rel="noopener">Amazon EFS</a> — Amazon Elastic File System (Amazon EFS) provides simple, scalable file storage for use with EC2 instances. This IBM MQ deployment uses Amazon EFS to ensure high availability of message data in case of server failure.</p>
 </li>
 <li>
-<p><a href="https://aws.amazon.com/documentation/iam/" target="_blank" rel="noopener">IAM</a> – AWS Identity and Access Management (IAM) enables you to securely control access to AWS services and resources for your users. With IAM, you can manage users, security credentials such as access keys, and permissions that control which AWS resources users can access, from a central location.  </p>
+<p><a href="https://aws.amazon.com/documentation/iam/" target="_blank" rel="noopener">IAM</a> — AWS Identity and Access Management (IAM) helps you to securely control access to AWS services and resources from a central location. You can manage users, security credentials (e.g., access keys), and permissions that control which AWS resources users can access.</p>
 </li>
 </ul>
 </div>
@@ -1219,7 +1216,7 @@ Cloud.</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-This Quick Start uses Amazon EFS, which is supported only in the regions listed on the <a href="https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services" target="_blank" rel="noopener">AWS Regional Table</a> webpage.
+This Quick Start uses Amazon EFS, which is not supported in all AWS Regions. For availability information, see <a href="https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services" target="_blank" rel="noopener">AWS Regional Services</a>.
 </td>
 </tr>
 </table>
@@ -1249,7 +1246,7 @@ Certain Regions are available on an opt-in basis. Refer to the AWS Documentation
 <div class="sect3">
 <h4 id="_iam_permissions">IAM permissions</h4>
 <div class="paragraph">
-<p>Before launching the Quick Start, you must log in to the AWS Management Console with <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html" target="_blank" rel="noopener">IAM permissions</a> for the resources and actions the templates deploy.</p>
+<p>Before launching the Quick Start, you must log in to the AWS Management Console with <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html" target="_blank" rel="noopener">IAM permissions</a> for the resources that the templates deploy.</p>
 </div>
 <div class="paragraph">
 <p>The <em>AdministratorAccess</em> managed policy within IAM provides sufficient permissions, although your organization may choose to use a custom policy with more restrictions.</p>
@@ -1285,21 +1282,21 @@ Certain Regions are available on an opt-in basis. Refer to the AWS Documentation
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Sign in to your AWS account at <a href="https://aws.amazon.com" class="bare">https://aws.amazon.com</a> with an IAM user role that has the necessary permissions. For details, see <a href="#_planning_the_deployment">Planning the deployment</a> earlier in this guide.</p>
+<p>Sign in to your AWS account at <a href="https://aws.amazon.com" class="bare">https://aws.amazon.com</a> with an IAM user role that has the necessary permissions. For more information, see <a href="#_planning_the_deployment">Planning the deployment</a>, earlier in this guide.</p>
 </li>
 <li>
-<p>Use the region selector in the navigation bar to choose the AWS Region where you want to deploy IBM MQ on AWS.</p>
+<p>Use the Region selector in the navigation bar to choose the AWS Region where you want to deploy IBM MQ on AWS.</p>
 </li>
 <li>
-<p>Make sure that your AWS account is configured correctly, as discussed in the <a href="#_technical_requirements">Technical requirements</a> section.</p>
+<p>Ensure that your AWS account is configured correctly, as discussed in the <a href="#_technical_requirements">Technical requirements</a> section.</p>
 </li>
 </ol>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_sign_up_for_an_ibm_mq_license">Sign up for an IBM MQ License</h3>
+<h3 id="_sign_up_for_an_ibm_mq_license">Sign up for an IBM MQ license</h3>
 <div class="paragraph">
-<p>To use the Quick Start in your production environment, you must have an IBM MQ program license. If you’d like to try out the software first, skip this step. The Quick Start will automatically sign you up for a 90-day trial period, and you can add a program license later.</p>
+<p>To use the Quick Start in a production environment, you must have an IBM MQ program license. If you want to try out the software first, skip this step. The Quick Start automatically signs you up for a 90-day trial period, and you can add a program license later.</p>
 </div>
 <div class="paragraph">
 <p>To get a program license:</p>
@@ -1307,10 +1304,10 @@ Certain Regions are available on an opt-in basis. Refer to the AWS Documentation
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Sign up for an IBM MQ program license at <a href="https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867" target="_blank" rel="noopener">IBM developerWorks</a> (requires an IBMid).</p>
+<p>To sign up for an IBM MQ program license, see <a href="https://www.ibm.com/account/reg/us-en/signup" target="_blank" rel="noopener">IBM MQ Trial</a>.</p>
 </li>
 <li>
-<p>Place the license key file for the software in an S3 bucket. You’ll be prompted for the bucket name and license file name in step 3.</p>
+<p>Place the license key file for the software in an S3 bucket. You are prompted for the bucket name and license file name in the next section.</p>
 </li>
 </ol>
 </div>
@@ -1332,7 +1329,7 @@ You are responsible for the cost of the AWS services used while running this Qui
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Sign in to your AWS account, and choose one of the following options to launch the AWS CloudFormation template. For help with choosing an option, see <a href="#_deployment_options">deployment options</a> earlier in this guide.</p>
+<p>Sign in to your AWS account, and choose one of the following options to launch the AWS CloudFormation template. For help with choosing an option, see <a href="#_deployment_options">deployment options</a>, earlier in this guide.</p>
 </li>
 </ol>
 </div>
@@ -1359,8 +1356,8 @@ You are responsible for the cost of the AWS services used while running this Qui
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-If you’re deploying IBM MQ into an existing VPC, make sure that your VPC has two private subnets in different Availability Zones for the workload instances, and that the subnets aren’t shared. This Quick Start doesn’t support <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html" target="_blank" rel="noopener">shared subnets</a>. These subnets require <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html" target="_blank" rel="noopener">NAT gateways</a> in their route tables, to allow the instances to download packages and software without exposing them to the internet.
-Also, make sure that the domain name option in the DHCP options is configured as explained in the <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html" target="_blank" rel="noopener">Amazon VPC documentation</a>. You provide your VPC settings when you launch the Quick Start.
+If you deploy IBM MQ into an existing VPC, ensure that your VPC has two private subnets in different Availability Zones for the workload instances and that the subnets aren’t shared. This Quick Start doesn’t support <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-sharing.html" target="_blank" rel="noopener">shared subnets</a>. To allow the instances to download packages and software without exposing them to the internet, the subnets require <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html" target="_blank" rel="noopener">NAT gateways</a> in their route tables.
+Also, ensure that the domain name in the DHCP options is configured, as explained in <a href="http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html" target="_blank" rel="noopener">DHCP options sets</a>. Provide your VPC settings when you launch the Quick Start.
 </td>
 </tr>
 </table>
@@ -1371,7 +1368,7 @@ Also, make sure that the domain name option in the DHCP options is configured as
 <div class="olist arabic">
 <ol class="arabic" start="2">
 <li>
-<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the network infrastructure for IBM MQ will be built. The template is launched in the us-east-2 Region by default.</p>
+<p>Check the AWS Region that’s displayed in the upper-right corner of the navigation bar, and change it if necessary. This is where the network infrastructure for IBM MQ is built. The template is launched in the us-east-2 Region by default.</p>
 </li>
 </ol>
 </div>
@@ -1381,7 +1378,7 @@ Also, make sure that the domain name option in the DHCP options is configured as
 <p>On the <strong>Create stack</strong> page, keep the default setting for the template URL, and then choose <strong>Next</strong>.</p>
 </li>
 <li>
-<p>On the <strong>Specify stack details</strong> page, change the stack name if needed. Review the parameters for the template. Provide values for the parameters that require input. For all other parameters, review the default settings and customize them as necessary.</p>
+<p>On the <strong>Specify stack details</strong> page, change the stack name if needed. Review the template parameters, and provide values for any parameters that require input. For all other parameters, review the default settings, and customize them as necessary.</p>
 </li>
 </ol>
 </div>
@@ -1403,7 +1400,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </div>
 </div>
 <div class="sect2">
-<h3 id="_parameters_for_launching_into_an_existing_vpc">Parameters for launching into an existing VPC</h3>
+<h3 id="_parameters_for_launching_into_a_new_vpc">Parameters for launching into a new VPC</h3>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 1. Software License Agreement</caption>
 <colgroup>
@@ -1428,215 +1425,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. Network Configuration</caption>
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 11%;">
-<col style="width: 73%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter label (name)</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">VPC ID
-(<code>VPCID</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of your existing VPC for deployment</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Private Subnet 1 ID
-(<code>PrivateSubnet1ID</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of private subnet 1 in Availability Zone 1 for the IBM MQ instances (e.g., subnet-a0246dcd)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Private Subnet 2 ID
-(<code>PrivateSubnet2ID</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of private subnet 2 in Availability Zone 2 for the IBM MQ instances (e.g., subnet-b1f432cd)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Public Subnet 1 ID
-(<code>PublicSubnet1ID</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of public subnet 1 in Availability Zone 1 for the ELB load balancer (e.g., subnet-9bc642ac)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Public Subnet 2 ID
-(<code>PublicSubnet2ID</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of public subnet 2 in Availability Zone 2 for the ELB load balancer (e.g., subnet-e3246d8e)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Allowed Admin Web Console External Access CIDR
-(<code>AdminConsoleAccessCIDR</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The CIDR IP range that is permitted to access the IBM MQ Web Console via the ELB. We recommend that you set this value to a trusted IP range.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Allowed Client Application External Access CIDR
-(<code>ClientAppAccessCIDR</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The CIDR IP range that is permitted to allow access for IBM MQ Client Applications. We recommend that you set this value to a trusted IP range.</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. Bastion Configuration</caption>
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 11%;">
-<col style="width: 73%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter label (name)</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SSH Key Name
-(<code>KeyPairName</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name of an existing EC2 key pair. All instances will launch with this key pair.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Bastion Security Group ID
-(<code>BastionSecurityGroupID</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">ID of the bastion host security group to enable SSH connections (e.g., sg-7f16e910)</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 4. IBM MQ Instance Configuration</caption>
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 11%;">
-<col style="width: 73%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter label (name)</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ Instance Owner
-(<code>MQOwner</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ibm-mq</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Set Owner tag for the IBM MQ instance</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ Instance Name
-(<code>MQInstanceName</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ibm-mq</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name for the IBM MQ instance that is deployed to EC2</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ Instance Type
-(<code>MQInstanceType</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>t2.micro</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ server EC2 instance type</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Queue Manager Name
-(<code>QueueManagerName</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QM1</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name to use for the IBM MQ queue manager. Queue Manager name can include Uppercase Letters, Numbers, periods (.), underscores (_), and percentage (%) (Max Length of 48 Characters).</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ Web Console Admin Username
-(<code>MQConsoleUsername</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mqconsoleadmin</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin Username used for accessing Web Console and REST Api</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ Web Console Admin Password
-(<code>MQConsolePassword</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Admin Password to access the MQ Web Console (Min. Length of 8 Characters, Max Length of 12 Characters)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">mqadmin Password
-(<code>MQAdminPassword</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Password for predefined mqadmin user used to administer MQ (Min. Length of 8 Characters, Max Length of 12 Characters)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">mqapp Password
-(<code>MQAppPassword</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Password for predefined mqapp user used by applications to securely connect to MQ (Min. Length of 8 Characters, Max Length of 12 Characters)</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. IBM MQ License</caption>
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 11%;">
-<col style="width: 73%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter label (name)</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ License S3 Bucket Name
-(<code>LicenseS3Bucket</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><em>Optional</em></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">S3 bucket name where you store IBM MQ License file. Leave blank to use 90 day Trial license.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ License S3 Key Prefix Name
-(<code>LicenseS3KeyPrefix</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><em>Optional</em></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">S3 key prefix for the directory your IBM MQ License file is stored. Leave blank to use 90 day Trial license.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_parameters_for_launching_into_a_new_vpc">Parameters for launching into a new VPC</h3>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 6. Software License Agreement</caption>
-<colgroup>
-<col style="width: 16%;">
-<col style="width: 11%;">
-<col style="width: 73%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Parameter label (name)</th>
-<th class="tableblock halign-left valign-top">Default value</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">License Agreement
-(<code>LicenseAgreement</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">I have read and agree to the license terms for IBM MQ (<a href="https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&amp;li_formnum=L-APIG-AZYF4X" class="bare">https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&amp;li_formnum=L-APIG-AZYF4X</a>).</p></td>
-</tr>
-</tbody>
-</table>
-<table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 7. VPC &amp; Bastion Configuration</caption>
+<caption class="title">Table 2. VPC &amp; Bastion Configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1695,7 +1484,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 8. IBM MQ Instance Configuration</caption>
+<caption class="title">Table 3. IBM MQ Instance Configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1731,7 +1520,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">Queue Manager Name
 (<code>QueueManagerName</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>QM1</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Name to use for the IBM MQ queue manager. Queue Manager name can include Uppercase Letters, Numbers, periods (.), underscores (_), and percentage (%) (Max Length of 48 Characters).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name to use for the IBM MQ queue manager. This string can include a maximum of 48 characters, consisting of uppercase letters, numbers, periods (.), underscores (<em>), and percent signs (%). See the IBM Knowledge Center for naming rules (<a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.pro.doc/q003340" class="bare">https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.pro.doc/q003340</a></em>.htm).</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ Web Console Admin Username
@@ -1749,18 +1538,18 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <td class="tableblock halign-left valign-top"><p class="tableblock">mqadmin Password
 (<code>MQAdminPassword</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Password for predefined mqadmin user used to administer MQ (Min. Length of 8 Characters, Max Length of 12 Characters)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Password for predefined mqadmin user, which is used to administer IBM MQ. See the IBM Knowledge Center for information on authority to administer IBM MQ (<a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm" class="bare">https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm</a>). This is an 8-12 character string.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">mqapp Password
 (<code>MQAppPassword</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Password for predefined mqapp user used by applications to securely connect to MQ (Min. Length of 8 Characters, Max Length of 12 Characters)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Password for predefined mqapp user, which applications use to securely connect to IBM MQ. See the IBM Knowledge Center for details on authorization for applications to use IBM MQ (<a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm" class="bare">https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm</a>). This is an 8-12 character string.</p></td>
 </tr>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 9. IBM MQ License</caption>
+<caption class="title">Table 4. IBM MQ License</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1789,7 +1578,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 10. AWS Quick Start Configuration</caption>
+<caption class="title">Table 5. AWS Quick Start Configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1820,6 +1609,214 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 (<code>QSS3KeyPrefix</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>quickstart-ibm-mq/</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_parameters_for_launching_into_an_existing_vpc">Parameters for launching into an existing VPC</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 6. Software License Agreement</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 11%;">
+<col style="width: 73%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter label (name)</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">License Agreement
+(<code>LicenseAgreement</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>-</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">I have read and agree to the license terms for IBM MQ (<a href="https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&amp;li_formnum=L-APIG-AZYF4X" class="bare">https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&amp;li_formnum=L-APIG-AZYF4X</a>).</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 7. Network Configuration</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 11%;">
+<col style="width: 73%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter label (name)</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VPC ID
+(<code>VPCID</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID of your existing VPC for deployment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Private Subnet 1 ID
+(<code>PrivateSubnet1ID</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID of private subnet 1 in Availability Zone 1 for the IBM MQ instances (e.g., subnet-a0246dcd)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Private Subnet 2 ID
+(<code>PrivateSubnet2ID</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID of private subnet 2 in Availability Zone 2 for the IBM MQ instances (e.g., subnet-b1f432cd)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Public Subnet 1 ID
+(<code>PublicSubnet1ID</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID of public subnet 1 in Availability Zone 1 for the ELB load balancer (e.g., subnet-9bc642ac)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Public Subnet 2 ID
+(<code>PublicSubnet2ID</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID of public subnet 2 in Availability Zone 2 for the ELB load balancer (e.g., subnet-e3246d8e)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allowed Admin Web Console External Access CIDR
+(<code>AdminConsoleAccessCIDR</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The CIDR IP range that is permitted to access the IBM MQ Web Console via the ELB. We recommend that you set this value to a trusted IP range.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allowed Client Application External Access CIDR
+(<code>ClientAppAccessCIDR</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The CIDR IP range that is permitted to allow access for IBM MQ Client Applications. We recommend that you set this value to a trusted IP range.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 8. Bastion Configuration</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 11%;">
+<col style="width: 73%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter label (name)</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSH Key Name
+(<code>KeyPairName</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name of an existing EC2 key pair. All instances will launch with this key pair.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bastion Security Group ID
+(<code>BastionSecurityGroupID</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID of the bastion host security group to enable SSH connections (e.g., sg-7f16e910)</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 9. IBM MQ Instance Configuration</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 11%;">
+<col style="width: 73%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter label (name)</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ Instance Owner
+(<code>MQOwner</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ibm-mq</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Set Owner tag for the IBM MQ instance</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ Instance Name
+(<code>MQInstanceName</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ibm-mq</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Name for the IBM MQ instance that is deployed to EC2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ Instance Type
+(<code>MQInstanceType</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>t2.micro</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ server EC2 instance type</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Queue Manager Name
+(<code>QueueManagerName</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>QM1</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The name to use for the IBM MQ queue manager. This string can include a maximum of 48 characters, consisting of uppercase letters, numbers, periods (.), underscores (<em>), and percent signs (%). See the IBM Knowledge Center for naming rules (<a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.pro.doc/q003340" class="bare">https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.pro.doc/q003340</a></em>.htm).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ Web Console Admin Username
+(<code>MQConsoleUsername</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>mqconsoleadmin</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Admin Username used for accessing Web Console and REST Api</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ Web Console Admin Password
+(<code>MQConsolePassword</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Admin Password to access the MQ Web Console (Min. Length of 8 Characters, Max Length of 12 Characters)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mqadmin Password
+(<code>MQAdminPassword</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Password for predefined mqadmin user, which is used to administer IBM MQ. See the IBM Knowledge Center for information on authority to administer IBM MQ (<a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm" class="bare">https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm</a>). This is an 8-12 character string.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mqapp Password
+(<code>MQAppPassword</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Password for predefined mqapp user, which applications use to securely connect to IBM MQ. See the IBM Knowledge Center for details on authorization for applications to use IBM MQ (<a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm" class="bare">https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm</a>). This is an 8-12 character string.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 10. IBM MQ License</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 11%;">
+<col style="width: 73%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter label (name)</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ License S3 Bucket Name
+(<code>LicenseS3Bucket</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><em>Optional</em></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">S3 bucket name where you store IBM MQ License file. Leave blank to use 90 day Trial license.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IBM MQ License S3 Key Prefix Name
+(<code>LicenseS3KeyPrefix</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><em>Optional</em></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">S3 key prefix for the directory your IBM MQ License file is stored. Leave blank to use 90 day Trial license.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1855,23 +1852,23 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <h2 id="_test_the_deployment">Test the deployment</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>When the AWS CloudFormation template has successfully created the stack, all server nodes will be running with the software installed in your AWS account.</p>
+<p>When the AWS CloudFormation template successfully creates the stack, all server nodes run with the software installed in your AWS account.</p>
 </div>
 <div class="paragraph">
-<p>In the following steps, you’ll connect to IBM MQ through a web console to verify the deployment, and then use the console to explore IBM MQ features.</p>
+<p>In the following steps, you connect to IBM MQ through a web console to verify and explore the deployment.</p>
 </div>
 <div class="paragraph">
-<p>To connect to IBM MQ through the web console:</p>
+<p>Connect to the IBM MQ Console:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Choose the URL of the Elastic Load Balancing endpoint for the IBM MQ console. This is the URL highlighted in <a href="#cfn_outputs">Figure 2</a>.</p>
+<p>Choose the URL of the Elastic Load Balancing endpoint for the IBM MQ Console, as shown in <a href="#cfn_outputs">Figure 2</a>.</p>
 </li>
 <li>
-<p>The <a href="https://www.ibm.com/support/knowledgecenter/en/SSAW57_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/cwlp_about.html" target="_blank" rel="noopener">Liberty server</a> used by the MQ Console is initially configured to use a self-signed certificate, so your browser may display the warning shown in Figure 3. In the dialog box, choose <strong>Advanced</strong>, and then accept the security certificate to proceed.</p>
+<p>The <a href="https://www.ibm.com/support/knowledgecenter/en/SSAW57_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/cwlp_about.html" target="_blank" rel="noopener">Liberty server</a> used by the IBM MQ Console is initially configured to use a self-signed certificate, so your browser may display the warning shown in <a href="#connection_error1">Figure 3</a>. Note that the screenshot was captured using Firefox v79.0; currently, Chrome v84.x does not allow users to bypass this warning.</p>
 <div class="paragraph">
-<p>We recommend that you update the self-signed certificate to a certificate that’s signed by a trusted CA. For more information about setting up certificates, see the <a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.0.0/com.ibm.mq.sec.doc/q127940_.htm" target="_blank" rel="noopener">IBM MQ documentation</a>.</p>
+<p>We recommend that you update the self-signed certificate to a certificate that’s signed by a trusted certificate authority (CA). For more information about setting up certificates, see <a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q127940_.htm" target="_blank" rel="noopener">Using client certificate authentication with the REST API and IBM MQ Console</a>.</p>
 </div>
 <div id="connection_error1" class="imageblock">
 <div class="content">
@@ -1887,7 +1884,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </div>
 </li>
 <li>
-<p>In the IBM MQ Console login screen, enter the user name and password you created during deployment. (The default user name is <strong>mqconsoleadmin</strong>.)</p>
+<p>On the IBM MQ Console login screen, enter the user name and password you created during deployment. (The default user name is <strong>mqconsoleadmin</strong>.)</p>
 <div id="login_screen1" class="imageblock">
 <div class="content">
 <a class="image" href="images/login_screen.png"><img src="images/login_screen.png" alt="image" width="648" height="439"></a>
@@ -1895,93 +1892,83 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 <div class="title">Figure 5. IBM MQ Console login screen</div>
 </div>
 <div class="paragraph">
-<p>The Console initially shows the default queue manager. If the status of the queue manager <strong>QM1</strong> (or the name you entered for the <strong>Queue Manager Name</strong> parameter in step 3) is <strong>Running</strong>, as shown in <a href="#queue_manager1">Figure 6</a>, then you have successfully deployed your queue manager.</p>
+<p>The Console initially displays a landing page with quick links, as shown in <a href="#landing_page1">Figure 6</a>. Choose <strong>Manage</strong> to see the queue-management page, where you can create and edit queue managers. There are also quick links to <strong>Create a queue manager</strong> and <strong>Create a queue</strong>.</p>
 </div>
+<div class="paragraph">
+<p>The <strong>MQ Basics</strong> tiles launch a short guide that describes some of the core concepts of messaging with IBM MQ, which is particularly useful if you are new to IBM MQ. There is also a link to the external <strong>Learn MQ</strong> website, where you can find tutorials and articles about IBM MQ.</p>
+</div>
+<div id="landing_page1" class="imageblock">
+<div class="content">
+<a class="image" href="images/landing_page.png"><img src="images/landing_page.png" alt="image" width="648" height="364"></a>
+</div>
+<div class="title">Figure 6. IBM MQ Console landing page</div>
+</div>
+<div class="paragraph">
+<p>You can use the IBM MQ Console to perform administrative tasks, such as stopping and starting queue managers and creating objects in queues and channels. In the following steps, use the Console to verify that the server works correctly, and add a message to a queue.</p>
+</div>
+</li>
+<li>
+<p>From the landing page, choose <strong>Manage</strong>.</p>
+<div id="manage_queue_page1" class="imageblock">
+<div class="content">
+<a class="image" href="images/manage_queue_page.png"><img src="images/manage_queue_page.png" alt="image" width="216" height="190"></a>
+</div>
+<div class="title">Figure 7. Manage queue page</div>
+</div>
+</li>
+<li>
+<p>On the <strong>Manage</strong> page, choose <strong>QM1</strong> to open the queue manager (see <a href="#queue_manager1">Figure 8</a>).</p>
 <div id="queue_manager1" class="imageblock">
 <div class="content">
-<a class="image" href="images/queue_manager.png"><img src="images/queue_manager.png" alt="image" width="648" height="439"></a>
+<a class="image" href="images/queue_manager.png"><img src="images/queue_manager.png" alt="image" width="648" height="364"></a>
 </div>
-<div class="title">Figure 6. Displaying the local queue manager</div>
-</div>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>You can use the IBM MQ Console to perform administration tasks such as stopping and starting queue managers and creating objects such as queues and channels. In the following steps, you’ll use the console to verify that the server is working correctly and add a message to a queue.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>In the console window, choose <strong>Add widget</strong>.</p>
-<div id="add_widget1" class="imageblock">
-<div class="content">
-<a class="image" href="images/add_widget.png"><img src="images/add_widget.png" alt="image" width="158" height="50"></a>
-</div>
-<div class="title">Figure 7. Adding a widget</div>
+<div class="title">Figure 8. Viewing the queue manager details</div>
 </div>
 </li>
 <li>
-<p>In the <strong>Add a new widget</strong> dialog box, choose <strong>Queues</strong> to display the predefined queue, <strong>Q1</strong>.</p>
-<div id="add_widget2" class="imageblock">
-<div class="content">
-<a class="image" href="images/create-queue-widget.png"><img src="images/create-queue-widget.png" alt="image" width="634" height="500"></a>
-</div>
-<div class="title">Figure 8. Creating a queues widget</div>
-</div>
+<p>Open the <strong>Q1</strong> queue from the table to view it’s details. Local queues display a message viewer, which allows you to view, filter, and search messages.</p>
 <div id="view-queue1" class="imageblock">
 <div class="content">
-<a class="image" href="images/view-queue.png"><img src="images/view-queue.png" alt="image" width="641" height="246"></a>
+<a class="image" href="images/view-queue.png"><img src="images/view-queue.png" alt="image" width="648" height="364"></a>
 </div>
-<div class="title">Figure 9. Viewing the predefined queue</div>
+<div class="title">Figure 9. Message viewer</div>
 </div>
 </li>
 <li>
-<p>On the toolbar, choose the envelope icon to put a test message on the queue.</p>
-<div id="env-icon1" class="imageblock">
-<div class="content">
-<a class="image" href="images/envelope-icon.png"><img src="images/envelope-icon.png" alt="image" width="222" height="68"></a>
-</div>
-<div class="title">Figure 10. Envelope icon</div>
-</div>
+<p>Choose <strong>Create</strong> to put a message in the queue. In the side panel, input a message in the <strong>Application data</strong> text field (see <a href="#place-message1">Figure 10</a>).</p>
 <div id="place-message1" class="imageblock">
 <div class="content">
-<a class="image" href="images/place-message.png"><img src="images/place-message.png" alt="put_message" width="620" height="226"></a>
+<a class="image" href="images/place-message.png"><img src="images/place-message.png" alt="put_message" width="648" height="364"></a>
 </div>
-<div class="title">Figure 11. Placing a message in the queue</div>
+<div class="title">Figure 10. Input message text in side panel</div>
 </div>
 </li>
 <li>
-<p>On the <strong>Queues on QM1</strong> window toolbar, you can now choose the folder icon to browse the messages on the queue.</p>
-<div id="dir-icon1" class="imageblock">
-<div class="content">
-<a class="image" href="images/folder-icon.png"><img src="images/folder-icon.png" alt="image" width="222" height="68"></a>
-</div>
-<div class="title">Figure 12. Folder icon</div>
-</div>
+<p>Choose <strong>Create</strong> to put the message in the queue. The side panel closes, and the list view refreshes automatically.</p>
 <div id="browse-message1" class="imageblock">
 <div class="content">
-<a class="image" href="images/browse-message.png"><img src="images/browse-message.png" alt="browse_message" width="613" height="424"></a>
+<a class="image" href="images/browse-message.png"><img src="images/browse-message.png" alt="browse_message" width="648" height="231"></a>
 </div>
-<div class="title">Figure 13. Browsing messages on the queue</div>
+<div class="title">Figure 11. Message appears in viewer</div>
+</div>
+<div class="paragraph">
+<p>For more information about using IBM MQ, see the <a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.adm.doc/q127570_.htm" target="_blank" rel="noopener">IBM Knowledge Center</a>.</p>
 </div>
 </li>
 </ol>
-</div>
-<div class="paragraph">
-<p>For more information about using the <a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.0.0/com.ibm.mq.adm.doc/q127570_.htm" target="_blank" rel="noopener">IBM MQ Console</a>, see the IBM Knowledge Center.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_post_deployment_steps">Post deployment steps</h2>
+<h2 id="_post_deployment_steps">Post-deployment steps</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_connect_to_the_ibm_mq_server">Connect to the IBM MQ Server</h3>
+<h3 id="_connect_to_the_ibm_mq_server">Connect to the IBM MQ server</h3>
 <div class="paragraph">
-<p>It is possible to administer IBM MQ locally from the server. For more information about this option, see <a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.0.0/com.ibm.mq.adm.doc/q019950_.htm" target="_blank" rel="noopener">Administering IBM MQ</a> in the IBM Knowledge Center.</p>
+<p>It&#8217;s possible to administer IBM MQ locally from the server. For more information, see <a href="https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.adm.doc/q019950_.htm" target="_blank" rel="noopener">Administering IBM MQ</a>.</p>
 </div>
 <div class="paragraph">
-<p>To connect to the IBM MQ server instance, use SSH to connect to the bastion host instance in your VPC. Use an SSH agent to forward your private key on connection. For more information about SSH agents, see the <a href="https://developer.github.com/v3/guides/using-ssh-agent-forwarding/" target="_blank" rel="noopener">GitHub documentation</a>.</p>
+<p>To connect to the IBM MQ server instance, use SSH (Secure Shell) to connect to the bastion host instance in your VPC. Use an SSH agent to forward your private key upon connection. For more information, see <a href="https://developer.github.com/v3/guides/using-ssh-agent-forwarding/" target="_blank" rel="noopener">Using SSH agent forwarding</a>.</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -2005,7 +1992,7 @@ Do not copy your private key to the bastion host instance.
 <p><strong>Q.</strong> I encountered a <strong>CREATE_FAILED</strong> error when I launched the Quick Start.</p>
 </div>
 <div class="paragraph">
-<p><strong>A.</strong> If AWS CloudFormation fails to create the stack, we recommend that you relaunch the template with <strong>Rollback on failure</strong> set to <strong>Disabled</strong>. (This setting is under <strong>Advanced</strong> in the AWS CloudFormation console, <strong>Options</strong> page.) With this setting, the stack’s state is retained and the instance is left running, so you can troubleshoot the issue. (For Windows, look at the log files in %ProgramFiles%\Amazon\EC2ConfigService and C:\cfn\log.)</p>
+<p><strong>A.</strong> If AWS CloudFormation fails to create the stack, we recommend that you relaunch the template with <strong>Rollback on failure</strong> set to <strong>Disabled</strong>. (This setting is under <strong>Advanced</strong> in the AWS CloudFormation console, <strong>Options</strong> page.) With this setting, the stack’s state is retained, and the instance remains running so you can troubleshoot the issue. (For Windows, look at the log files in <code>%ProgramFiles%\Amazon\EC2ConfigService</code> and <code>C:\cfn\log</code>.)</p>
 </div>
 <div class="admonitionblock warning">
 <table>
@@ -2014,24 +2001,24 @@ Do not copy your private key to the bastion host instance.
 <i class="fa icon-warning" title="Warning"></i>
 </td>
 <td class="content">
-When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, you continue to incur AWS charges for this stack. Please make sure to delete the stack when you finish troubleshooting.
+When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, you continue to incur AWS charges for the stack. Ensure that you delete the stack when you finish troubleshooting.
 </td>
 </tr>
 </table>
 </div>
 <div class="paragraph">
-<p>For additional information, see <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html" target="_blank" rel="noopener">Troubleshooting AWS CloudFormation</a> on the AWS website.</p>
+<p>For additional information, see <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html" target="_blank" rel="noopener">Troubleshooting AWS CloudFormation</a>.</p>
 </div>
 <div class="paragraph">
 <p><strong>Q.</strong> I encountered a size limitation error when I deployed the AWS CloudFormation templates.</p>
 </div>
 <div class="paragraph">
-<p><strong>A.</strong> We recommend that you launch the Quick Start templates from the links in this guide or from another S3 bucket. If you deploy the templates from a local copy on your computer or from a location other than an S3 bucket, you might encounter template size limitations. For more information about AWS CloudFormation quotas, see the <a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html" target="_blank" rel="noopener">AWS documentation</a>.</p>
+<p><strong>A.</strong> We recommend that you launch the Quick Start templates from the links in this guide or from another S3 bucket. If you deploy the templates from a local copy on your computer, or from a location other than an S3 bucket, you might encounter template size limitations. For more information, see <a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html" target="_blank" rel="noopener">AWS CloudFormation quotas</a>.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_additional_resources">Additional Resources</h2>
+<h2 id="_additional_resources">Additional resources</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p><strong>AWS services</strong></p>
@@ -2039,16 +2026,16 @@ When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, 
 <div class="ulist">
 <ul>
 <li>
-<p>Amazon EC2<br>
-<a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html" class="bare">http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html</a></p>
+<p><a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html" target="_blank" rel="noopener">Amazon EC2</a></p>
 </li>
 <li>
-<p>AWS CloudFormation<br>
-<a href="https://aws.amazon.com/documentation/cloudformation/" class="bare">https://aws.amazon.com/documentation/cloudformation/</a></p>
+<p><a href="https://aws.amazon.com/documentation/cloudformation/" target="_blank" rel="noopener">AWS CloudFormation</a></p>
 </li>
 <li>
-<p>Amazon VPC<br>
-<a href="https://aws.amazon.com/documentation/vpc/" class="bare">https://aws.amazon.com/documentation/vpc/</a></p>
+<p><a href="https://aws.amazon.com/documentation/vpc/" target="_blank" rel="noopener">Amazon VPC</a></p>
+</li>
+<li>
+<p><a href="https://aws.amazon.com/quickstart/" target="_blank" rel="noopener">AWS Quick Start deployments</a></p>
 </li>
 </ul>
 </div>
@@ -2058,27 +2045,13 @@ When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, 
 <div class="ulist">
 <ul>
 <li>
-<p>IBM blog<br>
-<a href="http://ibm.biz/mqawsquickstartblog" class="bare">http://ibm.biz/mqawsquickstartblog</a></p>
+<p><a href="http://ibm.biz/mqawsquickstartblog" target="_blank" rel="noopener">IBM blog</a></p>
 </li>
 <li>
-<p>MQ on Cloud resources<br>
-<a href="https://developer.ibm.com/messaging/mq-on-cloud/" class="bare">https://developer.ibm.com/messaging/mq-on-cloud/</a></p>
+<p><a href="https://developer.ibm.com/messaging/mq-on-cloud/" target="_blank" rel="noopener">IBM MQ resources</a></p>
 </li>
 <li>
-<p>IBM MQ downloads<br>
-<a href="https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867" class="bare">https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><strong>Quick Start reference deployments</strong></p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>AWS Quick Start home page<br>
-<a href="https://aws.amazon.com/quickstart/" class="bare">https://aws.amazon.com/quickstart/</a></p>
+<p><a href="https://www.ibm.com/account/reg/us-en/subscribe?formid=urx-17867" target="_blank" rel="noopener">IBM MQ downloads</a></p>
 </li>
 </ul>
 </div>
@@ -2109,11 +2082,11 @@ the templates and scripts for this Quick Start, to post your comments,
 and to share your customizations with others.</p>
 </div>
 <hr>
-<div class="paragraph">
-<p>© 2020, Amazon Web Services Inc., or its affiliates, and IBM. All rights reserved.</p>
 </div>
-<div class="sect3">
-<h4 id="_notices">Notices</h4>
+</div>
+<div class="sect1">
+<h2 id="_notices">Notices</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>This document is provided for informational purposes only. It represents AWS’s current product offerings and practices as of the date of issue of this document, which are subject to change without notice. Customers are responsible for making their own independent assessment of the information in this document and any use of AWS’s products or services, each of which is provided “as is” without warranty of any kind, whether expressed or implied. This document does not create any warranties, representations, contractual commitments, conditions, or assurances from AWS, its affiliates, suppliers, or licensors. The responsibilities and liabilities of AWS to its customers are controlled by AWS agreements, and this document is not part of, nor does it modify, any agreement between AWS and its customers.</p>
 </div>
@@ -2123,11 +2096,10 @@ and to share your customizations with others.</p>
 </div>
 </div>
 </div>
-</div>
-<div id="footer">
-<div id="footer-text">
-Last updated 2020-09-04 21:20:26 UTC
-</div>
-</div>
+<p class="footer-text">
+<!-- We can use document attributes: -->
+<!-- Generated with Asciidoctor v2.0.10. -->
+<a href="https://aws.amazon.com/privacy/">Privacy</a> | <a href="https://aws.amazon.com/terms/">Site terms</a> | &copy; 2020, Amazon Web Services, Inc. or its affiliates and IBM. All rights reserved.
+</p>
 </body>
 </html>
