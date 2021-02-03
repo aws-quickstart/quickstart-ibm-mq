@@ -11,6 +11,7 @@
 :template_aws_iam_policy:
 :template_aws_iam_role:
 :template_cloudformation:
+:template_deterministic_ec2_instances:
 :template_ec2:
 :template_efs:
 :template_elasticloadbalancing:
