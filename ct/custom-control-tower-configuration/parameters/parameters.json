@@ -1,0 +1,77 @@
+[
+    {
+        "ParameterKey":"AdminConsoleAccessCIDR",
+        "ParameterValue":"10.0.0.0/16"
+    },
+    {
+        "ParameterKey": "AdminRemoteAccessCIDR",
+        "ParameterValue": "10.0.0.0/16"
+    },
+    {
+        "ParameterKey": "AvailabilityZones",
+        "ParameterValue": [
+            "us-east-1a",
+            "us-east-1b"
+          ]
+    },
+    {
+        "ParameterKey": "BastionAMIOS",
+        "ParameterValue": "Ubuntu-Server-20.04-LTS-HVM"
+    },
+    {
+        "ParameterKey": "ClientAppAccessCIDR",
+        "ParameterValue": "10.0.0.0/16"
+    },
+    {
+        "ParameterKey": "KeyPairName",
+        "ParameterValue": "aws-qs-tc-all"
+    },
+    {
+        "ParameterKey": "LicenseAgreement",
+        "ParameterValue": "I agree"
+    },
+    {
+        "ParameterKey": "LicenseS3Bucket",
+        "ParameterValue": ""
+    },
+    {
+        "ParameterKey": "LicenseS3KeyPrefix",
+        "ParameterValue": ""
+    },
+    {
+        "ParameterKey": "MQAdminPassword",
+        "ParameterValue": "eskxf-h4jP"
+    },
+    {
+        "ParameterKey": "MQAppPassword",
+        "ParameterValue": "eskxf-h4jP"
+    },
+    {
+        "ParameterKey":"MQConsolePassword",
+        "ParameterValue":"eskxf-h4jP"
+    },
+    {
+        "ParameterKey":"MQConsoleUsername",
+        "ParameterValue":"mqconsoleadmin"
+    },
+{
+        "ParameterKey":"MQInstanceName",
+        "ParameterValue":"ct-ibm-mq"
+    },
+    {
+        "ParameterKey": "MQOwner",
+        "ParameterValue": "ct-ibm"
+    },
+    {
+        "ParameterKey":"QueueManagerName",
+        "ParameterValue":"QM1"
+    },
+    {
+        "ParameterKey":"QSS3BucketName",
+        "ParameterValue":"aws-quickstart"
+    },
+    {
+        "ParameterKey":"QSS3BucketRegion",
+        "ParameterValue":"us-east-1"
+    }
+]
