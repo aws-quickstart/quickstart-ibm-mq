@@ -584,4 +584,3 @@ Outputs:
   ReadMeInfo:
     Description: 'For more information and details visit:'
     Value: https://aws.amazon.com/quickstart/architecture/ibm-mq/
-...
