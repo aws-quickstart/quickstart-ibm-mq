@@ -1,6 +1,6 @@
 
-=== Parameters for launching into a new VPC
-include::ibm-mq-master.adoc[]
-
 === Parameters for launching into an existing VPC
 include::ibm-mq.adoc[]
+
+=== Parameters for launching into a new VPC
+include::ibm-mq-master.adoc[]
