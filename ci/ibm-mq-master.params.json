@@ -1,0 +1,66 @@
+[
+  {
+    "ParameterKey": "AvailabilityZones",
+    "ParameterValue": "$[taskcat_genaz_2]"
+  },
+  {
+    "ParameterKey": "AdminRemoteAccessCIDR",
+    "ParameterValue": "10.0.0.0/16"
+  },
+  {
+    "ParameterKey": "AdminConsoleAccessCIDR",
+    "ParameterValue": "10.0.0.0/16"
+  },
+  {
+    "ParameterKey": "ClientAppAccessCIDR",
+    "ParameterValue": "10.0.0.0/16"
+  },
+  {
+    "ParameterKey": "KeyPairName",
+    "ParameterValue": "$[alfred_getkeypair]"
+  },
+  {
+    "ParameterKey": "BastionAMIOS",
+    "ParameterValue": "Ubuntu-Server-20.04-LTS-HVM"
+  },
+  {
+    "ParameterKey": "LicenseAgreement",
+    "ParameterValue": "I agree"
+  },
+  {
+    "ParameterKey": "LicenseS3Bucket",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "LicenseS3KeyPrefix",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "MQConsoleUsername",
+    "ParameterValue": "mqconsoleadmin"
+  },
+  {
+    "ParameterKey": "MQConsolePassword",
+    "ParameterValue": "$[alfred_genpass_10]"
+  },
+  {
+    "ParameterKey": "MQAdminPassword",
+    "ParameterValue": "$[alfred_genpass_10]"
+  },
+  {
+    "ParameterKey": "MQAppPassword",
+    "ParameterValue": "$[alfred_genpass_10]"
+  },
+  {
+    "ParameterKey": "MQOwner",
+    "ParameterValue": "taskcat-ibm"
+  },
+  {
+    "ParameterKey": "MQInstanceName",
+    "ParameterValue": "taskcat-ibm-mq"
+  },
+  {
+    "ParameterKey": "QueueManagerName",
+    "ParameterValue": "QM1"
+  }
+]

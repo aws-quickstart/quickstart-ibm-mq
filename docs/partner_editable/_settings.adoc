@@ -13,3 +13,5 @@
 // Additional content will be auto-generated based on these attributes.
 // :marketplace_subscription:
 // :marketplace_listing_url: https://example.com/
+// Uncomment the following attribute if you are deploying AWS Control Tower. 
+:control_tower:

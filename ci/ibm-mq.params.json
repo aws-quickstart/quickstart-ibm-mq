@@ -1,0 +1,94 @@
+[
+  {
+    "ParameterKey": "VPCID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PrivateSubnet1ID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PrivateSubnet2ID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PublicSubnet1ID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PublicSubnet2ID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "PublicSubnet1CIDR",
+    "ParameterValue": "0.0.0.0/0"
+  },
+  {
+    "ParameterKey": "PublicSubnet2CIDR",
+    "ParameterValue": "0.0.0.0/0"
+  },
+  {
+    "ParameterKey": "PrivateSubnet1CIDR",
+    "ParameterValue": "10.0.0.0/16"
+  },
+  {
+    "ParameterKey": "PrivateSubnet2CIDR",
+    "ParameterValue": "10.0.0.0/16"
+  },
+  {
+    "ParameterKey": "BastionSecurityGroupID",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "QSS3BucketName",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "QueueManagerName",
+    "ParameterValue": "taskcat"
+  },
+  {
+    "ParameterKey": "LicenseAgreement",
+    "ParameterValue": "I agree"
+  },
+  {
+    "ParameterKey": "LicenseS3Bucket",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "LicenseS3KeyPrefix",
+    "ParameterValue": ""
+  },
+  {
+    "ParameterKey": "MQConsoleUsername",
+    "ParameterValue": "mqconsoleadmin"
+  },
+  {
+    "ParameterKey": "MQConsolePassword",
+    "ParameterValue": "$[taskcat_genpass_8A]"
+  },
+  {
+    "ParameterKey": "MQAdminPassword",
+    "ParameterValue": "$[taskcat_genpass_8A]"
+  },
+  {
+    "ParameterKey": "MQAppPassword",
+    "ParameterValue": "$[taskcat_genpass_8A]"
+  },
+  {
+    "ParameterKey": "MQOwner",
+    "ParameterValue": "taskcat-ibm"
+  },
+  {
+    "ParameterKey": "MQInstanceName",
+    "ParameterValue": "taskcat-ibm-mq"
+  },
+  {
+    "ParameterKey": "QueueManagerName",
+    "ParameterValue": "QM1"
+  },
+  {
+    "ParameterKey": "QSS3BucketName",
+    "ParameterValue": "ibm-mq-quickstart"
+  }
+]
