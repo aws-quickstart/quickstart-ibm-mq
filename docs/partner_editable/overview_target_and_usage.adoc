@@ -1,7 +1,0 @@
-// Replace the content in <>
-// Identify your target audience and explain how/why they would use this Quick Start.
-//Avoid borrowing text from third-party websites (copying text from AWS service documentation is fine). Also, avoid marketing-speak, focusing instead on the technical aspect.
-
-This Quick Start reference deployment guide provides step-by-step instructions for deploying {partner-product-short-name} server on the AWS Cloud.
-
-This Quick Start is for IT infrastructure personnel and system administrators who require guidance on how to configure, deploy, and run an IBM MQ server on AWS. It deploys IBM MQ queue manager (version 9.2) in an environment that's designed to be secure and highly available.
