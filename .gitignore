@@ -1,2 +1,6 @@
-.DS_Store
 ct/custom-control-tower-configuration.zip
+.idea
+.DS_Store
+.taskcat
+taskcat_outputs
+
