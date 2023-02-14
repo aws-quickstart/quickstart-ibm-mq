@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "This template deploys a WebSphere Liberty operator into a new EKS cluster in a new VPC. (qs-1tdrmii9l)"
+Description: "This template deploys a IBM MQ into a new EKS cluster in a new VPC. (qs-1tss294ep)"
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: Deploy with no application
+    EntrypointName: Deploy IBM MQ in a new VPC
     Order: 1
   LICENSE: Apache License, Version 2.0
   AWS::CloudFormation::Interface:
@@ -76,7 +76,7 @@ Parameters:
       hyphens (-), underscores (_), periods (.), asterisks (*), single quotes ('),
       open parenthesis ((), close parenthesis ()), and forward slashes (/). End the
       prefix with a forward slash.
-    Default: quickstart-ibm-liberty-eks/
+    Default: quickstart-ibm-mq-eks/
   QSS3BucketRegion:
     Type: String
     Description: >-
@@ -92,7 +92,7 @@ Parameters:
       arn:aws:iam::012345678910:user/otherid@example.com.
     Type: String
   AvailabilityZones:
-    Description: Availability Zones to use for the subnet in the new VPC. You must select 2 Availability Zones.
+    Description: Availability Zones to use for the subnet in the new VPC. You must select 3 Availability Zones.
     Type: List<AWS::EC2::AvailabilityZone::Name>
 
 Conditions:
@@ -100,17 +100,17 @@ Conditions:
   SetupECR: !Equals [!Ref SetupNewECR, "Yes"]
 
 Resources:
-  IBMLibertyIAMRoleStack:
+  IBMMQIAMRoleStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-iam-role.template.yaml
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq-iam-role.template.yaml
         - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
           S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
       Parameters:
-        RoleName: !Join [ "", [ "ibm-liberty-", !Ref EKSClusterName, "-", !Ref "AWS::Region", "-role" ] ]
+        RoleName: !Join [ "", [ "ibm-mq-", !Ref EKSClusterName, "-", !Ref "AWS::Region", "-role" ] ]
 
-  IBMLibertyVPCStack:
+  IBMMQVPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub
@@ -119,52 +119,55 @@ Resources:
           S3Region: !If [ UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion ]
       Parameters:
         AvailabilityZones: !Join [ ',', !Ref AvailabilityZones ]
-        NumberOfAZs: 2
+        NumberOfAZs: 3
         PrivateSubnetATag2: "kubernetes.io/role/internal-elb="
         PublicSubnetTag2: "kubernetes.io/role/elb="
 
-  IBMLibertyBootNodeStack:
+  IBMMQBootNodeStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-ec2-bootnode.template.yaml
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq-ec2-bootnode.template.yaml
         - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
           S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
       Parameters:
-        RoleName: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleName
+        RoleName: !GetAtt IBMMQIAMRoleStack.Outputs.RoleName
         BootNodeName: !Join ["-", [!Ref EKSClusterName, "bootnode"]]
         EKSClusterName: !Ref EKSClusterName
-        PublicSubnet1ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet1ID'
-        PublicSubnet2ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet2ID'
+        PublicSubnet1ID: !GetAtt 'IBMMQVPCStack.Outputs.PublicSubnet1ID'
+        PublicSubnet2ID: !GetAtt 'IBMMQVPCStack.Outputs.PublicSubnet2ID'
+        PublicSubnet3ID: !GetAtt 'IBMMQVPCStack.Outputs.PublicSubnet3ID'
         AvailabilityZone1: !Select [0, !Ref AvailabilityZones]
         AvailabilityZone2: !Select [1, !Ref AvailabilityZones]
-        PrivateSubnet1ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet1AID'
-        PrivateSubnet2ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet2AID'
+        AvailabilityZone3: !Select [1, !Ref AvailabilityZones]
+        PrivateSubnet1ID: !GetAtt 'IBMMQVPCStack.Outputs.PrivateSubnet1AID'
+        PrivateSubnet2ID: !GetAtt 'IBMMQVPCStack.Outputs.PrivateSubnet2AID'
+        PrivateSubnet3ID: !GetAtt 'IBMMQVPCStack.Outputs.PrivateSubnet3AID'
 
-  IBMLibertyEKSClusterStack:
+  IBMMQEKSClusterStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-create-eks.template.yaml
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq-create-eks.template.yaml
         - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
           S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
       Parameters:
-        BootNodeInstanceId: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceId
+        BootNodeInstanceId: !GetAtt IBMMQBootNodeStack.Outputs.InstanceId
         EKSClusterName: !Ref EKSClusterName
         LaunchType: "EC2"
 
-  IBMLibertyWorkloadStack:
+  IBMMQWorkloadStack:
     Type: 'AWS::CloudFormation::Stack'
     DependsOn:
-      - IBMLibertyEKSClusterStack
+      - IBMMQEKSClusterStack
     Properties:
       TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-eks-workload.template.yaml
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq-eks-workload.template.yaml
         - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
           S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
       Parameters:
-        BootNodeInstanceId: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceId
-        BootNodeUser: !GetAtt IBMLibertyBootNodeStack.Outputs.User
+        BootNodeInstanceId: !GetAtt IBMMQBootNodeStack.Outputs.InstanceId
+        BootNodeUser: !GetAtt IBMMQBootNodeStack.Outputs.User
         EKSClusterName: !Ref EKSClusterName
         LaunchType: "EC2"
         DeployApp: None
@@ -174,14 +177,14 @@ Resources:
           - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
         AdditionalEKSAdminArns: !Ref AdditionalEKSAdminArns
 
-  IBMLibertyECRStack:
+  IBMMQECRStack:
     Type: 'AWS::CloudFormation::Stack'
     Condition: SetupECR
     DependsOn:
-      - IBMLibertyEKSClusterStack
+      - IBMMQEKSClusterStack
     Properties:
       TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-create-ecr.template.yaml
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq-create-ecr.template.yaml
         - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
           S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
       Parameters:
@@ -194,48 +197,39 @@ Outputs:
   ECRName:
     Condition: SetupECR
     Description: ECR name
-    Value: !GetAtt IBMLibertyECRStack.Outputs.ECRName
+    Value: !GetAtt IBMMQECRStack.Outputs.ECRName
   ECRArn:
     Condition: SetupECR
     Description: ECR ARN
-    Value: !GetAtt IBMLibertyECRStack.Outputs.ECRArn
+    Value: !GetAtt IBMMQECRStack.Outputs.ECRArn
   ECRRepositoryUri:
     Condition: SetupECR
     Description: ECR URI
-    Value: !GetAtt IBMLibertyECRStack.Outputs.ECRRepositoryUri
+    Value: !GetAtt IBMMQECRStack.Outputs.ECRRepositoryUri
   BootNodeInstanceId:
     Description: Boot node EC2 instance ID
-    Value: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceId
+    Value: !GetAtt IBMMQBootNodeStack.Outputs.InstanceId
   BootNodeName:
     Description: Boot node name
-    Value: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceName
+    Value: !GetAtt IBMMQBootNodeStack.Outputs.InstanceName
   InstallLogsLocation:
     Description: Install logs location (on boot node)
     Value: "/opt/ibm/install.log"
   CloudWatchInstallLogs:
     Description: Installation logs (in CloudWatch)
-    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.CloudWatchInstallLogs
+    Value: !GetAtt IBMMQWorkloadStack.Outputs.CloudWatchInstallLogs
   DeploymentProperties:
     Description: Deployment properties
-    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.DeploymentProperties
-  LibertyAppDeployYaml:
-    Description: CR (Custom Resource) to deploy for WebSphereLibertyApplication
-    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.LibertyAppDeployYaml
-  LibertyAppDeployServiceYaml:
-    Description: CR (Custom Resource) to enable HTTPS access to the WebSphereLibertyApplication
-    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.LibertyAppDeployServiceYaml
-  WLOVersion:
-    Description: The installed version of WebSphere Liberty Operator
-    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.WLOVersion
+    Value: !GetAtt IBMMQWorkloadStack.Outputs.DeploymentProperties
   EKSClusterVpcId:
     Description: The ID of the VPC which was created for your EKS cluster
-    Value: !GetAtt IBMLibertyVPCStack.Outputs.VPCID
+    Value: !GetAtt IBMMQVPCStack.Outputs.VPCID
   EKSClusterVpcUrl:
     Description: URL to manage the VPC which was created for your EKS cluster
-    Value: !Join ["", ["https://", !Ref "AWS::Region", ".console.aws.amazon.com/vpc/home?region=", !Ref "AWS::Region", "#VpcDetails:VpcId=", !GetAtt IBMLibertyVPCStack.Outputs.VPCID]]
+    Value: !Join ["", ["https://", !Ref "AWS::Region", ".console.aws.amazon.com/vpc/home?region=", !Ref "AWS::Region", "#VpcDetails:VpcId=", !GetAtt IBMMQVPCStack.Outputs.VPCID]]
   IAMRoleName:
     Description: Role name to manage EKS
-    Value: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleName
+    Value: !GetAtt IBMMQIAMRoleStack.Outputs.RoleName
   IAMRoleUrl:
     Description: The URL to view the IAM role that was used to create the EKS cluster
-    Value: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleURL
+    Value: !GetAtt IBMMQIAMRoleStack.Outputs.RoleURL

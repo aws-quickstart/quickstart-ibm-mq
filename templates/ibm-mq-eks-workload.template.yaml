@@ -1,0 +1,150 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This template installs IBM MQ on EKS cluster. (qs-1tss294hd)
+Metadata:
+  LICENSE: Apache License, Version 2.0
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: EKS configuration
+        Parameters:
+          - EKSClusterName
+          - AdditionalEKSAdminArns
+          - LaunchType
+      - Label:
+          default: Application configuration
+        Parameters:
+          - DeployApp
+          - AppContainerImageURL
+          - AppName
+          - AppNamespace
+          - AppReplicas
+          - QSS3CodeLocation
+      - Label:
+          default: License
+        Parameters:
+          - LicenseEdition
+          - LicenseProductEntitlementSource
+      - Label:
+          default: Boot node configuration
+        Parameters:
+          - BootNodeInstanceId
+          - BootNodeUser
+      - Label:
+          default: Other configuration
+        Parameters:
+          - MainStackName
+    ParameterLabels:
+      AppContainerImageURL:
+        default: Custom application image name
+      AppName:
+        default: Application name
+      AppNamespace:
+        default: EKS namespace to deploy the app
+      AppReplicas:
+        default: Number of app replicas
+      DeployApp:
+        default: Deploy application
+      EKSClusterName:
+        default: EKS cluster name
+      LicenseEdition:
+        default: Edition
+      LicenseProductEntitlementSource:
+        default: Product entitlement source
+      BootNodeInstanceId:
+        default: Boot node
+      BootNodeUser:
+        default: Boot node login user
+      AdditionalEKSAdminArns:
+        default: Additional EKS administrator ARNs (IAM users or roles)
+      QSS3CodeLocation:
+        default: Quick Start S3 location
+      MainStackName:
+        default: Main stack name
+Parameters:
+  DeployApp:
+    Type: String
+    AllowedValues: [ "Sample", "Custom", None ]
+    Default: "Sample"
+    Description: Type of application to deploy. If "None", deploy no application. If "Sample" or "Custom", also see the "License" parameters.
+  AppNamespace:
+    Type: String
+    Default: "default"
+    Description: Namespace in the EKS cluster where app will be deployed.
+  MQAppPassword:
+    Type: String
+    NoEcho: true
+    Description: App password for IBM MQ deployment
+  MQAdminPassword:
+    Type: String
+    NoEcho: true
+    Description: Admin password for IBM MQ deployment
+  AppReplicas:
+    Type: Number
+    MinValue: 1
+    MaxValue: 20
+    Default: 2
+    Description: Number of app replicas. Ignore this parameter if DeployApp=None.
+  BootNodeInstanceId:
+    Type: AWS::EC2::Instance::Id
+    Description: Boot Node Instance Id
+  BootNodeUser:
+    Type: String
+    Default: "ec2-user"
+    Description: Boot Node User
+  EKSClusterName:
+    Type: String
+    Description: Name for the new cluster (required).
+  LaunchType:
+    Type: String
+    AllowedValues: [ EC2 ]
+    Default: EC2
+    Description: Select which launch type to use for your EKS cluster (required).
+  QSS3CodeLocation:
+    Type: String
+    Description: The S3 location for your copy of the Quick Start assets.
+  AdditionalEKSAdminArns:
+    Default: ""
+    Description: >-
+      (Optional) A comma-delimited list of IAM user or role Amazon Resource Names (ARNs)
+      to be granted administrative access to the Amazon EKS cluster. For example, grant
+      access to two users with their ARNs: "arn:aws:iam::012345678910:user/user1@example.com,
+      arn:aws:iam::012345678910:user/user2@example.com"
+    Type: String
+  MainStackName:
+    Type: String
+    Description: The name of the main (parent) stack. This is used to title the CloudWatch log group to which installation output is written.
+
+Conditions:
+  DeployAppSet: !Not [!Equals [!Ref DeployApp, None]]
+
+Resources:
+  InstallWLO:
+    Type: AWS::SSM::Association
+    Properties:
+      Name: AWS-RunShellScript
+      Targets:
+      - Key: InstanceIds
+        Values:
+        - !Ref BootNodeInstanceId
+      Parameters:
+        commands:
+        - !Sub |
+          #!/bin/bash
+          aws s3 cp ${QSS3CodeLocation} . --recursive
+
+          echo "deploying IBM MQ ... update the steps here"
+
+        workingDirectory:
+        - /opt/ibm
+      WaitForSuccessTimeoutSeconds: 1200
+
+Outputs:
+  EKSName:
+    Description: EKS Cluster name
+    Value: !Ref EKSClusterName
+  CloudWatchInstallLogs:
+    Description: CloudWatch Install Logs
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName"]]
+  DeploymentProperties:
+    Description: Deployment properties
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName","/log-events/deployment.properties"]]
