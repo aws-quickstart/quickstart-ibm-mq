@@ -61,11 +61,6 @@ Metadata:
       MainStackName:
         default: Main stack name
 Parameters:
-  DeployApp:
-    Type: String
-    AllowedValues: [ "Sample", "Custom", None ]
-    Default: "Sample"
-    Description: Type of application to deploy. If "None", deploy no application. If "Sample" or "Custom", also see the "License" parameters.
   AppNamespace:
     Type: String
     Default: "default"
@@ -78,12 +73,6 @@ Parameters:
     Type: String
     NoEcho: true
     Description: Admin password for IBM MQ deployment
-  AppReplicas:
-    Type: Number
-    MinValue: 1
-    MaxValue: 20
-    Default: 2
-    Description: Number of app replicas. Ignore this parameter if DeployApp=None.
   BootNodeInstanceId:
     Type: AWS::EC2::Instance::Id
     Description: Boot Node Instance Id
@@ -113,9 +102,6 @@ Parameters:
   MainStackName:
     Type: String
     Description: The name of the main (parent) stack. This is used to title the CloudWatch log group to which installation output is written.
-
-Conditions:
-  DeployAppSet: !Not [!Equals [!Ref DeployApp, None]]
 
 Resources:
   InstallWLO:

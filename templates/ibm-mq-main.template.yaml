@@ -44,6 +44,18 @@ Parameters:
     MaxLength: 250
     AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
     ConstraintDescription: The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
+  AppNamespace:
+    Type: String
+    Default: "default"
+    Description: Namespace in the EKS cluster where app will be deployed.
+  MQAppPassword:
+    Type: String
+    NoEcho: true
+    Description: App password for IBM MQ deployment
+  MQAdminPassword:
+    Type: String
+    NoEcho: true
+    Description: Admin password for IBM MQ deployment
   SetupNewECR:
     Type: String
     AllowedValues: ["Yes", "No"]
@@ -172,6 +184,9 @@ Resources:
         LaunchType: "EC2"
         DeployApp: None
         MainStackName: !Ref "AWS::StackName"
+        AppNamespace: !Ref AppNamespace
+        MQAdminPassword: !Ref MQAdminPassword
+        MQAppPassword: !Ref MQAppPassword
         QSS3CodeLocation: !Sub
           - s3://${S3Bucket}/${QSS3KeyPrefix}
           - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]

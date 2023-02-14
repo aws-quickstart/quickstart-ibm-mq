@@ -28,6 +28,8 @@ tests:
       QSS3BucketRegion: $[taskcat_current_region]
       QSS3KeyPrefix: $[taskcat_project_name]/
       AvailabilityZones: $[taskcat_genaz_3]
+      MQAppPassword: $[taskcat_genpass_10]
+      MQAdminPassword: $[taskcat_genpass_10]
     regions:
       - eu-west-2
       - eu-west-3
