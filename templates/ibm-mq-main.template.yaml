@@ -1,466 +1,241 @@
----
-# © Copyright IBM Corporation 2017, 2020
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-AWSTemplateFormatVersion: '2010-09-09'
-Description: This master template creates a VPC infrastructure for a multi-AZ, multi-tier
-  deployment of IBM MQ 9.2.0 on AWS EC2, with EFS. It deploys a VPC with bastions
-  and the IBM MQ solution. The IBM MQ solution is configured to use an EFS for persistant
-  storage of the MQ volume. **WARNING** This template creates EC2 instances and related
-  resources. You will be billed for the AWS resources used if you create a stack from
-  this template. IBM MQ is licensed seperatley, please review the terms and conditions
-  here (https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&li_formnum=L-APIG-AZYF4X)
-  for further details. (qs-1nhqnkuin)
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "This template deploys a WebSphere Liberty operator into a new EKS cluster in a new VPC. (qs-1tdrmii9l)"
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: "Parameters for launching into a new VPC"
-    OptionalParameters:
-      - LicenseS3Bucket
-      - LicenseS3KeyPrefix
+    EntrypointName: Deploy with no application
+    Order: 1
+  LICENSE: Apache License, Version 2.0
   AWS::CloudFormation::Interface:
     ParameterGroups:
-    - Label:
-        default: Software License Agreement
-      Parameters:
-      - LicenseAgreement
-    - Label:
-        default: VPC & Bastion Configuration
-      Parameters:
-      - AvailabilityZones
-      - AdminRemoteAccessCIDR
-      - AdminConsoleAccessCIDR
-      - ClientAppAccessCIDR
-      - KeyPairName
-      - BastionAMIOS
-      - BastionInstanceType
-    - Label:
-        default: IBM MQ Instance Configuration
-      Parameters:
-      - MQOwner
-      - MQInstanceName
-      - MQInstanceType
-      - QueueManagerName
-      - MQConsoleUsername
-      - MQConsolePassword
-      - MQAdminPassword
-      - MQAppPassword
-    - Label:
-        default: IBM MQ License
-      Parameters:
-      - LicenseS3Bucket
-      - LicenseS3KeyPrefix
-    - Label:
-        default: AWS Quick Start Configuration
-      Parameters:
-      - QSS3BucketName
-      - QSS3BucketRegion
-      - QSS3KeyPrefix
+      - Label:
+          default: EKS configuration
+        Parameters:
+          - EKSClusterName
+          - SetupNewECR
+          - AdditionalEKSAdminArns
+          - AvailabilityZones
+      - Label:
+          default: AWS Partner Solution configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+          - QSS3BucketRegion
     ParameterLabels:
-      AdminConsoleAccessCIDR:
-        default: Allowed Admin Web Console External Access CIDR
-      AdminRemoteAccessCIDR:
-        default: Allowed Bastion External Access CIDR
+      EKSClusterName:
+        default: EKS cluster name
+      QSS3BucketName:
+        default: Partner Solution S3 bucket name
+      QSS3BucketRegion:
+        default: Partner Solution S3 bucket Region
+      QSS3KeyPrefix:
+        default: Partner Solution S3 key prefix
+      AdditionalEKSAdminArns:
+        default: Additional EKS administrator ARNs
+      SetupNewECR:
+        default: Set up new ECR
       AvailabilityZones:
         default: Availability Zones
-      BastionAMIOS:
-        default: Bastion AMI Operating System
-      BastionInstanceType:
-        default: Bastion Instance Type
-      ClientAppAccessCIDR:
-        default: Allowed Client Application External Access CIDR
-      MQInstanceName:
-        default: IBM MQ Instance Name
-      MQInstanceType:
-        default: IBM MQ Instance Type
-      KeyPairName:
-        default: Key Pair Name
-      LicenseAgreement:
-        default: License Agreement
-      LicenseS3Bucket:
-        default: IBM MQ License S3 Bucket Name
-      LicenseS3KeyPrefix:
-        default: IBM MQ License S3 Key Prefix Name
-      MQConsoleUsername:
-        default: IBM MQ Web Console Admin Username
-      MQConsolePassword:
-        default: IBM MQ Web Console Admin Password
-      MQAdminPassword:
-        default: mqadmin Password
-      MQAppPassword:
-        default: mqapp Password
-      MQOwner:
-        default: IBM MQ Instance Owner
-      QueueManagerName:
-        default: Queue Manager Name
-      QSS3BucketName:
-        default: Quick Start S3 Bucket Name
-      QSS3BucketRegion:
-        default: Quick Start S3 bucket Region
-      QSS3KeyPrefix:
-        default: Quick Start S3 Key Prefix
+
 Parameters:
-  AdminRemoteAccessCIDR:
-    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
-    Description: The CIDR IP range that is permitted to access the IBM MQ server via
-      the Bastion Server. We recommend that you set this value to a trusted IP range.
+  EKSClusterName:
     Type: String
-  AdminConsoleAccessCIDR:
-    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
-    Description: The CIDR IP range that is permitted to access the IBM MQ Web Console
-      via the ELB. We recommend that you set this value to a trusted IP range.
+    Description: Name of the new EKS cluster (2-250 characters). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
+    MinLength: 2
+    MaxLength: 250
+    AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
+    ConstraintDescription: The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
+  SetupNewECR:
     Type: String
-  AvailabilityZones:
-    Description: List of Availability Zones to use for the subnets in the VPC. Only
-      two Availability Zones are used for this deployment, and the logical order of
-      your selections is preserved.
-    Type: List<AWS::EC2::AvailabilityZone::Name>
-  BastionAMIOS:
-    AllowedValues:
-      - Amazon-Linux2-HVM
-      - CentOS-7-HVM
-      - Ubuntu-Server-20.04-LTS-HVM
-      - SUSE-SLES-15-HVM
-    Default: Amazon-Linux2-HVM
-    Description: The Linux distribution for the AMI to be used for the bastion instances
-    Type: String
-  BastionInstanceType:
-    AllowedValues:
-    - t2.nano
-    - t2.micro
-    - t2.small
-    - t2.medium
-    - t2.large
-    - m3.large
-    - m3.xlarge
-    - m3.2xlarge
-    - m4.large
-    - m4.xlarge
-    - m4.2xlarge
-    - m4.4xlarge
-    Default: t2.micro
-    Description: Amazon EC2 instance type for the bastion instances
-    Type: String
-  ClientAppAccessCIDR:
-    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
-    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
-    Description: The CIDR IP range that is permitted to allow access for IBM MQ Client
-      Applications. We recommend that you set this value to a trusted IP range.
-    Type: String
-  MQInstanceType:
-    Description: IBM MQ server EC2 instance type
-    Type: String
-    Default: t2.micro
-    AllowedValues:
-    - t1.micro
-    - t2.nano
-    - t2.micro
-    - t2.small
-    - t2.medium
-    - t2.large
-    - m1.small
-    - m1.medium
-    - m1.large
-    - m1.xlarge
-    - m2.xlarge
-    - m2.2xlarge
-    - m2.4xlarge
-    - m3.medium
-    - m3.large
-    - m3.xlarge
-    - m3.2xlarge
-    - m4.large
-    - m4.xlarge
-    - m4.2xlarge
-    - m4.4xlarge
-    - m4.10xlarge
-    - c1.medium
-    - c1.xlarge
-    - c3.large
-    - c3.xlarge
-    - c3.2xlarge
-    - c3.4xlarge
-    - c3.8xlarge
-    - c4.large
-    - c4.xlarge
-    - c4.2xlarge
-    - c4.4xlarge
-    - c4.8xlarge
-    - g2.2xlarge
-    - g2.8xlarge
-    - r3.large
-    - r3.xlarge
-    - r3.2xlarge
-    - r3.4xlarge
-    - r3.8xlarge
-    - i2.xlarge
-    - i2.2xlarge
-    - i2.4xlarge
-    - i2.8xlarge
-    - d2.xlarge
-    - d2.2xlarge
-    - d2.4xlarge
-    - d2.8xlarge
-    - hi1.4xlarge
-    - hs1.8xlarge
-    - cr1.8xlarge
-    - cc2.8xlarge
-    - cg1.4xlarge
-    ConstraintDescription: must be a valid EC2 instance type.
-  QueueManagerName:
-    Description: The name to use for the IBM MQ queue manager. This string can include a maximum of 48 characters, consisting of uppercase letters, numbers, periods (.), underscores (_), and percent signs (%).
-      See the IBM Knowledge Center for naming rules (https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.pro.doc/q003340_.htm).
-    Type: String
-    AllowedPattern: ^[0-9A-Z._%]+([0-9A-Z._\/%]*[0-9A-Z.%])*$
-    MaxLength: 48
-    Default: QM1
-    ConstraintDescription: must be a valid MQ queue manager name.
-  KeyPairName:
-    Description: The name of an existing public/private key pair, which allows you
-      to securely connect to your instance after it launches
-    Type: AWS::EC2::KeyPair::KeyName
-  LicenseAgreement:
-    Description: I have read and agree to the license terms for IBM MQ (https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&li_formnum=L-APIG-AZYF4X).
-    Type: String
-    Default: '-'
-    AllowedValues:
-    - I agree
-    - '-'
-    ConstraintDescription: must answer 'I agree'
-  LicenseS3Bucket:
-    AllowedPattern: ^[0-9a-zA-Z]?([0-9a-zA-Z-]*[0-9a-zA-Z])*$
-    ConstraintDescription: S3 bucket name can include numbers, lowercase letters,
-      uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).
-    Description: S3 bucket name where you store your IBM MQ License file. Leave blank
-      to use 90 day Trial license.
-    Type: String
-    MinLength: 0
-  LicenseS3KeyPrefix:
-    AllowedPattern: ^[0-9a-zA-Z]?([0-9a-zA-Z-/]*[0-9a-zA-Z])*$
-    ConstraintDescription: S3 key prefix can include numbers, lowercase letters, uppercase
-      letters, hyphens (-), and forward slash (/). It cannot start or end with a hyphen
-      (-) or (/).
-    Description: S3 key prefix for the directory your IBM MQ License file is stored.
-      Leave blank to use 90 day Trial license.
-    Type: String
-    MinLength: 0
-  MQConsoleUsername:
-    Description: Admin Username used for accessing Web Console and REST Api
-    Default: mqconsoleadmin
-    Type: String
-  MQConsolePassword:
-    Description: Admin Password to access the MQ Web Console (Min. Length of 8 Characters, Max Length of 12 Characters)
-    Type: String
-    MinLength: 8
-    MaxLength: 12
-    NoEcho: true
-  MQAdminPassword:
-    Description: Password for predefined mqadmin user, which is used to administer IBM MQ.
-      See the IBM Knowledge Center for information on authority to administer IBM MQ (https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm).
-      This is an 8-12 character string.
-    Type: String
-    MinLength: 8
-    MaxLength: 12
-    NoEcho: true
-  MQAppPassword:
-    Description: Password for predefined mqapp user, which applications use to securely connect to IBM MQ.
-      See the IBM Knowledge Center for details on authorization for applications to use IBM MQ (https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.2.0/com.ibm.mq.sec.doc/q010400_.htm).
-      This is an 8-12 character string.
-    Type: String
-    MinLength: 8
-    MaxLength: 12
-    NoEcho: true
-  MQInstanceName:
-    Description: Name for the IBM MQ instance that is deployed to EC2
-    Type: String
-    Default: ibm-mq
-  MQOwner:
-    Description: Set Owner tag for the IBM MQ instance
-    Default: ibm-mq
-    Type: String
+    AllowedValues: ["Yes", "No"]
+    Default: "Yes"
+    Description: >-
+      Choose No if you do not want to set up a new private ECR named <EKS cluster name>-ecr.
   QSS3BucketName:
-    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
-    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
-      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
-      (-).
+    AllowedPattern: ^[0-9a-z]+([0-9a-z-\.]*[0-9a-z])*$
+    ConstraintDescription: >-
+      The S3 bucket name can include numbers, lowercase letters,
+      and hyphens (-), but it cannot start or end with a hyphen.
     Default: aws-quickstart
-    Description: S3 bucket name for the Quick Start assets. This string can include
-      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start
-      or end with a hyphen (-).
-    Type: String
-  QSS3BucketRegion:
-    Default: 'us-east-1'
-    Description: 'The AWS Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When using your own bucket, you must specify this value.'
+    Description: >-
+      Name of the S3 bucket for your copy of the deployment assets. Keep the default
+      name unless you are customizing the template. Changing the name updates code
+      references to point to a new location.
+    MinLength: 3
+    MaxLength: 63
     Type: String
   QSS3KeyPrefix:
-    AllowedPattern: ^[0-9a-zA-Z-/]*$
-    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
-      uppercase letters, hyphens (-), and forward slash (/).
-    Default: quickstart-ibm-mq/
-    Description: S3 key prefix for the Quick Start assets. Quick Start key prefix
-      can include numbers, lowercase letters, uppercase letters, hyphens (-), and
-      forward slash (/).
     Type: String
-Rules:
-  LicenseAgreementRule:
-    Assertions:
-    - Assert:
-        Fn::Contains:
-        - - I agree
-        - Ref: LicenseAgreement
-      AssertDescription: User must agree to the terms of the license agreement.
-  EFSSupportedRegionRule:
-    Assertions:
-    - Assert:
-        Fn::Contains:
-        - - us-east-1
-          - us-east-2
-          - us-west-1
-          - us-west-2
-          - ca-central-1
-          - eu-central-1
-          - eu-west-1
-          - eu-west-2
-          - eu-west-3
-          - ap-southeast-1
-          - ap-southeast-2
-          - ap-northeast-1
-          - ap-northeast-2
-          - ap-south-1
-        - !Ref AWS::Region
-      AssertDescription: This Quick Start utilizes Amazon EFS. Please refer to AWS Region table and launch the stack in one of the regions where EFS is supported.
+    Description: >-
+      S3 key prefix that is used to simulate a folder for your copy of the
+      deployment assets. Keep the default prefix unless you are customizing
+      the template. Changing the prefix updates code references to point to
+      a new location.
+    AllowedPattern: ^([0-9a-zA-Z!-_\.\*'\(\)/]+/)*$
+    ConstraintDescription: >-
+      The S3 key prefix can include numbers, lowercase letters, uppercase letters,
+      hyphens (-), underscores (_), periods (.), asterisks (*), single quotes ('),
+      open parenthesis ((), close parenthesis ()), and forward slashes (/). End the
+      prefix with a forward slash.
+    Default: quickstart-ibm-liberty-eks/
+  QSS3BucketRegion:
+    Type: String
+    Description: >-
+      AWS Region where the S3 bucket (QSS3BucketName) is hosted. Keep
+      the default Region unless you are customizing the template. Changing the Region
+      updates code references to point to a new location. When using your own bucket,
+      specify the Region.
+    Default: us-east-1
+  AdditionalEKSAdminArns:
+    Default: ""
+    Description: >-
+      (Optional) One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster. By default, you can access the EKS cluster from boot node only. To enter multiple ARNs, use a comma-delimited list. Example: arn:aws:iam::012345678910:user/myid@example.com,
+      arn:aws:iam::012345678910:user/otherid@example.com.
+    Type: String
+  AvailabilityZones:
+    Description: Availability Zones to use for the subnet in the new VPC. You must select 2 Availability Zones.
+    Type: List<AWS::EC2::AvailabilityZone::Name>
+
 Conditions:
-  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, aws-quickstart]
+  SetupECR: !Equals [!Ref SetupNewECR, "Yes"]
+
 Resources:
-  VPCStack:
+  IBMLibertyIAMRoleStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-iam-role.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        RoleName: !Join [ "", [ "ibm-liberty-", !Ref EKSClusterName, "-", !Ref "AWS::Region", "-role" ] ]
+
+  IBMLibertyVPCStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL:
-        Fn::Sub:
+      TemplateURL: !Sub
         - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template.yaml
-        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+        - S3Bucket: !If [ UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName ]
+          S3Region: !If [ UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion ]
       Parameters:
-        AvailabilityZones:
-          Fn::Join:
-          - ','
-          - Ref: AvailabilityZones
-        NumberOfAZs: '2'
-  BastionStack:
-    DependsOn: VPCStack
-    Type: AWS::CloudFormation::Stack
+        AvailabilityZones: !Join [ ',', !Ref AvailabilityZones ]
+        NumberOfAZs: 2
+        PrivateSubnetATag2: "kubernetes.io/role/internal-elb="
+        PublicSubnetTag2: "kubernetes.io/role/elb="
+
+  IBMLibertyBootNodeStack:
+    Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL:
-        Fn::Sub:
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-linux-bastion/templates/linux-bastion.template
-        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-ec2-bootnode.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
       Parameters:
-        BastionAMIOS:
-          Ref: BastionAMIOS
-        BastionInstanceType:
-          Ref: BastionInstanceType
-        EnableBanner: true
-        KeyPairName:
-          Ref: KeyPairName
-        PublicSubnet1ID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.PublicSubnet1ID
-        PublicSubnet2ID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.PublicSubnet2ID
-        QSS3BucketName: !If [UsingDefaultBucket, !Sub "${QSS3BucketName}-${AWS::Region}",!Ref QSS3BucketName]
-        QSS3BucketRegion: !If [UsingDefaultBucket, !Ref "AWS::Region", !Ref QSS3BucketRegion]
-        QSS3KeyPrefix:
-          Fn::Sub: ${QSS3KeyPrefix}submodules/quickstart-linux-bastion/
-        RemoteAccessCIDR:
-          Ref: AdminRemoteAccessCIDR
-        VPCID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.VPCID
-  MQStack:
-    DependsOn: BastionStack
-    Type: AWS::CloudFormation::Stack
+        RoleName: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleName
+        BootNodeName: !Join ["-", [!Ref EKSClusterName, "bootnode"]]
+        EKSClusterName: !Ref EKSClusterName
+        PublicSubnet1ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet1ID'
+        PublicSubnet2ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet2ID'
+        AvailabilityZone1: !Select [0, !Ref AvailabilityZones]
+        AvailabilityZone2: !Select [1, !Ref AvailabilityZones]
+        PrivateSubnet1ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet1AID'
+        PrivateSubnet2ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet2AID'
+
+  IBMLibertyEKSClusterStack:
+    Type: 'AWS::CloudFormation::Stack'
     Properties:
-      TemplateURL:
-        Fn::Sub:
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq.template
-        - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
-          S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-create-eks.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
       Parameters:
-        AdminConsoleAccessCIDR:
-          Ref: AdminConsoleAccessCIDR
-        BastionSecurityGroupID:
-          Fn::GetAtt:
-          - BastionStack
-          - Outputs.BastionSecurityGroupID
-        ClientAppAccessCIDR:
-          Ref: ClientAppAccessCIDR
-        KeyPairName:
-          Ref: KeyPairName
-        LicenseAgreement:
-          Ref: LicenseAgreement
-        LicenseS3Bucket:
-          Ref: LicenseS3Bucket
-        LicenseS3KeyPrefix:
-          Ref: LicenseS3KeyPrefix
-        MQConsoleUsername:
-          Ref: MQConsoleUsername
-        MQConsolePassword:
-          Ref: MQConsolePassword
-        MQAdminPassword:
-          Ref: MQAdminPassword
-        MQAppPassword:
-          Ref: MQAppPassword
-        MQOwner:
-          Ref: MQOwner
-        MQInstanceName:
-          Ref: MQInstanceName
-        MQInstanceType:
-          Ref: MQInstanceType
-        PrivateSubnet1ID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.PrivateSubnet1AID
-        PrivateSubnet2ID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.PrivateSubnet2AID
-        PublicSubnet1ID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.PublicSubnet1ID
-        PublicSubnet2ID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.PublicSubnet2ID
-        QueueManagerName:
-          Ref: QueueManagerName
-        VPCID:
-          Fn::GetAtt:
-          - VPCStack
-          - Outputs.VPCID
+        BootNodeInstanceId: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceId
+        EKSClusterName: !Ref EKSClusterName
+        LaunchType: "EC2"
+
+  IBMLibertyWorkloadStack:
+    Type: 'AWS::CloudFormation::Stack'
+    DependsOn:
+      - IBMLibertyEKSClusterStack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-eks-workload.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        BootNodeInstanceId: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceId
+        BootNodeUser: !GetAtt IBMLibertyBootNodeStack.Outputs.User
+        EKSClusterName: !Ref EKSClusterName
+        LaunchType: "EC2"
+        DeployApp: None
+        MainStackName: !Ref "AWS::StackName"
+        QSS3CodeLocation: !Sub
+          - s3://${S3Bucket}/${QSS3KeyPrefix}
+          - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+        AdditionalEKSAdminArns: !Ref AdditionalEKSAdminArns
+
+  IBMLibertyECRStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: SetupECR
+    DependsOn:
+      - IBMLibertyEKSClusterStack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-create-ecr.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        ECRName: !Join ["-", [!Ref EKSClusterName, "ecr"]]
+
 Outputs:
-  MQRestApiURL:
-    Description: URL for Elastic Load Balancer to connect to REST API
-    Value: !GetAtt MQStack.Outputs.MQRestApiURL
-  MQConsoleURL:
-    Description: URL for Elastic Load Balancer to connect to MQ Console
-    Value: !GetAtt MQStack.Outputs.MQConsoleURL
-  ReadMeInfo:
-    Description: 'For more information and details visit:'
-    Value: https://aws.amazon.com/quickstart/architecture/ibm-mq/
+  EKSClusterName:
+    Description: EKS cluster name
+    Value: !Ref EKSClusterName
+  ECRName:
+    Condition: SetupECR
+    Description: ECR name
+    Value: !GetAtt IBMLibertyECRStack.Outputs.ECRName
+  ECRArn:
+    Condition: SetupECR
+    Description: ECR ARN
+    Value: !GetAtt IBMLibertyECRStack.Outputs.ECRArn
+  ECRRepositoryUri:
+    Condition: SetupECR
+    Description: ECR URI
+    Value: !GetAtt IBMLibertyECRStack.Outputs.ECRRepositoryUri
+  BootNodeInstanceId:
+    Description: Boot node EC2 instance ID
+    Value: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceId
+  BootNodeName:
+    Description: Boot node name
+    Value: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceName
+  InstallLogsLocation:
+    Description: Install logs location (on boot node)
+    Value: "/opt/ibm/install.log"
+  CloudWatchInstallLogs:
+    Description: Installation logs (in CloudWatch)
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.CloudWatchInstallLogs
+  DeploymentProperties:
+    Description: Deployment properties
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.DeploymentProperties
+  LibertyAppDeployYaml:
+    Description: CR (Custom Resource) to deploy for WebSphereLibertyApplication
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.LibertyAppDeployYaml
+  LibertyAppDeployServiceYaml:
+    Description: CR (Custom Resource) to enable HTTPS access to the WebSphereLibertyApplication
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.LibertyAppDeployServiceYaml
+  WLOVersion:
+    Description: The installed version of WebSphere Liberty Operator
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.WLOVersion
+  EKSClusterVpcId:
+    Description: The ID of the VPC which was created for your EKS cluster
+    Value: !GetAtt IBMLibertyVPCStack.Outputs.VPCID
+  EKSClusterVpcUrl:
+    Description: URL to manage the VPC which was created for your EKS cluster
+    Value: !Join ["", ["https://", !Ref "AWS::Region", ".console.aws.amazon.com/vpc/home?region=", !Ref "AWS::Region", "#VpcDetails:VpcId=", !GetAtt IBMLibertyVPCStack.Outputs.VPCID]]
+  IAMRoleName:
+    Description: Role name to manage EKS
+    Value: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleName
+  IAMRoleUrl:
+    Description: The URL to view the IAM role that was used to create the EKS cluster
+    Value: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleURL
