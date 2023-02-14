@@ -139,7 +139,7 @@ Resources:
         PublicSubnet3ID: !GetAtt 'IBMMQVPCStack.Outputs.PublicSubnet3ID'
         AvailabilityZone1: !Select [0, !Ref AvailabilityZones]
         AvailabilityZone2: !Select [1, !Ref AvailabilityZones]
-        AvailabilityZone3: !Select [1, !Ref AvailabilityZones]
+        AvailabilityZone3: !Select [2, !Ref AvailabilityZones]
         PrivateSubnet1ID: !GetAtt 'IBMMQVPCStack.Outputs.PrivateSubnet1AID'
         PrivateSubnet2ID: !GetAtt 'IBMMQVPCStack.Outputs.PrivateSubnet2AID'
         PrivateSubnet3ID: !GetAtt 'IBMMQVPCStack.Outputs.PrivateSubnet3AID'
