@@ -131,6 +131,12 @@ Resources:
         - !Sub |
           #!/bin/bash
           aws s3 cp ${QSS3CodeLocation} . --recursive
+          echo "APPLICATION_NAMESPACE=${AppNamespace}" > scripts/ibm-mq-parameters.properties
+          echo "AWS_DEFAULT_REGION=${AWS::Region}" >> scripts/ibm-mq-parameters.properties
+          echo "BOOTNODE_INSTANCE_ID=${BootNodeInstanceId}" >> scripts/ibm-mq-parameters.properties
+          echo "BOOTNODE_USER=${BootNodeUser}" >> scripts/ibm-mq-parameters.properties
+          echo "EKS_ADMIN_USER_ARNS='${AdditionalEKSAdminArns}'" >> scripts/ibm-mq-parameters.properties
+          echo "EKS_CLUSTER_NAME=${EKSClusterName}" >> scripts/ibm-mq-parameters.properties
 
           echo "deploying IBM MQ ... update the steps here"
 
