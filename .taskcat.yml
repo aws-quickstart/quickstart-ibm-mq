@@ -29,4 +29,5 @@ tests:
       QSS3KeyPrefix: $[taskcat_project_name]/
       AvailabilityZones: $[taskcat_genaz_3]
     regions:
+      - eu-west-2
       - eu-west-3
