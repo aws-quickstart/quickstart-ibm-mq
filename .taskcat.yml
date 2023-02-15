@@ -31,5 +31,6 @@ tests:
       MQAppPassword: $[taskcat_genpass_10]
       MQAdminPassword: $[taskcat_genpass_10]
     regions:
+      - eu-west-1
       - eu-west-2
       - eu-west-3

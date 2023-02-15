@@ -182,7 +182,6 @@ Resources:
         BootNodeUser: !GetAtt IBMMQBootNodeStack.Outputs.User
         EKSClusterName: !Ref EKSClusterName
         LaunchType: "EC2"
-        DeployApp: None
         MainStackName: !Ref "AWS::StackName"
         AppNamespace: !Ref AppNamespace
         MQAdminPassword: !Ref MQAdminPassword

@@ -13,7 +13,6 @@ Metadata:
       - Label:
           default: Application configuration
         Parameters:
-          - DeployApp
           - AppContainerImageURL
           - AppName
           - AppNamespace
@@ -42,8 +41,6 @@ Metadata:
         default: EKS namespace to deploy the app
       AppReplicas:
         default: Number of app replicas
-      DeployApp:
-        default: Deploy application
       EKSClusterName:
         default: EKS cluster name
       LicenseEdition:
