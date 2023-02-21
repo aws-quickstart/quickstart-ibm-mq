@@ -208,6 +208,12 @@ Outputs:
   EKSClusterName:
     Description: EKS cluster name
     Value: !Ref EKSClusterName
+  MQURLParameterName:
+    Description: Name of the SSM parameter that stores MQ Console URL
+    Value: !GetAtt IBMMQWorkloadStack.Outputs.MQURLParameterName
+  MQURLParameterValue:
+    Description: MQ Console URL parameter value, should be the console URL. If TBD, use the CLI or AWS Console to get the latest.
+    Value: !GetAtt IBMMQWorkloadStack.Outputs.MQURLParameterValue
   ECRName:
     Condition: SetupECR
     Description: ECR name

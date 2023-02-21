@@ -101,7 +101,13 @@ Parameters:
     Description: The name of the main (parent) stack. This is used to title the CloudWatch log group to which installation output is written.
 
 Resources:
-  InstallWLO:
+  MQURLParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Value: TBD
+      Description: SSM Parameter for storing MQ Console URL
+  InstallMQ:
     Type: AWS::SSM::Association
     Properties:
       Name: AWS-RunShellScript
@@ -115,13 +121,23 @@ Resources:
           #!/bin/bash
           aws s3 cp ${QSS3CodeLocation} . --recursive
           echo "APPLICATION_NAMESPACE=${AppNamespace}" > scripts/ibm-mq-parameters.properties
+          echo "APP_PASSWORD=${MQAppPassword}" >> scripts/ibm-mq-parameters.properties
+          echo "ADMIN_PASSWORD=${MQAdminPassword}" >> scripts/ibm-mq-parameters.properties
           echo "AWS_DEFAULT_REGION=${AWS::Region}" >> scripts/ibm-mq-parameters.properties
           echo "BOOTNODE_INSTANCE_ID=${BootNodeInstanceId}" >> scripts/ibm-mq-parameters.properties
           echo "BOOTNODE_USER=${BootNodeUser}" >> scripts/ibm-mq-parameters.properties
           echo "EKS_ADMIN_USER_ARNS='${AdditionalEKSAdminArns}'" >> scripts/ibm-mq-parameters.properties
           echo "EKS_CLUSTER_NAME=${EKSClusterName}" >> scripts/ibm-mq-parameters.properties
+          echo "MQURL_SSM_PARAMETER=${MQURLParameter}" >> scripts/ibm-mq-parameters.properties
 
           echo "deploying IBM MQ ... update the steps here"
+
+          chmod 755 ./scripts/*.sh
+          echo > install.log
+
+          chown -R ${BootNodeUser} /opt/ibm
+          chgrp -R ${BootNodeUser} /opt/ibm
+          su - ${BootNodeUser} -c '/opt/ibm/scripts/install.sh' | tee install.log
 
         workingDirectory:
         - /opt/ibm
@@ -137,3 +153,9 @@ Outputs:
   DeploymentProperties:
     Description: Deployment properties
     Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName","/log-events/deployment.properties"]]
+  MQURLParameterName:
+    Description: Name of the SSM parameter that stores MQ Console URL
+    Value: !Ref MQURLParameter
+  MQURLParameterValue:
+    Description: MQ Console URL parameter value, should be the console URL. If TBD, use the CLI or AWS Console to get the latest.
+    Value: !GetAtt MQURLParameter.Value

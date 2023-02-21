@@ -22,7 +22,7 @@ tests:
   mq-eks:
     template: ./templates/ibm-mq-main.template.yaml
     parameters:
-      EKSClusterName: was-cluster-$[taskcat_random-string]
+      EKSClusterName: mq-cluster-$[taskcat_random-string]
       SetupNewECR: "Yes"
       QSS3BucketName: $[taskcat_autobucket]
       QSS3BucketRegion: $[taskcat_current_region]

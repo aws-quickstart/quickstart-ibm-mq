@@ -11,7 +11,7 @@
 # *********************************************************************
 set -o pipefail
 CUR_DIR="$(cd $(dirname $0) && pwd)"
-source $CUR_DIR/ibm-liberty-parameters.properties
+source $CUR_DIR/ibm-mq-parameters.properties
 
 export AWS_DEFAULT_REGION
 
