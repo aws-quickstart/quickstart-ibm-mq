@@ -1,28 +1,26 @@
 :xrefstyle: short
 
-Deploying this Partner Solution with default parameters builds the following {partner-product-short-name} environment in the
+Deploying this Partner Solution with default parameters builds the following {partner-product-short-name} Native HA environment in the
 AWS Cloud.
 
 // Replace this example diagram with your own. Follow our wiki guidelines: https://w.amazon.com/bin/view/AWS_Quick_Starts/Process_for_PSAs/#HPrepareyourarchitecturediagram. Upload your source PowerPoint file to the GitHub {deployment name}/docs/images/ directory in its repository.
 
 [#architecture1]
 .Partner Solution architecture for {partner-product-short-name} on AWS
-image::../docs/deployment_guide/images/architecture_diagram.png[Architecture]
+image::../docs/deployment_guide/images/quickstart-ibm-mq-eks-architecture-diagram.png[Architecture]
 
 As shown in <<architecture1>>, this Partner Solution sets up the following:
 
-* A highly available architecture that spans two Availability Zones.*
-* A virtual private cloud (VPC) configured with public and private subnets, according to AWS
-best practices, to provide you with your own virtual network on AWS.*
+* A highly available architecture that spans three Availability Zones.*
+* A virtual private cloud (VPC) configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.*
 * In the public subnets:
 ** Managed network address translation (NAT) gateways to allow outbound
 internet access for resources in the private subnets.*
-** A Linux bastion host in an Auto Scaling group to allow inbound Secure
-Shell (SSH) access to Amazon Elastic Compute Cloud (Amazon EC2) instances in public and private subnets.*
-* In the private subnets:
-** <item>.
-** <item>.
+** Network load balancers automatically distribute connections to the active IBM MQ server.*
+* In the private subnets, an https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html[Amazon EKS managed node group^] to automate the provisioning and lifecycle management of the nodes (Amazon EC2 instances) for the EKS cluster. Each node comprises the following:
+** An IBM MQ server.
+** An Amazon Elastic Block Store (Amazon EBS) for persistent distributed storage to ensure high availability of the queue manager service and message data. 
 // Add bullet points for any additional components that are included in the deployment. Ensure that the additional components are shown in the architecture diagram. End each bullet with a period.
-* <describe any additional components>.
+//* <describe any additional components>.
 
 [.small]#* The template that deploys this Partner Solution into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#
