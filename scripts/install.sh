@@ -63,9 +63,9 @@ fi
 # Install MQ helm chart
 echo "Installing IBM MQ helm chart..."
 cd $CUR_DIR/..
-git clone https://github.com/ibm-messaging/mq-helm.git
+git clone --depth 1 --branch main https://github.com/ibm-messaging/mq-helm.git
 cd mq-helm/samples/AWSEKS/deploy/
-./install.sh $APPLICATION_NAMESPACE $APP_PASSWORD $ADMIN_PASSWORD
+./install.sh $APPLICATION_NAMESPACE $ADMIN_PASSWORD $APP_PASSWORD
 
 #Wait 2 minutes for POD to be in a running state
 sleep 120
