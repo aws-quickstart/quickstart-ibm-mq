@@ -1,3 +1,27 @@
 // Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
 
 == Postdeployment steps
+. Determine IBM MQ web console through CloudFormation stack. 
+In CloudFormation service three high level stacks will have been created. The one with the earliest created time and the description 
+"This template deploys a IBM MQ into a new AWS EKS cluster in a new VPC"
+is the main stack. 
+.. Select to the main CloudFormation stack.
+.. Choose the *Outputs* tab.
+.. The value of the `MQURLParameterValue` key is the IBM MQ Console URL
+
+
+. Determine IBM MQ web console through the AWS EC2 Boot Node.
+The MQ Native HA cluster is installed using an AWS EC2 instance that is acts as a boot node. You can access the AWS EKS cluster from the AWS EC2 boot node. The boot node will have the suffix `-bootnode`.
+.. If the boot node is `stopped`, select it and start it. 
+.. Once `Running` select it and click on `Connect`.
+.. Connect using Session Manager.
+.. Run the following commands:
+[source,shell]
+----
+  sudo su ec2-user
+  export PATH=$PATH:/usr/local/bin
+  kubectl get all
+----
+The output will show a load balancer. eg. `afd56b5d7ee7d4bdc827106721c26999-638763888.eu-west-2.elb.amazonaws.com`
+
+Access the web console through `https:://<load-balancer-address>:9443/ibmmq/console`
