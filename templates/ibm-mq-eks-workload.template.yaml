@@ -9,20 +9,14 @@ Metadata:
         Parameters:
           - EKSClusterName
           - AdditionalEKSAdminArns
-          - LaunchType
       - Label:
           default: Application configuration
         Parameters:
-          - AppContainerImageURL
-          - AppName
           - AppNamespace
-          - AppReplicas
           - QSS3CodeLocation
-      - Label:
-          default: License
-        Parameters:
-          - LicenseEdition
-          - LicenseProductEntitlementSource
+          - MQAppPassword
+          - MQAdminPassword
+          - InternalLoadBalancer
       - Label:
           default: Boot node configuration
         Parameters:
@@ -33,20 +27,16 @@ Metadata:
         Parameters:
           - MainStackName
     ParameterLabels:
-      AppContainerImageURL:
-        default: Custom application image name
-      AppName:
-        default: Application name
       AppNamespace:
         default: EKS namespace to deploy the app
-      AppReplicas:
-        default: Number of app replicas
       EKSClusterName:
         default: EKS cluster name
-      LicenseEdition:
-        default: Edition
-      LicenseProductEntitlementSource:
-        default: Product entitlement source
+      MQAdminPassword:
+        default: MQ admin password
+      MQAppPassword:
+        default: MQ app password
+      InternalLoadBalancer:
+        default: Setup internal Load Balancer
       BootNodeInstanceId:
         default: Boot node
       BootNodeUser:
@@ -70,6 +60,11 @@ Parameters:
     Type: String
     NoEcho: true
     Description: Admin password for IBM MQ deployment
+  InternalLoadBalancer:
+    Type: String
+    Default: "true"
+    AllowedValues: [ "true", "false" ]
+    Description: Choose "false" to create public Load Balancer
   BootNodeInstanceId:
     Type: AWS::EC2::Instance::Id
     Description: Boot Node Instance Id
@@ -80,11 +75,6 @@ Parameters:
   EKSClusterName:
     Type: String
     Description: Name for the new cluster (required).
-  LaunchType:
-    Type: String
-    AllowedValues: [ EC2 ]
-    Default: EC2
-    Description: Select which launch type to use for your EKS cluster (required).
   QSS3CodeLocation:
     Type: String
     Description: The S3 location for your copy of the Quick Start assets.
@@ -123,6 +113,7 @@ Resources:
           echo "APPLICATION_NAMESPACE=${AppNamespace}" > scripts/ibm-mq-parameters.properties
           echo "APP_PASSWORD=${MQAppPassword}" >> scripts/ibm-mq-parameters.properties
           echo "ADMIN_PASSWORD=${MQAdminPassword}" >> scripts/ibm-mq-parameters.properties
+          echo "INTERNAL_LOAD_BALANCER=${InternalLoadBalancer}" >> scripts/ibm-mq-parameters.properties
           echo "AWS_DEFAULT_REGION=${AWS::Region}" >> scripts/ibm-mq-parameters.properties
           echo "BOOTNODE_INSTANCE_ID=${BootNodeInstanceId}" >> scripts/ibm-mq-parameters.properties
           echo "BOOTNODE_USER=${BootNodeUser}" >> scripts/ibm-mq-parameters.properties
@@ -130,7 +121,7 @@ Resources:
           echo "EKS_CLUSTER_NAME=${EKSClusterName}" >> scripts/ibm-mq-parameters.properties
           echo "MQURL_SSM_PARAMETER=${MQURLParameter}" >> scripts/ibm-mq-parameters.properties
 
-          echo "deploying IBM MQ ... update the steps here"
+          echo "deploying IBM MQ"
 
           chmod 755 ./scripts/*.sh
           echo > install.log

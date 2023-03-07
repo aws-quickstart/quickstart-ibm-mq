@@ -20,19 +20,25 @@ project:
   - ap-northeast-2
   - ap-south-1
   s3_bucket: ''
+  parameters:
+    EKSClusterName: mq-cluster-$[taskcat_random-string]
+    QSS3BucketName: $[taskcat_autobucket]
+    QSS3BucketRegion: $[taskcat_current_region]
+    QSS3KeyPrefix: $[taskcat_project_name]/
+    AvailabilityZones: $[taskcat_genaz_3]
+    MQAppPassword: $[taskcat_genpass_10]
+    MQAdminPassword: $[taskcat_genpass_10]
 tests:
-  mq-eks:
+  mq-eks-private:
     template: ./templates/ibm-mq-main.template.yaml
     parameters:
-      EKSClusterName: mq-cluster-$[taskcat_random-string]
-      SetupNewECR: "Yes"
-      QSS3BucketName: $[taskcat_autobucket]
-      QSS3BucketRegion: $[taskcat_current_region]
-      QSS3KeyPrefix: $[taskcat_project_name]/
-      AvailabilityZones: $[taskcat_genaz_3]
-      MQAppPassword: $[taskcat_genpass_10]
-      MQAdminPassword: $[taskcat_genpass_10]
+      InternalLoadBalancer: "true"
     regions:
       - eu-west-1
       - eu-west-2
+  mq-eks-public:
+    template: ./templates/ibm-mq-main.template.yaml
+    parameters:
+      InternalLoadBalancer: "false"
+    regions:
       - eu-west-3

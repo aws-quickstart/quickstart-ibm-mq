@@ -5,15 +5,33 @@ Metadata:
     EntrypointName: Deploy IBM MQ in a new VPC
     Order: 1
   LICENSE: Apache License, Version 2.0
+  LintSpellExclude:
+    - Partner
+    - Solution
+    - ARNs
+    - namespace
+    - Load Balancer
+    - One
+    - com
+    - aws
+    - arn
+    - myid
+    - otherid
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
           default: EKS configuration
         Parameters:
           - EKSClusterName
-          - SetupNewECR
           - AdditionalEKSAdminArns
           - AvailabilityZones
+      - Label:
+          default: IBM MQ configuration
+        Parameters:
+          - AppNamespace
+          - MQAdminPassword
+          - MQAppPassword
+          - InternalLoadBalancer
       - Label:
           default: AWS Partner Solution configuration
         Parameters:
@@ -31,11 +49,16 @@ Metadata:
         default: Partner Solution S3 key prefix
       AdditionalEKSAdminArns:
         default: Additional EKS administrator ARNs
-      SetupNewECR:
-        default: Set up new ECR
       AvailabilityZones:
         default: Availability Zones
-
+      AppNamespace:
+        default: App namespace
+      MQAdminPassword:
+        default: MQ admin password
+      MQAppPassword:
+        default: MQ app password
+      InternalLoadBalancer:
+        default: Setup internal Load Balancer
 Parameters:
   EKSClusterName:
     Type: String
@@ -51,17 +74,16 @@ Parameters:
   MQAppPassword:
     Type: String
     NoEcho: true
-    Description: App password for IBM MQ deployment
+    Description: App password for IBM MQ deployment.
   MQAdminPassword:
     Type: String
     NoEcho: true
-    Description: Admin password for IBM MQ deployment
-  SetupNewECR:
+    Description: Admin password for IBM MQ deployment.
+  InternalLoadBalancer:
     Type: String
-    AllowedValues: ["Yes", "No"]
-    Default: "Yes"
-    Description: >-
-      Choose No if you do not want to set up a new private ECR named <EKS cluster name>-ecr.
+    Default: "true"
+    AllowedValues: ["true", "false"]
+    Description: Choose false to create public Load Balancer.
   QSS3BucketName:
     AllowedPattern: ^[0-9a-z]+([0-9a-z-\.]*[0-9a-z])*$
     ConstraintDescription: >-
@@ -109,7 +131,6 @@ Parameters:
 
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, aws-quickstart]
-  SetupECR: !Equals [!Ref SetupNewECR, "Yes"]
 
 Resources:
   IBMMQIAMRoleStack:
@@ -186,23 +207,11 @@ Resources:
         AppNamespace: !Ref AppNamespace
         MQAdminPassword: !Ref MQAdminPassword
         MQAppPassword: !Ref MQAppPassword
+        InternalLoadBalancer: !Ref InternalLoadBalancer
         QSS3CodeLocation: !Sub
           - s3://${S3Bucket}/${QSS3KeyPrefix}
           - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
         AdditionalEKSAdminArns: !Ref AdditionalEKSAdminArns
-
-  IBMMQECRStack:
-    Type: 'AWS::CloudFormation::Stack'
-    Condition: SetupECR
-    DependsOn:
-      - IBMMQEKSClusterStack
-    Properties:
-      TemplateURL: !Sub
-        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq-create-ecr.template.yaml
-        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
-          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
-      Parameters:
-        ECRName: !Join ["-", [!Ref EKSClusterName, "ecr"]]
 
 Outputs:
   EKSClusterName:
@@ -214,18 +223,6 @@ Outputs:
   MQURLParameterValue:
     Description: MQ Console URL parameter value, should be the console URL. If TBD, use the CLI or AWS Console to get the latest.
     Value: !GetAtt IBMMQWorkloadStack.Outputs.MQURLParameterValue
-  ECRName:
-    Condition: SetupECR
-    Description: ECR name
-    Value: !GetAtt IBMMQECRStack.Outputs.ECRName
-  ECRArn:
-    Condition: SetupECR
-    Description: ECR ARN
-    Value: !GetAtt IBMMQECRStack.Outputs.ECRArn
-  ECRRepositoryUri:
-    Condition: SetupECR
-    Description: ECR URI
-    Value: !GetAtt IBMMQECRStack.Outputs.ECRRepositoryUri
   BootNodeInstanceId:
     Description: Boot node EC2 instance ID
     Value: !GetAtt IBMMQBootNodeStack.Outputs.InstanceId

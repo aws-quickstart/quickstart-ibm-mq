@@ -64,13 +64,14 @@ fi
 echo "Installing IBM MQ helm chart..."
 cd $CUR_DIR/..
 git clone --depth 1 --branch main https://github.com/ibm-messaging/mq-helm.git
-cd mq-helm/samples/AWSEKS/deploy/
-./install.sh $APPLICATION_NAMESPACE $ADMIN_PASSWORD $APP_PASSWORD
+cd mq-helm/samples/AWSEKSPartnerSolution/deploy/
+./install.sh $APPLICATION_NAMESPACE $ADMIN_PASSWORD $APP_PASSWORD $INTERNAL_LOAD_BALANCER
 
 #Wait 2 minutes for POD to be in a running state
 sleep 120
+wait_for services secureapphelm-ibm-mq-loadbalancer $APPLICATION_NAMESPACE
 export CONSOLE_PORT=9443
-export CONSOLE_IP=$(kubectl get services secureapphelm-ibm-mq-loadbalancer -n mq-ha -o jsonpath="{..hostname}")
+export CONSOLE_IP=$(kubectl get services secureapphelm-ibm-mq-loadbalancer -n $APPLICATION_NAMESPACE -o jsonpath="{..hostname}")
 export MQ_URL=$(echo https://$CONSOLE_IP:$CONSOLE_PORT/ibmmq/console)
 aws ssm put-parameter --name $MQURL_SSM_PARAMETER --value $MQ_URL --type String --overwrite
 

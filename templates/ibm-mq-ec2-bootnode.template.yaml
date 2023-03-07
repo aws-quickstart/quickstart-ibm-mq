@@ -1,14 +1,63 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This template creates an EC2 instance which is used to run eksctl and kubectl. (qs-1tss294hj)
 Metadata:
-  ParameterLabels:
-      RoleName:
-        default: Role name
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: IAM role configuration
+        Parameters:
+          - RoleName
+      - Label:
+          default: Boot node configuration
+        Parameters:
+          - BootNodeName
+          - EKSClusterName
+          - LatestAmiId
+      - Label:
+          default: Network configuration
+        Parameters:
+          - PublicSubnet1ID
+          - PublicSubnet2ID
+          - PublicSubnet3ID
+          - PrivateSubnet1ID
+          - PrivateSubnet2ID
+          - PrivateSubnet3ID
+          - AvailabilityZone1
+          - AvailabilityZone2
+          - AvailabilityZone3
+    ParameterLabels:
+        RoleName:
+          default: Role name
+        BootNodeName:
+          default: Boot node name
+        PublicSubnet1ID:
+          default: Public subnet 1 ID
+        PublicSubnet2ID:
+          default: Public subnet 2 ID
+        PublicSubnet3ID:
+          default: Public subnet 3 ID
+        PrivateSubnet1ID:
+          default: Private subnet 1 ID
+        PrivateSubnet2ID:
+          default: Private subnet 2 ID
+        PrivateSubnet3ID:
+          default: Private subnet 3 ID
+        AvailabilityZone1:
+          default: Availability Zone 1 ID
+        AvailabilityZone2:
+          default: Availability Zone 2 ID
+        AvailabilityZone3:
+          default: Availability Zone 3 ID
+        EKSClusterName:
+          default: EKS cluster name
+        LatestAmiId:
+          default: Latest AMI ID
 Parameters:
   RoleName:
-    Description: The name of the role to attach to the boot node
+    Description: The name of the role to attach to the boot node.
     Type: String
   BootNodeName:
+    Description: The name of the boot node.
     Type: String
   PublicSubnet1ID:
     Description: The ID of the public subnet in Availability Zone 1 for the boot node and EKS cluster (for example, "subnet-9bc642ac").

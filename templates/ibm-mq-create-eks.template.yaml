@@ -1,9 +1,18 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This template creates an EKS cluster using eksctl from an EC2 instance. (qs-1tss294hs)
 Metadata:
-  ParameterLabels:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: EKS configuration
+        Parameters:
+          - BootNodeInstanceId
+          - EKSClusterName
+    ParameterLabels:
       EKSClusterName:
         default: EKS Cluster Name
+      BootNodeInstanceId:
+        default: Boot node instance ID
 Parameters:
   BootNodeInstanceId:
     Type: AWS::EC2::Instance::Id
@@ -11,15 +20,6 @@ Parameters:
   EKSClusterName:
     Type: String
     Description: Name for the new cluster*.
-  LaunchType:
-    Type: String
-    AllowedValues: [ EC2 ]
-    Default: EC2
-    Description: Select which launch type to use for your EKS cluster*.
-Conditions:
-  IsFargate: !Equals
-    - !Ref LaunchType
-    - Fargate
 Resources:
   SpecificInstanceIdAssociation:
     Type: AWS::SSM::Association
@@ -217,6 +217,3 @@ Outputs:
   EKSUrl:
     Description: Link to the EKS cluster
     Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/eks/home?region=",!Ref "AWS::Region","#/clusters/", !Ref EKSClusterName]]
-  LaunchType:
-    Description: Launch type of the new cluster
-    Value: !Ref LaunchType

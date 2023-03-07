@@ -1,7 +1,13 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This template creates an IAM role which can be attached to an EC2 instance profile to enable EKS cluster creation with eksctl. Based on https://eksctl.io/usage/minimum-iam-policies/. (qs-1tss294h4)
 Metadata:
-  ParameterLabels:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: IAM role configuration
+        Parameters:
+          - RoleName
+    ParameterLabels:
       RoleName:
         default: Role name
 Parameters:
