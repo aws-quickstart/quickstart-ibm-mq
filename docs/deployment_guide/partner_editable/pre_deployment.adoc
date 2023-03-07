@@ -1,3 +1,11 @@
 //Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
 
 == Predeployment steps
+. Download and configure the Kubernetes command line interface so that you can manage deployed applications and resources with `kubectl` commands.
++
+For more information, refer to https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html[Installing or updating kubectl^].
+//Need to check if need AWS CLI - https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+. (Optional) Note the ARNs that need to access the EKS cluster.
++
+By default, you can access the EKS cluster from the boot node only. If you want to enable direct access to the EKS cluster, prepare a list of Identity and Access Management (IAM) entity Amazon Resource Names (ARNs) that need to have this access. When you deploy this solution, you'll enter those ARNS in a comma-delimited list in the parameter `AdditionalEKSAdminArns`.
++
