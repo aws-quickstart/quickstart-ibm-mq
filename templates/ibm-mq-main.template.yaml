@@ -187,7 +187,6 @@ Resources:
       Parameters:
         BootNodeInstanceId: !GetAtt IBMMQBootNodeStack.Outputs.InstanceId
         EKSClusterName: !Ref EKSClusterName
-        LaunchType: "EC2"
 
   IBMMQWorkloadStack:
     Type: 'AWS::CloudFormation::Stack'
