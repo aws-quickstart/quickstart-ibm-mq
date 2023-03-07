@@ -42,8 +42,8 @@ Resources:
             echo "/opt/ibm/cluster.yaml isn't available yet, waiting"
             sleep 5
             i=$[$i+1]
-            if [ $i -ge 12 ]; then
-              echo "Timed out waiting 60 seconds for /opt/ibm/cluster.yaml to be available"
+            if [ $i -ge 18 ]; then
+              echo "Timed out waiting 90 seconds for /opt/ibm/cluster.yaml to be available"
               break;
             fi
             echo "/opt/ibm/cluster.yaml ready:"
@@ -51,9 +51,10 @@ Resources:
           done
         - |
           #!/bin/bash
+          cd /opt/ibm
           eksctl create cluster -f /opt/ibm/cluster.yaml > /opt/ibm/eksctl.log
         workingDirectory:
-        - /opt/ibm
+        - /tmp
       WaitForSuccessTimeoutSeconds: 1200
 
   LambdaExecutionRole:
