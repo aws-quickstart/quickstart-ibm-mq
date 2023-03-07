@@ -168,6 +168,18 @@ Resources:
           !Sub |
             #!/bin/bash
             /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource BootNode --configsets Required --region ${AWS::Region}
+            i=0
+            while [ ! -f /opt/ibm/cluster.yaml ]; do
+            echo "/opt/ibm/cluster.yaml isn't available yet, waiting"
+            sleep 5
+            i=$[$i+1]
+            if [ $i -ge 12 ]; then
+            echo "Timed out waiting 60 seconds for /opt/ibm/cluster.yaml to be available"
+            break;
+            fi
+            echo "/opt/ibm/cluster.yaml ready:"
+            cat /opt/ibm/cluster.yaml
+            done
             /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource BootNode --region ${AWS::Region}
 
 Outputs:
