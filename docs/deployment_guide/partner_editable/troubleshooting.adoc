@@ -4,18 +4,17 @@ For troubleshooting common Partner Solution issues, refer to the https://fwd.aws
 
 == Resources
 // Uncomment section and add links to any external resources that are specified by the partner.
-== Additional resources
 
 *AWS services*
 
-* https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html[AWS EKS]
+* https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html[AWS EKS^]
 * https://aws.amazon.com/documentation/cloudformation/[AWS CloudFormation^]
 * https://aws.amazon.com/documentation/vpc/[Amazon VPC^]
 * https://aws.amazon.com/quickstart/[AWS Quick Start deployments^]
 
 *IBM MQ*
 
-* https://github.com/ibm-messaging/mq-helm[MQ Helm charts]
-* https://developer.ibm.com/components/ibm-mq/[MQ developer resources]
+* https://github.com/ibm-messaging/mq-helm[MQ Helm charts^]
+* https://developer.ibm.com/components/ibm-mq/[MQ developer resources^]
 * https://developer.ibm.com/messaging/mq-on-cloud/[IBM MQ resources^]
 
