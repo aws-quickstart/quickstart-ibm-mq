@@ -110,7 +110,7 @@ Parameters:
       hyphens (-), underscores (_), periods (.), asterisks (*), single quotes ('),
       open parenthesis ((), close parenthesis ()), and forward slashes (/). End the
       prefix with a forward slash.
-    Default: quickstart-ibm-mq-eks/
+    Default: quickstart-ibm-mq/
   QSS3BucketRegion:
     Type: String
     Description: >-

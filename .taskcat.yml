@@ -1,7 +1,7 @@
 general:
   s3_regional_buckets: true
 project:
-  name: quickstart-ibm-mq-eks
+  name: quickstart-ibm-mq
   package_lambda: false
   shorten_stack_name: true
   regions:
