@@ -202,7 +202,6 @@ Resources:
         BootNodeInstanceId: !GetAtt IBMMQBootNodeStack.Outputs.InstanceId
         BootNodeUser: !GetAtt IBMMQBootNodeStack.Outputs.User
         EKSClusterName: !Ref EKSClusterName
-        LaunchType: "EC2"
         MainStackName: !Ref "AWS::StackName"
         AppNamespace: !Ref AppNamespace
         MQAdminPassword: !Ref MQAdminPassword
