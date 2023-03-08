@@ -16,7 +16,7 @@ As shown in <<architecture1>>, this Partner Solution sets up the following:
 * In the public subnets:
 ** Managed network address translation (NAT) gateways to allow outbound
 internet access for resources in the private subnets.
-** Classic load balancer automatically distribute connections to the active IBM MQ server.
+** Classic load balancer automatically distributes connections to the active IBM MQ server.
 * In the private subnets, an https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html[Amazon EKS managed node group^] to automate the provisioning and lifecycle management of the nodes (Amazon EC2 instances) for the EKS cluster. Each node comprises the following:
 ** An IBM MQ server.
 ** An Amazon Elastic Block Store (Amazon EBS) for persistent distributed storage to ensure high availability of the queue manager service and message data. 
