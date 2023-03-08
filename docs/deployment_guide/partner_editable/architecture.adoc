@@ -11,16 +11,16 @@ image::../docs/deployment_guide/images/quickstart-ibm-mq-eks-architecture-diagra
 
 As shown in <<architecture1>>, this Partner Solution sets up the following:
 
-* A highly available architecture that spans three Availability Zones.*
-* A virtual private cloud (VPC) configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.*
+* A highly available architecture that spans three Availability Zones.
+* A virtual private cloud (VPC) configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.
 * In the public subnets:
 ** Managed network address translation (NAT) gateways to allow outbound
-internet access for resources in the private subnets.*
-** Network load balancers automatically distribute connections to the active IBM MQ server.*
+internet access for resources in the private subnets.
+** Classic load balancer automatically distributes connections to the active IBM MQ server.
 * In the private subnets, an https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html[Amazon EKS managed node group^] to automate the provisioning and lifecycle management of the nodes (Amazon EC2 instances) for the EKS cluster. Each node comprises the following:
 ** An IBM MQ server.
 ** An Amazon Elastic Block Store (Amazon EBS) for persistent distributed storage to ensure high availability of the queue manager service and message data. 
 // Add bullet points for any additional components that are included in the deployment. Ensure that the additional components are shown in the architecture diagram. End each bullet with a period.
 //* <describe any additional components>.
 
-[.small]#* The template that deploys this Partner Solution into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#
+//[.small]#* The template that deploys this Partner Solution into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#

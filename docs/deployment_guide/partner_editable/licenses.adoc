@@ -2,7 +2,7 @@
 
 There is no cost to use this Partner Solution, but you will be billed for any AWS services or resources that this Partner Solution deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^].
 
-This solution makes use of https://github.com/ibm-messaging/mq-helm/samples/AWSEKS[Helm charts] to deploy https://www.ibm.com/docs/en/ibm-mq/latest?topic=containers-mq-advanced-developers-container-image[IBM MQ Advanced for Developers images] as an IBM MQ Native HA solution on Amazon EKS. 
+This solution makes use of https://github.com/ibm-messaging/mq-helm/tree/main/samples/AWSEKSPartnerSolution[Helm charts] to deploy https://www.ibm.com/docs/en/ibm-mq/latest?topic=containers-mq-advanced-developers-container-image[IBM MQ Advanced for Developers images] as an IBM MQ Native HA solution on Amazon EKS. 
 
 The https://www14.software.ibm.com/cgi-bin/weblap/lap.pl?popup=Y&li_formnum=L-APIG-BYHCL7[IBM MQ software license agreement^] details the licensing terms. 
 

@@ -1,4 +1,4 @@
-:partner-solution-project-name: quickstart-ibm-mq-eks
+:partner-solution-project-name: quickstart-ibm-mq
 :partner-solution-github-org: aws-quickstart
 :partner-product-name: IBM MQ Native HA
 :partner-product-short-name: IBM MQ
