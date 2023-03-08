@@ -1,0 +1,250 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "This template deploys a IBM MQ into a new EKS cluster in a new VPC. (qs-1tss294ep)"
+Metadata:
+  QuickStartDocumentation:
+    EntrypointName: Deploy IBM MQ in a new VPC
+    Order: 1
+  LICENSE: Apache License, Version 2.0
+  LintSpellExclude:
+    - Partner
+    - Solution
+    - ARNs
+    - namespace
+    - Load Balancer
+    - One
+    - com
+    - aws
+    - arn
+    - myid
+    - otherid
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: EKS configuration
+        Parameters:
+          - EKSClusterName
+          - AdditionalEKSAdminArns
+          - AvailabilityZones
+      - Label:
+          default: IBM MQ configuration
+        Parameters:
+          - AppNamespace
+          - MQAdminPassword
+          - MQAppPassword
+          - InternalLoadBalancer
+      - Label:
+          default: AWS Partner Solution configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+          - QSS3BucketRegion
+    ParameterLabels:
+      EKSClusterName:
+        default: EKS cluster name
+      QSS3BucketName:
+        default: Partner Solution S3 bucket name
+      QSS3BucketRegion:
+        default: Partner Solution S3 bucket Region
+      QSS3KeyPrefix:
+        default: Partner Solution S3 key prefix
+      AdditionalEKSAdminArns:
+        default: Additional EKS administrator ARNs
+      AvailabilityZones:
+        default: Availability Zones
+      AppNamespace:
+        default: App namespace
+      MQAdminPassword:
+        default: MQ admin password
+      MQAppPassword:
+        default: MQ app password
+      InternalLoadBalancer:
+        default: Setup internal Load Balancer
+Parameters:
+  EKSClusterName:
+    Type: String
+    Description: Name of the new EKS cluster (2-250 characters). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
+    MinLength: 2
+    MaxLength: 250
+    AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
+    ConstraintDescription: The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
+  AppNamespace:
+    Type: String
+    Default: "default"
+    Description: Namespace in the EKS cluster where app will be deployed.
+  MQAppPassword:
+    Type: String
+    NoEcho: true
+    Description: App password for IBM MQ deployment.
+  MQAdminPassword:
+    Type: String
+    NoEcho: true
+    Description: Admin password for IBM MQ deployment.
+  InternalLoadBalancer:
+    Type: String
+    Default: "true"
+    AllowedValues: ["true", "false"]
+    Description: Choose false to create public Load Balancer.
+  QSS3BucketName:
+    AllowedPattern: ^[0-9a-z]+([0-9a-z-\.]*[0-9a-z])*$
+    ConstraintDescription: >-
+      The S3 bucket name can include numbers, lowercase letters,
+      and hyphens (-), but it cannot start or end with a hyphen.
+    Default: aws-quickstart
+    Description: >-
+      Name of the S3 bucket for your copy of the deployment assets. Keep the default
+      name unless you are customizing the template. Changing the name updates code
+      references to point to a new location.
+    MinLength: 3
+    MaxLength: 63
+    Type: String
+  QSS3KeyPrefix:
+    Type: String
+    Description: >-
+      S3 key prefix that is used to simulate a folder for your copy of the
+      deployment assets. Keep the default prefix unless you are customizing
+      the template. Changing the prefix updates code references to point to
+      a new location.
+    AllowedPattern: ^([0-9a-zA-Z!-_\.\*'\(\)/]+/)*$
+    ConstraintDescription: >-
+      The S3 key prefix can include numbers, lowercase letters, uppercase letters,
+      hyphens (-), underscores (_), periods (.), asterisks (*), single quotes ('),
+      open parenthesis ((), close parenthesis ()), and forward slashes (/). End the
+      prefix with a forward slash.
+    Default: quickstart-ibm-mq/
+  QSS3BucketRegion:
+    Type: String
+    Description: >-
+      AWS Region where the S3 bucket (QSS3BucketName) is hosted. Keep
+      the default Region unless you are customizing the template. Changing the Region
+      updates code references to point to a new location. When using your own bucket,
+      specify the Region.
+    Default: us-east-1
+  AdditionalEKSAdminArns:
+    Default: ""
+    Description: >-
+      (Optional) One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster. By default, you can access the EKS cluster from boot node only. To enter multiple ARNs, use a comma-delimited list. Example: arn:aws:iam::012345678910:user/myid@example.com,
+      arn:aws:iam::012345678910:user/otherid@example.com.
+    Type: String
+  AvailabilityZones:
+    Description: Availability Zones to use for the subnet in the new VPC. You must select 3 Availability Zones.
+    Type: List<AWS::EC2::AvailabilityZone::Name>
+
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, aws-quickstart]
+
+Resources:
+  IBMMQIAMRoleStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq-iam-role.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        RoleName: !Join [ "", [ "ibm-mq-", !Ref EKSClusterName, "-", !Ref "AWS::Region", "-role" ] ]
+
+  IBMMQVPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template.yaml
+        - S3Bucket: !If [ UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName ]
+          S3Region: !If [ UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion ]
+      Parameters:
+        AvailabilityZones: !Join [ ',', !Ref AvailabilityZones ]
+        NumberOfAZs: 3
+        PrivateSubnetATag2: "kubernetes.io/role/internal-elb="
+        PublicSubnetTag2: "kubernetes.io/role/elb="
+
+  IBMMQBootNodeStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq-ec2-bootnode.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        RoleName: !GetAtt IBMMQIAMRoleStack.Outputs.RoleName
+        BootNodeName: !Join ["-", [!Ref EKSClusterName, "bootnode"]]
+        EKSClusterName: !Ref EKSClusterName
+        PublicSubnet1ID: !GetAtt 'IBMMQVPCStack.Outputs.PublicSubnet1ID'
+        PublicSubnet2ID: !GetAtt 'IBMMQVPCStack.Outputs.PublicSubnet2ID'
+        PublicSubnet3ID: !GetAtt 'IBMMQVPCStack.Outputs.PublicSubnet3ID'
+        AvailabilityZone1: !Select [0, !Ref AvailabilityZones]
+        AvailabilityZone2: !Select [1, !Ref AvailabilityZones]
+        AvailabilityZone3: !Select [2, !Ref AvailabilityZones]
+        PrivateSubnet1ID: !GetAtt 'IBMMQVPCStack.Outputs.PrivateSubnet1AID'
+        PrivateSubnet2ID: !GetAtt 'IBMMQVPCStack.Outputs.PrivateSubnet2AID'
+        PrivateSubnet3ID: !GetAtt 'IBMMQVPCStack.Outputs.PrivateSubnet3AID'
+
+  IBMMQEKSClusterStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq-create-eks.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        BootNodeInstanceId: !GetAtt IBMMQBootNodeStack.Outputs.InstanceId
+        EKSClusterName: !Ref EKSClusterName
+
+  IBMMQWorkloadStack:
+    Type: 'AWS::CloudFormation::Stack'
+    DependsOn:
+      - IBMMQEKSClusterStack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-mq-eks-workload.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        BootNodeInstanceId: !GetAtt IBMMQBootNodeStack.Outputs.InstanceId
+        BootNodeUser: !GetAtt IBMMQBootNodeStack.Outputs.User
+        EKSClusterName: !Ref EKSClusterName
+        MainStackName: !Ref "AWS::StackName"
+        AppNamespace: !Ref AppNamespace
+        MQAdminPassword: !Ref MQAdminPassword
+        MQAppPassword: !Ref MQAppPassword
+        InternalLoadBalancer: !Ref InternalLoadBalancer
+        QSS3CodeLocation: !Sub
+          - s3://${S3Bucket}/${QSS3KeyPrefix}
+          - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+        AdditionalEKSAdminArns: !Ref AdditionalEKSAdminArns
+
+Outputs:
+  EKSClusterName:
+    Description: EKS cluster name
+    Value: !Ref EKSClusterName
+  MQURLParameterName:
+    Description: Name of the SSM parameter that stores MQ Console URL
+    Value: !GetAtt IBMMQWorkloadStack.Outputs.MQURLParameterName
+  MQURLParameterValue:
+    Description: MQ Console URL parameter value, should be the console URL. If TBD, use the CLI or AWS Console to get the latest.
+    Value: !GetAtt IBMMQWorkloadStack.Outputs.MQURLParameterValue
+  BootNodeInstanceId:
+    Description: Boot node EC2 instance ID
+    Value: !GetAtt IBMMQBootNodeStack.Outputs.InstanceId
+  BootNodeName:
+    Description: Boot node name
+    Value: !GetAtt IBMMQBootNodeStack.Outputs.InstanceName
+  InstallLogsLocation:
+    Description: Install logs location (on boot node)
+    Value: "/opt/ibm/install.log"
+  CloudWatchInstallLogs:
+    Description: Installation logs (in CloudWatch)
+    Value: !GetAtt IBMMQWorkloadStack.Outputs.CloudWatchInstallLogs
+  DeploymentProperties:
+    Description: Deployment properties
+    Value: !GetAtt IBMMQWorkloadStack.Outputs.DeploymentProperties
+  EKSClusterVpcId:
+    Description: The ID of the VPC which was created for your EKS cluster
+    Value: !GetAtt IBMMQVPCStack.Outputs.VPCID
+  EKSClusterVpcUrl:
+    Description: URL to manage the VPC which was created for your EKS cluster
+    Value: !Join ["", ["https://", !Ref "AWS::Region", ".console.aws.amazon.com/vpc/home?region=", !Ref "AWS::Region", "#VpcDetails:VpcId=", !GetAtt IBMMQVPCStack.Outputs.VPCID]]
+  IAMRoleName:
+    Description: Role name to manage EKS
+    Value: !GetAtt IBMMQIAMRoleStack.Outputs.RoleName
+  IAMRoleUrl:
+    Description: The URL to view the IAM role that was used to create the EKS cluster
+    Value: !GetAtt IBMMQIAMRoleStack.Outputs.RoleURL

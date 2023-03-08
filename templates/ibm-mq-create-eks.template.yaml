@@ -1,0 +1,220 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This template creates an EKS cluster using eksctl from an EC2 instance. (qs-1tss294hs)
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: EKS configuration
+        Parameters:
+          - BootNodeInstanceId
+          - EKSClusterName
+    ParameterLabels:
+      EKSClusterName:
+        default: EKS Cluster Name
+      BootNodeInstanceId:
+        default: Boot node instance ID
+Parameters:
+  BootNodeInstanceId:
+    Type: AWS::EC2::Instance::Id
+    Description: Boot Node Instance Id
+  EKSClusterName:
+    Type: String
+    Description: Name for the new cluster*.
+Resources:
+  SpecificInstanceIdAssociation:
+    Type: AWS::SSM::Association
+    Properties:
+      Name: AWS-RunShellScript
+      Targets:
+      - Key: InstanceIds
+        Values:
+        - !Ref BootNodeInstanceId
+      Parameters:
+        commands:
+        - |
+          #!/bin/bash
+          curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+          sudo mv /tmp/eksctl /usr/local/bin
+        - |
+          #!/bin/bash
+          i=0
+          while [ ! -f /opt/ibm/cluster.yaml ]; do
+            echo "/opt/ibm/cluster.yaml isn't available yet, waiting"
+            sleep 5
+            i=$[$i+1]
+            if [ $i -ge 18 ]; then
+              echo "Timed out waiting 90 seconds for /opt/ibm/cluster.yaml to be available"
+              break;
+            fi
+            echo "/opt/ibm/cluster.yaml ready:"
+            cat /opt/ibm/cluster.yaml
+          done
+        - |
+          #!/bin/bash
+          cd /opt/ibm
+          eksctl create cluster -f /opt/ibm/cluster.yaml > /opt/ibm/eksctl.log
+        workingDirectory:
+        - /tmp
+      WaitForSuccessTimeoutSeconds: 1200
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/CloudWatchAgentServerPolicy
+      Path: /
+      Policies:
+        - PolicyName: IBMMQSSMLimitedAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:ListCommandInvocations
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - logs:FilterLogEvents
+                Resource: !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*
+              - Effect: Allow
+                Action:
+                  - ssm:SendCommand
+                Resource:
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:instance/*
+                  - !Sub arn:${AWS::Partition}:ssm:*:*:document/*
+        - PolicyName: IBMMQEC2LimitedAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:StartInstances
+                Resource:
+                  - !Sub arn:${AWS::Partition}:license-manager:*:${AWS::AccountId}:license-configuration/*
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:instance/*
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeInstances
+                Resource: '*'
+
+  CleanUpLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+          import os
+          import traceback
+          import time
+
+          def handler(event, context):
+              responseData = {}
+              try:
+                if event['RequestType'] == 'Delete':
+                  print("Run destroy script")
+
+                  ssm = boto3.client('ssm', region_name=os.environ['Region'])
+                  ec2 = boto3.resource('ec2')
+
+                  instanceID = os.environ['BootNode']
+                  stackName = os.environ['StackName']
+
+                  instance = ec2.Instance(instanceID)
+                  instance_state = lambda: instance.state.get('Name', 'LAMBDA_ERR')
+                  retries = 18
+
+                  while instance_state() != 'running' and retries > 0:
+                    print(f"Boot node is not running (its current state is '{instance_state()}'). Starting now...")
+                    try:
+                      instance.start()
+                      instance.wait_until_running()
+                    except Exception as ex:
+                      print(f"Error when starting boot node: {ex}")
+                      print("Trying again in 10 seconds.")
+                      time.sleep(10)
+
+                    instance.reload()
+                    retries = retries - 1
+
+                  # We're looping here because it can take a while for the
+                  # SSM agent to start up on the boot node. Once the command
+                  # is successfully sent, we break and move on.
+                  while True:
+                    try:
+                      response = ssm.send_command(Targets=[{"Key":"instanceids","Values":[instanceID]}],
+                              DocumentName="AWS-RunShellScript",
+                              Parameters={"commands":[f"/opt/ibm/scripts/destroy.sh >> /opt/ibm/eksctl.log"],
+                                          "executionTimeout":["1800"],
+                                          "workingDirectory":["/opt/ibm/scripts"]},
+                              Comment="Execute script to delete EKS cluster",
+                              TimeoutSeconds=180)
+                      break
+                    except Exception as ex:
+                      print("Error:", ex)
+                      print("Trying again in 10 seconds...")
+                      time.sleep(10)
+
+                  print("Response:", response)
+                  command_id = response['Command']['CommandId']
+                  current_status = 'Pending'
+                  command_in_progress = lambda: current_status in ('Pending', 'InProgress')
+
+                  while command_in_progress():
+                    print("Checking on SSM command status...")
+                    invocations = ssm.list_command_invocations(
+                          CommandId=command_id,
+                          InstanceId=instanceID,
+                          Details=True
+                    )
+
+                    if len(invocations['CommandInvocations']):
+                      current_status = invocations['CommandInvocations'][0]['Status']
+
+                    print(f"Current status is '{current_status}'.")
+                    if command_in_progress(): time.sleep(30)
+                  else:
+                    if current_status != 'Success':
+                      try:
+                        error = invocations['CommandInvocations'][0]['CommandPlugins'][0]['Output']
+                      except:
+                        error = 'Unknown error, check SSM command history logs'
+
+                      raise RuntimeError(f"SSM command failed with the following error: {error}")
+
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, {}, '')
+
+              except Exception as e:
+                print(e)
+                traceback.print_exc()
+                cfnresponse.send(event, context, cfnresponse.FAILED, {}, '')
+      Environment:
+        Variables:
+          Region: !Ref AWS::Region
+          BootNode: !Ref BootNodeInstanceId
+          StackName: !Ref AWS::StackName
+      Handler: index.handler
+      Role: !GetAtt 'LambdaExecutionRole.Arn'
+      Runtime: python3.7
+      Timeout: 900
+
+  Cleanup:
+    Type: Custom::Cleanup
+    Properties:
+      ServiceToken: !GetAtt 'CleanUpLambda.Arn'
+Outputs:
+  EKSName:
+    Description: EKS cluster name
+    Value: !Ref EKSClusterName
+  EKSUrl:
+    Description: Link to the EKS cluster
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/eks/home?region=",!Ref "AWS::Region","#/clusters/", !Ref EKSClusterName]]

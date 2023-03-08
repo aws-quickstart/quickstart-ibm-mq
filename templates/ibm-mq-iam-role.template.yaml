@@ -1,0 +1,172 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This template creates an IAM role which can be attached to an EC2 instance profile to enable EKS cluster creation with eksctl. Based on https://eksctl.io/usage/minimum-iam-policies/. (qs-1tss294h4)
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: IAM role configuration
+        Parameters:
+          - RoleName
+    ParameterLabels:
+      RoleName:
+        default: Role name
+Parameters:
+  RoleName:
+    Description: The name to give to the role.
+    Default: IBMMQDeploymentRole
+    Type: String
+Resources:
+  IBMMQDeploymentRole:
+    Type: AWS::IAM::Role
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - EIAMPolicyWildcardResource
+          ignore_reasons:
+            - EIAMPolicyWildcardResource: "eks ListClusters, DescribeAddonVersions, RegisterCluster, CreateCluster only allow wildcard resource."
+    Properties:
+      RoleName: !Ref RoleName
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: 'sts:AssumeRole'
+            Principal:
+              Service: !Sub ec2.${AWS::URLSuffix}
+            Effect: Allow
+            Sid: ''
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonEC2FullAccess
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AWSCloudFormationFullAccess
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonS3ReadOnlyAccess
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/CloudWatchAgentServerPolicy
+      Policies:
+        - PolicyName: IBMMQEKSFullAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - eks:ListClusters
+                  - eks:DescribeAddonVersions
+                  - eks:RegisterCluster
+                  - eks:CreateCluster
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - eks:DeleteFargateProfile
+                  - eks:UpdateClusterVersion
+                  - eks:DescribeFargateProfile
+                  - eks:ListTagsForResource
+                  - eks:UpdateAddon
+                  - eks:ListAddons
+                  - eks:UpdateClusterConfig
+                  - eks:DescribeAddon
+                  - eks:UpdateNodegroupVersion
+                  - eks:DescribeNodegroup
+                  - eks:AssociateEncryptionConfig
+                  - eks:ListUpdates
+                  - eks:ListIdentityProviderConfigs
+                  - eks:ListNodegroups
+                  - eks:DisassociateIdentityProviderConfig
+                  - eks:UntagResource
+                  - eks:CreateNodegroup
+                  - eks:DeregisterCluster
+                  - eks:DeleteCluster
+                  - eks:CreateFargateProfile
+                  - eks:ListFargateProfiles
+                  - eks:DescribeIdentityProviderConfig
+                  - eks:DeleteAddon
+                  - eks:DeleteNodegroup
+                  - eks:DescribeUpdate
+                  - eks:TagResource
+                  - eks:AccessKubernetesApi
+                  - eks:CreateAddon
+                  - eks:UpdateNodegroupConfig
+                  - eks:DescribeCluster
+                  - eks:AssociateIdentityProviderConfig
+                Resource:
+                  - !Sub arn:${AWS::Partition}:eks:*:${AWS::AccountId}:identityproviderconfig/*/*/*/*
+                  - !Sub arn:${AWS::Partition}:eks:*:${AWS::AccountId}:cluster/*
+                  - !Sub arn:${AWS::Partition}:eks:*:${AWS::AccountId}:nodegroup/*/*/*
+                  - !Sub arn:${AWS::Partition}:eks:*:${AWS::AccountId}:addon/*/*/*
+                  - !Sub arn:${AWS::Partition}:eks:*:${AWS::AccountId}:fargateprofile/*/*/*
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                  - ssm:PutParameter
+                Resource: !Sub arn:${AWS::Partition}:ssm:*:${AWS::AccountId}:parameter/*
+              - Effect: Allow
+                Action:
+                  - kms:CreateGrant
+                  - kms:DescribeKey
+                Resource: !Sub arn:${AWS::Partition}:kms:*:${AWS::AccountId}:key/*
+              - Effect: Allow
+                Action: logs:PutRetentionPolicy
+                Resource: !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*
+        - PolicyName: IBMMQIAMLimitedAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:CreateInstanceProfile
+                  - iam:DeleteInstanceProfile
+                  - iam:GetInstanceProfile
+                  - iam:RemoveRoleFromInstanceProfile
+                  - iam:GetRole
+                  - iam:CreateRole
+                  - iam:DeleteRole
+                  - iam:AttachRolePolicy
+                  - iam:PutRolePolicy
+                  - iam:ListInstanceProfiles
+                  - iam:AddRoleToInstanceProfile
+                  - iam:ListInstanceProfilesForRole
+                  - iam:PassRole
+                  - iam:DetachRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:GetOpenIDConnectProvider
+                  - iam:CreateOpenIDConnectProvider
+                  - iam:DeleteOpenIDConnectProvider
+                  - iam:TagOpenIDConnectProvider
+                  - iam:ListAttachedRolePolicies
+                  - iam:TagRole
+                  - iam:GetPolicy
+                  - iam:CreatePolicy
+                  - iam:DeletePolicy
+                  - iam:ListPolicyVersions
+                Resource:
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:instance-profile/eksctl-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/eksctl-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/eksctl-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:oidc-provider/*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/aws-service-role/eks-nodegroup.amazonaws.com/AWSServiceRoleForAmazonEKSNodegroup
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/eksctl-managed-*
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/AmazonEKS_EBS_CSI_DriverRole*
+              - Effect: Allow
+                Action:
+                  - iam:GetRole
+                Resource:
+                  - !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*
+              - Effect: Allow
+                Action:
+                  - iam:CreateServiceLinkedRole
+                Resource: !Sub arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*
+                Condition:
+                    StringEquals:
+                        iam:AWSServiceName:
+                          - eks.amazonaws.com
+                          - eks-nodegroup.amazonaws.com
+                          - eks-fargate.amazonaws.com
+Outputs:
+  RoleName:
+    Description: The name of the created role.
+    Value: !Ref IBMMQDeploymentRole
+  RoleARN:
+    Description: The ARN of the created role.
+    Value: !GetAtt IBMMQDeploymentRole.Arn
+  RoleURL:
+    Description: Link to the IAM role.
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/iamv2/home?region=",!Ref "AWS::Region","#/roles/details/", !Ref IBMMQDeploymentRole]]

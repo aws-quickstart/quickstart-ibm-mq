@@ -1,6 +1,7 @@
+general:
+  s3_regional_buckets: true
 project:
   name: quickstart-ibm-mq
-  owner: mcguire7@uk.ibm.com
   package_lambda: false
   shorten_stack_name: true
   regions:
@@ -19,41 +20,25 @@ project:
   - ap-northeast-2
   - ap-south-1
   s3_bucket: ''
+  parameters:
+    EKSClusterName: mq-cluster-$[taskcat_random-string]
+    QSS3BucketName: $[taskcat_autobucket]
+    QSS3BucketRegion: $[taskcat_current_region]
+    QSS3KeyPrefix: $[taskcat_project_name]/
+    AvailabilityZones: $[taskcat_genaz_3]
+    MQAppPassword: $[taskcat_genpass_10]
+    MQAdminPassword: $[taskcat_genpass_10]
 tests:
-  quickstart-ibm-mqt1:
+  mq-eks-private:
+    template: ./templates/ibm-mq-main.template.yaml
     parameters:
-      AdminConsoleAccessCIDR: 10.0.0.0/16
-      AdminRemoteAccessCIDR: 10.0.0.0/16
-      AvailabilityZones: $[taskcat_genaz_2]
-      BastionAMIOS: Ubuntu-Server-20.04-LTS-HVM
-      ClientAppAccessCIDR: 10.0.0.0/16
-      KeyPairName: $[taskcat_getkeypair]
-      LicenseAgreement: I agree
-      LicenseS3Bucket: ''
-      LicenseS3KeyPrefix: ''
-      MQAdminPassword: $[taskcat_genpass_10]
-      MQAppPassword: $[taskcat_genpass_10]
-      MQConsolePassword: $[taskcat_genpass_10]
-      MQConsoleUsername: mqconsoleadmin
-      MQInstanceName: taskcat-ibm-mq
-      MQOwner: taskcat-ibm
-      QueueManagerName: QM1
-      QSS3BucketName: $[taskcat_autobucket]
-      QSS3BucketRegion: $[taskcat_current_region]
+      InternalLoadBalancer: "true"
     regions:
-    - us-east-1
-    - us-east-2
-    - us-west-1
-    - us-west-2
-    - ca-central-1
-    - eu-central-1
-    - eu-west-1
-    - eu-west-2
-    - eu-west-3
-    - ap-southeast-1
-    - ap-southeast-2
-    - ap-northeast-1
-    - ap-northeast-2
-    - ap-south-1
-    s3_bucket: ''
-    template: templates/ibm-mq-master.template
+      - eu-west-1
+      - eu-west-2
+  mq-eks-public:
+    template: ./templates/ibm-mq-main.template.yaml
+    parameters:
+      InternalLoadBalancer: "false"
+    regions:
+      - eu-west-3
