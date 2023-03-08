@@ -3,10 +3,10 @@
 :partner-product-name: IBM MQ Native HA
 :partner-product-short-name: IBM MQ
 :partner-company-name: IBM
-:doc-month: February
+:doc-month: March
 :doc-year: 2023
 :partner-contributors: Martin Evans, Soheel Chughtai, {partner-company-name}
-// :other-contributors: 
+// :other-contributors:
 :aws-contributors: Senthil Nagaraj, AWS IBM Alliance team
 :aws-ia-contributors: Vinod Shukla, AWS Integration & Automation team
 :deployment_time: 30 minutes
