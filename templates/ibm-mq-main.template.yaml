@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "This template deploys a IBM MQ into a new EKS cluster in a new VPC. (qs-1tss294ep)"
+Description: "This template deploys IBM MQ into a new Amazon EKS cluster in a new VPC. (qs-1tss294ep)"
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: Deploy IBM MQ in a new VPC
+    EntrypointName: Deploy IBM MQ in new VPC
     Order: 1
   LICENSE: Apache License, Version 2.0
   LintSpellExclude:
@@ -62,7 +62,7 @@ Metadata:
 Parameters:
   EKSClusterName:
     Type: String
-    Description: Name of the new EKS cluster (2-250 characters). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
+    Description: Name of new Amazon EKS cluster (2-250 characters). Name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
     MinLength: 2
     MaxLength: 250
     AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
@@ -70,7 +70,7 @@ Parameters:
   AppNamespace:
     Type: String
     Default: "default"
-    Description: Namespace in the EKS cluster where app will be deployed.
+    Description: Namespace in Amazon EKS cluster where app is deployed.
   MQAppPassword:
     Type: String
     NoEcho: true
@@ -122,11 +122,11 @@ Parameters:
   AdditionalEKSAdminArns:
     Default: ""
     Description: >-
-      (Optional) One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster. By default, you can access the EKS cluster from boot node only. To enter multiple ARNs, use a comma-delimited list. Example: arn:aws:iam::012345678910:user/myid@example.com,
+      (Optional) One or more IAM user or role ARNs to be granted administrative access to new Amazon EKS cluster. By default, access Amazon EKS cluster from boot node only. To enter multiple ARNs, use comma-delimited list. Example: arn:aws:iam::012345678910:user/myid@example.com,
       arn:aws:iam::012345678910:user/otherid@example.com.
     Type: String
   AvailabilityZones:
-    Description: Availability Zones to use for the subnet in the new VPC. You must select 3 Availability Zones.
+    Description: Availability Zones to use for subnet in new VPC. You must select 3 Availability Zones.
     Type: List<AWS::EC2::AvailabilityZone::Name>
 
 Conditions:
@@ -213,38 +213,38 @@ Resources:
 
 Outputs:
   EKSClusterName:
-    Description: EKS cluster name
+    Description: EKS cluster name.
     Value: !Ref EKSClusterName
   MQURLParameterName:
-    Description: Name of the SSM parameter that stores MQ Console URL
+    Description: Name of SSM parameter that stores MQ console URL.
     Value: !GetAtt IBMMQWorkloadStack.Outputs.MQURLParameterName
   MQURLParameterValue:
-    Description: MQ Console URL parameter value, should be the console URL. If TBD, use the CLI or AWS Console to get the latest.
+    Description: MQ console URL parameter value, should be console URL. If TBD, use CLI or AWS Console to get latest.
     Value: !GetAtt IBMMQWorkloadStack.Outputs.MQURLParameterValue
   BootNodeInstanceId:
-    Description: Boot node EC2 instance ID
+    Description: Boot node EC2 instance ID.
     Value: !GetAtt IBMMQBootNodeStack.Outputs.InstanceId
   BootNodeName:
-    Description: Boot node name
+    Description: Boot node name.
     Value: !GetAtt IBMMQBootNodeStack.Outputs.InstanceName
   InstallLogsLocation:
-    Description: Install logs location (on boot node)
+    Description: Install logs location (on boot node).
     Value: "/opt/ibm/install.log"
   CloudWatchInstallLogs:
-    Description: Installation logs (in CloudWatch)
+    Description: Installation logs (in CloudWatch).
     Value: !GetAtt IBMMQWorkloadStack.Outputs.CloudWatchInstallLogs
   DeploymentProperties:
-    Description: Deployment properties
+    Description: Deployment properties.
     Value: !GetAtt IBMMQWorkloadStack.Outputs.DeploymentProperties
   EKSClusterVpcId:
-    Description: The ID of the VPC which was created for your EKS cluster
+    Description: ID of VPC created for your Amazon EKS cluster.
     Value: !GetAtt IBMMQVPCStack.Outputs.VPCID
   EKSClusterVpcUrl:
-    Description: URL to manage the VPC which was created for your EKS cluster
+    Description: URL to manage VPC created for your Amazon EKS cluster.
     Value: !Join ["", ["https://", !Ref "AWS::Region", ".console.aws.amazon.com/vpc/home?region=", !Ref "AWS::Region", "#VpcDetails:VpcId=", !GetAtt IBMMQVPCStack.Outputs.VPCID]]
   IAMRoleName:
-    Description: Role name to manage EKS
+    Description: Role name to manage Amazon EKS.
     Value: !GetAtt IBMMQIAMRoleStack.Outputs.RoleName
   IAMRoleUrl:
-    Description: The URL to view the IAM role that was used to create the EKS cluster
+    Description: URL to view IAM role used to create Amazon EKS cluster.
     Value: !GetAtt IBMMQIAMRoleStack.Outputs.RoleURL
