@@ -12,7 +12,6 @@ is the main stack.
 
 * **Determine IBM MQ web console through the AWS EC2 boot node.**
 The MQ Native HA cluster is installed using an AWS EC2 instance that acts as a boot node. You can access the AWS EKS cluster from the AWS EC2 boot node. The boot node will have the suffix `-bootnode`.
-//TODO Vinod, I reworded the two list items below for clarity. Please confirm they're accurate. 
 .. If the boot node status is `stopped`, select the boot node, and then restart it.
 .. When the status is `Running`, select the boot node, and then choose `Connect`.
 .. Connect using Session Manager.

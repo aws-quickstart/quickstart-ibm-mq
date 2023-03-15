@@ -14,15 +14,13 @@ As shown in <<architecture1>>, this Partner Solution sets up the following:
 * A highly available architecture that spans three Availability Zones.
 * A virtual private cloud (VPC) configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.
 * In the public subnets:
-//TODO Vinod, There's no bullet item for the "Boot node" in the diagram (under the first public subnet). Should I remove that icon from the diagram? If we need to keep it, can you please add a bullet item for it?
 ** Managed network address translation (NAT) gateways to allow outbound internet access for resources in the private subnets.
+** One boot node, an Amazon Elastic Compute Cloud (Amazon EC2) instance, to access the Amazon EKS cluster.
 * In the private subnets, an https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html[Amazon EKS managed node group^] to automate the provisioning and lifecycle management of the nodes (Amazon EC2 instances) for the EKS cluster. Each node comprises the following:
-//TODO Vinod, The resource icon for the three IBM MQ servers in the diagram is for Amazon ECS. I don't see Amazon ECS mentioned in the bullets or diagram, so is that the correct resource icon?
 ** An IBM MQ server.
 ** An Amazon Elastic Block Store (Amazon EBS) for persistent distributed storage to ensure high availability of the queue manager service and message data.
-//TODO Vinod, I moved the "Classic load balancer" bullet from under the public subnets to the private subnets bullet because the diagram shows this item under private subnets. Is that correct?
-** Classic load balancer automatically distributes connections to the active IBM MQ server. 
-//TODO Vinod, Can you please add a bullet item for the Amazon EKS icon that's outside of the VPC?
+* A Classic Load Balancer that automatically distributes connections to the active IBM MQ server. 
+* Amazon EKS, which provides the Kubernetes control plane for the cluster.
 // Add bullet points for any additional components that are included in the deployment. Ensure that the additional components are shown in the architecture diagram. End each bullet with a period.
 //* <describe any additional components>.
 
