@@ -10,7 +10,7 @@ For troubleshooting common Partner Solution issues, refer to the https://fwd.aws
 * https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html[AWS EKS^]
 * https://aws.amazon.com/documentation/cloudformation/[AWS CloudFormation^]
 * https://aws.amazon.com/documentation/vpc/[Amazon VPC^]
-* https://aws.amazon.com/quickstart/[AWS Quick Start deployments^]
+* https://aws.amazon.com/quickstart/[AWS Partner Solutions^]
 
 *IBM MQ*
 
