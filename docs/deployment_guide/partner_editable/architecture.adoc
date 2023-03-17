@@ -18,7 +18,7 @@ As shown in <<architecture1>>, this Partner Solution sets up the following:
 ** One boot node, an Amazon Elastic Compute Cloud (Amazon EC2) instance, to access the Amazon EKS cluster.
 * In the private subnets, an https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html[Amazon EKS managed node group^] to automate the provisioning and lifecycle management of the nodes (Amazon EC2 instances) for the Amazon EKS cluster. Each node comprises the following:
 ** An IBM MQ server.
-** An Amazon Elastic Block Store (Amazon EBS) for persistent distributed storage to ensure high availability of the queue manager service and message data.
+** An Amazon Elastic Block Store (Amazon EBS) volume for persistent distributed storage and high availability of the queue manager service and message data.
 * A Classic Load Balancer that automatically distributes connections to the active IBM MQ server. 
 * Amazon EKS, which provides the Kubernetes control plane for the cluster.
 // Add bullet points for any additional components that are included in the deployment. Ensure that the additional components are shown in the architecture diagram. End each bullet with a period.
