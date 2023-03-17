@@ -1,0 +1,1 @@
+This guide covers the information you need to deploy the {partner-product-name} Partner Solution in an Amazon Elastic Kubernetes Service (Amazon EKS) cluster.

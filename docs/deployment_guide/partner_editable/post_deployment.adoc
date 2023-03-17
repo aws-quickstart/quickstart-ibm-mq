@@ -1,0 +1,30 @@
+// Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
+
+== Postdeployment steps
+* **Determine IBM MQ web console through AWS CloudFormation stack.**
+In CloudFormation service, three high-level stacks are created. The stack with the earliest created time and the description
+"This template deploys a IBM MQ into a new AWS EKS cluster in a new VPC"
+is the main stack.
+.. Select to the main CloudFormation stack.
+.. Choose the *Outputs* tab.
+*** The value of the `MQURLParameterValue` key is the IBM MQ console URL
+
+
+* **Determine IBM MQ web console through the AWS EC2 boot node.**
+The MQ Native HA cluster is installed using an AWS EC2 instance that acts as a boot node. You can access the AWS EKS cluster from the AWS EC2 boot node. The boot node will have the suffix `-bootnode`.
+.. If the boot node status is `stopped`, select the boot node, and then restart it.
+.. When the status is `Running`, select the boot node, and then choose `Connect`.
+.. Connect using Session Manager.
+.. Run the following commands:
++
+```
+  sudo su ec2-user
+  export PATH=$PATH:/usr/local/bin
+  kubectl get all
+```
++
+The output shows a load balancer, for example `afd56b5d7ee7d4bdc827106721c26999-638763888.eu-west-2.elb.amazonaws.com`.
+Access the web console through `https:://<load-balancer-address>:9443/ibmmq/console`.
+
+* **Internal only load balancer.**
+If you opted for an internal only load balancer, it won't be reachable from a public IP. To access the IBM MQ web console, use port forwarding of port 9443 in AWS Systems Manager. For more information, refer to https://aws.amazon.com/blogs/mt/use-port-forwarding-in-aws-systems-manager-session-manager-to-connect-to-remote-hosts/[AWS SSM port forwarding^], where the `target` is your Amazon EC2 boot node and the host is your load balancer.
